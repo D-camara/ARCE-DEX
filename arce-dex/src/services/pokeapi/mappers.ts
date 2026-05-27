@@ -37,6 +37,31 @@ function mapNamedResourceToForm(resource: PokeApiNamedResource): PokemonForm {
   }
 }
 
+export function getIdFromPokeApiUrl(url: string): number | null {
+  const match = url.match(/\/(\d+)\/?$/)
+
+  return match ? Number(match[1]) : null
+}
+
+export function mapPokemonListResource(resource: PokeApiNamedResource): PokemonSummary | null {
+  const id = getIdFromPokeApiUrl(resource.url)
+
+  if (id === null) {
+    return null
+  }
+
+  const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
+
+  return {
+    id,
+    name: resource.name,
+    displayName: formatPokemonName(resource.name),
+    sprite: imageUrl,
+    imageUrl,
+    types: [],
+  }
+}
+
 export function mapPokemonSummary(pokemon: PokeApiPokemonResponse): PokemonSummary {
   const sprite =
     pokemon.sprites.other?.['official-artwork']?.front_default ??

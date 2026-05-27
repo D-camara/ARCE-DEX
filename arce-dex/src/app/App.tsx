@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Heart, History, Menu, Users } from 'lucide-react'
 import { PokemonCard } from '../components/pokemon/PokemonCard'
-import { PokemonTabs } from '../components/pokemon/PokemonTabs'
+import { PokemonTabs, type PokemonTabName } from '../components/pokemon/PokemonTabs'
 import { TeamDrawer } from '../components/team/TeamDrawer'
 import { TeamAnalysisPanel } from '../components/type-analysis/TeamAnalysisPanel'
 import { EmptyState, ErrorState, LoadingState, SkeletonCard, Toast } from '../components/ui/StatusStates'
@@ -11,7 +11,7 @@ import { SearchExperience } from '../features/pokemon-search/SearchExperience'
 import { importTeamJson } from '../lib/export-import'
 import { normalizePokemonSearch } from '../lib/utils'
 import { usePokemon } from '../hooks/usePokemon'
-import { usePokemonList } from '../hooks/usePokemonList'
+import { usePokemonAutocompleteList } from '../hooks/usePokemonList'
 import { useFavoritesStore } from '../stores/favoritesStore'
 import { useSearchHistoryStore } from '../stores/searchHistoryStore'
 import { useTeamStore } from '../stores/teamStore'
@@ -30,11 +30,13 @@ function App() {
   const [query, setQuery] = useState('')
   const [selectedIdentifier, setSelectedIdentifier] = useState<string | number>(448)
   const [isTeamOpen, setIsTeamOpen] = useState(false)
+  const [isAutocompleteOpen, setIsAutocompleteOpen] = useState(false)
+  const [activePokemonTab, setActivePokemonTab] = useState<PokemonTabName>('Info')
   const [showToast, setShowToast] = useState(false)
   const [transferValue, setTransferValue] = useState('')
   const [transferMessage, setTransferMessage] = useState('Formato validado pela base tecnica.')
 
-  const pokemonListQuery = usePokemonList()
+  const pokemonListQuery = usePokemonAutocompleteList()
   const selectedPokemonQuery = usePokemon(selectedIdentifier)
   const selectedPokemon = selectedPokemonQuery.data
 
@@ -72,6 +74,7 @@ function App() {
     if (normalizedSearch !== '') {
       setSelectedIdentifier(normalizedSearch)
       addSearch(String(normalizedSearch))
+      setIsAutocompleteOpen(false)
     }
   }
 
@@ -79,6 +82,21 @@ function App() {
     setSelectedIdentifier(pokemon.id)
     setQuery(pokemon.displayName)
     addSearch(pokemon.name)
+    setActivePokemonTab('Info')
+    setIsAutocompleteOpen(false)
+  }
+
+  function handleSearchChange(value: string) {
+    setQuery(value)
+    setIsAutocompleteOpen(value.trim().length >= 2)
+  }
+
+  function handleViewWeaknesses() {
+    if (!selectedPokemon) {
+      return
+    }
+
+    setActivePokemonTab('Fraquezas')
   }
 
   function handleAddToTeam() {
@@ -143,11 +161,16 @@ function App() {
 
       <main>
         <SearchExperience
+          canViewWeaknesses={Boolean(selectedPokemon)}
+          isAutocompleteOpen={isAutocompleteOpen}
           isError={pokemonListQuery.isError}
           isLoading={pokemonListQuery.isLoading}
-          onChange={setQuery}
+          onChange={handleSearchChange}
+          onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
+          onMountTeam={() => setIsTeamOpen(true)}
           onSearch={handleSearch}
           onSelect={handleSelectPokemon}
+          onViewWeaknesses={handleViewWeaknesses}
           suggestions={summaries}
           value={query}
         />
@@ -175,7 +198,11 @@ function App() {
                   onToggleFavorite={() => toggleFavorite(selectedPokemon.id)}
                   pokemon={selectedPokemon}
                 />
-                <PokemonTabs data={pokemonTabData} />
+                <PokemonTabs
+                  activeTab={activePokemonTab}
+                  data={pokemonTabData}
+                  onTabChange={setActivePokemonTab}
+                />
               </>
             )}
           </div>

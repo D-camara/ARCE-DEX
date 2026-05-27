@@ -13,22 +13,31 @@ export type PokemonTabData = {
 
 type PokemonTabsProps = {
   data: PokemonTabData
+  activeTab?: PokemonTabName
+  onTabChange?: (tab: PokemonTabName) => void
 }
 
 const tabs = ['Info', 'Evolucao', 'Golpes', 'Fraquezas', 'Formas'] as const
+export type PokemonTabName = (typeof tabs)[number]
 
-export function PokemonTabs({ data }: PokemonTabsProps) {
-  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>('Info')
+export function PokemonTabs({ activeTab, data, onTabChange }: PokemonTabsProps) {
+  const [internalActiveTab, setInternalActiveTab] = useState<PokemonTabName>('Info')
+  const selectedTab = activeTab ?? internalActiveTab
+
+  function handleTabChange(tab: PokemonTabName) {
+    setInternalActiveTab(tab)
+    onTabChange?.(tab)
+  }
 
   return (
     <section className="tabs-card">
       <div className="tab-list" role="tablist" aria-label="Dados do Pokemon">
         {tabs.map((tab) => (
           <button
-            aria-selected={activeTab === tab}
-            className={activeTab === tab ? 'is-active' : ''}
+            aria-selected={selectedTab === tab}
+            className={selectedTab === tab ? 'is-active' : ''}
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabChange(tab)}
             role="tab"
             type="button"
           >
@@ -37,21 +46,21 @@ export function PokemonTabs({ data }: PokemonTabsProps) {
         ))}
       </div>
       <div className="tab-panel">
-        {activeTab === 'Info' && (
+        {selectedTab === 'Info' && (
           <StateBlock
             label="success"
             title="Resumo pronto"
             text="Dados principais separados da camada de API e prontos para receber hooks reais."
           />
         )}
-        {activeTab === 'Evolucao' && (
+        {selectedTab === 'Evolucao' && (
           <div className="evolution-line">
             {data.evolution.map((name) => (
               <span key={name}>{name}</span>
             ))}
           </div>
         )}
-        {activeTab === 'Golpes' && (
+        {selectedTab === 'Golpes' && (
           <div className="move-list">
             {data.moves.map((move) => (
               <div key={move.name}>
@@ -63,14 +72,14 @@ export function PokemonTabs({ data }: PokemonTabsProps) {
             ))}
           </div>
         )}
-        {activeTab === 'Fraquezas' && (
+        {selectedTab === 'Fraquezas' && (
           <div className="weakness-grid">
             <TypeGroup label="Fraquezas" types={data.weaknesses} />
             <TypeGroup label="Resiste" types={data.resistances} />
             <TypeGroup label="Imune" types={data.immunities} />
           </div>
         )}
-        {activeTab === 'Formas' && (
+        {selectedTab === 'Formas' && (
           <div className="form-list">
             {data.forms.map((form) => (
               <span key={form.name}>{form.displayName}</span>

@@ -175,10 +175,11 @@ main {
 }
 
 .search-card {
+  position: relative;
   display: grid;
   gap: 16px;
   padding: 20px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .eyebrow {
@@ -196,15 +197,31 @@ main {
   padding: 0 14px;
   border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.9);
+  color: #e0f2fe;
+  background: rgba(2, 6, 23, 0.92);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.search-box:focus-within {
+  border-color: rgba(56, 189, 248, 0.75);
+  background: rgba(8, 13, 24, 0.98);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.14);
 }
 
 .search-box input {
   width: 100%;
   border: 0;
   outline: 0;
-  color: var(--text);
+  color: #f8fafc;
   background: transparent;
+}
+
+.search-box input::placeholder {
+  color: #94a3b8;
+  opacity: 1;
 }
 
 .shortcut-grid,
@@ -222,6 +239,7 @@ main {
 }
 
 .shortcut-grid span,
+.shortcut-grid button,
 .status-state {
   min-height: 44px;
   padding: 12px;
@@ -231,6 +249,43 @@ main {
   color: var(--soft);
   font-size: 0.82rem;
   text-align: center;
+}
+
+.shortcut-grid button {
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.shortcut-grid button:hover:not(:disabled),
+.shortcut-grid button:focus-visible {
+  border-color: rgba(56, 189, 248, 0.55);
+  background: rgba(56, 189, 248, 0.14);
+  color: #e0f2fe;
+}
+
+.shortcut-grid button:disabled {
+  cursor: not-allowed;
+  color: rgba(148, 163, 184, 0.58);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.suggestion-list {
+  position: absolute;
+  z-index: 18;
+  left: 20px;
+  right: 20px;
+  top: calc(100% - 20px);
+  max-height: min(440px, 62svh);
+  padding: 8px;
+  overflow-y: auto;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 16px;
+  background: rgba(8, 13, 24, 0.98);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(18px);
 }
 
 .suggestion-item,
@@ -251,6 +306,18 @@ main {
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.04);
   text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.suggestion-item:hover,
+.suggestion-item:focus-visible {
+  border-color: rgba(56, 189, 248, 0.52);
+  background: rgba(56, 189, 248, 0.12);
+  transform: translateY(-1px);
 }
 
 .suggestion-item img,
@@ -735,9 +802,15 @@ main {
   }
 
   .search-card .search-box,
-  .search-card .shortcut-grid,
-  .search-card .suggestion-list {
+  .search-card .shortcut-grid {
     grid-column: 2;
+  }
+
+  .search-card .suggestion-list {
+    left: auto;
+    right: 20px;
+    width: min(420px, calc(100% - 40px));
+    top: calc(100% - 20px);
   }
 
   .content-grid {
