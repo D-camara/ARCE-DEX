@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getPokemon, getPokemonList } from '../services/pokeapi/endpoints'
 import { mapPokemonListResource, mapPokemonSummary } from '../services/pokeapi/mappers'
 
-const DEFAULT_AUTOCOMPLETE_LIMIT = 1025
+const DEFAULT_AUTOCOMPLETE_LIMIT = 1500
 
 export function usePokemonList(limit = 151, offset = 0) {
   return useQuery({

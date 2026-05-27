@@ -6,6 +6,7 @@ import type {
   PokeApiPokemonSpeciesResponse,
   PokeApiTypeResponse,
 } from '../../types/pokeapi'
+import { getPokemonSearchCandidates } from '../../lib/search'
 import { pokeApiGet } from './client'
 
 export function getPokemonList(limit = 151, offset = 0) {
@@ -14,6 +15,24 @@ export function getPokemonList(limit = 151, offset = 0) {
 
 export function getPokemon(identifier: string | number) {
   return pokeApiGet<PokeApiPokemonResponse>(`/pokemon/${identifier}`)
+}
+
+export async function findPokemon(identifier: string | number) {
+  const candidates =
+    typeof identifier === 'string' ? getPokemonSearchCandidates(identifier) : [identifier]
+  let lastError: unknown
+
+  for (const candidate of candidates) {
+    try {
+      return await getPokemon(candidate)
+    } catch (error) {
+      lastError = error
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error('Pokemon nao encontrado para essa busca.')
 }
 
 export function getEvolutionChain(id: string | number) {
@@ -26,6 +45,12 @@ export function getEvolutionChainByUrl(url: string) {
 
 export function getPokemonSpecies(identifier: string | number) {
   return pokeApiGet<PokeApiPokemonSpeciesResponse>(`/pokemon-species/${identifier}`)
+}
+
+export async function findPokemonSpecies(identifier: string | number) {
+  const pokemon = await findPokemon(identifier)
+
+  return pokeApiGet<PokeApiPokemonSpeciesResponse>(pokemon.species.url)
 }
 
 export function getPokemonForm(identifier: string | number) {

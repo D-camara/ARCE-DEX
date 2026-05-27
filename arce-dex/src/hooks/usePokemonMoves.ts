@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getPokemon } from '../services/pokeapi/endpoints'
+import { findPokemon } from '../services/pokeapi/endpoints'
 import { mapPokemonDetail } from '../services/pokeapi/mappers'
 import { normalizePokemonSearch } from '../lib/utils'
 
@@ -10,7 +10,7 @@ export function usePokemonMoves(identifier: string | number | null, search = '')
   return useQuery({
     queryKey: ['pokemon-moves', normalizedIdentifier, search],
     queryFn: async () => {
-      const pokemon = mapPokemonDetail(await getPokemon(normalizedIdentifier as string | number))
+      const pokemon = mapPokemonDetail(await findPokemon(normalizedIdentifier as string | number))
       const normalizedSearch = search.trim().toLowerCase()
 
       if (!normalizedSearch) {

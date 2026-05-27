@@ -1,6 +1,10 @@
 import { Search } from 'lucide-react'
 import type { PokemonSummary } from '../../types/pokemon'
 import { TypeBadges } from '../../components/pokemon/TypeBadges'
+import {
+  getPokemonAutocompleteSuggestions,
+  normalizePokemonSearchText,
+} from '../../lib/search'
 
 type SearchExperienceProps = {
   suggestions: PokemonSummary[]
@@ -31,23 +35,10 @@ export function SearchExperience({
   onChange,
   onSelect,
 }: SearchExperienceProps) {
-  const normalizedValue = value.trim().toLowerCase()
-  const numericValue = normalizedValue.replace(/^#/, '')
+  const normalizedValue = normalizePokemonSearchText(value)
   const shouldShowSuggestions = isAutocompleteOpen && normalizedValue.length >= 2
   const visibleSuggestions = shouldShowSuggestions
-    ? suggestions
-        .filter((pokemon) => {
-          const searchableName = `${pokemon.name} ${pokemon.displayName}`.toLowerCase()
-          const pokemonId = String(pokemon.id)
-          const paddedPokemonId = pokemonId.padStart(3, '0')
-
-          if (/^\d+$/.test(numericValue)) {
-            return pokemonId.includes(numericValue) || paddedPokemonId.includes(numericValue)
-          }
-
-          return searchableName.includes(normalizedValue)
-        })
-        .slice(0, 8)
+    ? getPokemonAutocompleteSuggestions(value, suggestions)
     : []
 
   return (
@@ -90,14 +81,16 @@ export function SearchExperience({
             visibleSuggestions.map((pokemon) => (
               <button
                 className="suggestion-item"
-                key={pokemon.id}
+                key={pokemon.name}
                 onClick={() => onSelect(pokemon)}
                 type="button"
               >
-                <img src={pokemon.imageUrl} alt="" />
+                {pokemon.imageUrl ? <img src={pokemon.imageUrl} alt="" /> : <span aria-hidden />}
                 <span>
                   <strong>{pokemon.displayName}</strong>
-                  <small>#{String(pokemon.id).padStart(4, '0')}</small>
+                  <small>
+                    {pokemon.id > 0 ? `#${String(pokemon.id).padStart(4, '0')}` : pokemon.name}
+                  </small>
                 </span>
                 <TypeBadges compact types={pokemon.types} />
               </button>

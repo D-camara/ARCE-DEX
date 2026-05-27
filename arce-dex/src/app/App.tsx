@@ -87,7 +87,7 @@ function App() {
   }
 
   function handleSelectPokemon(pokemon: PokemonSummary) {
-    setSelectedIdentifier(pokemon.id)
+    setSelectedIdentifier(pokemon.name)
     setQuery(pokemon.displayName)
     addSearch(pokemon.name)
     setActivePokemonTab('Info')
