@@ -161,10 +161,11 @@ function EvolutionBranch({
 
   return (
     <div className="evolution-branch">
-      <span className={isCurrent ? 'evolution-node is-current' : 'evolution-node'}>
+      <button className={isCurrent ? 'evolution-node is-current' : 'evolution-node'} type="button">
+        {node.sprite && <img src={node.sprite} alt="" />}
         <strong>{node.displayName}</strong>
         <small>{node.method}</small>
-      </span>
+      </button>
       {node.evolvesTo.length > 0 && (
         <div className="evolution-children">
           {node.evolvesTo.map((child) => (
@@ -207,7 +208,7 @@ function formatMultiplier(multiplier: number) {
 
 function formatMoveLearnMethod(move: PokemonMove) {
   if (move.learnedAtLevel !== null && move.learnMethod === 'level-up') {
-    return `Lv. ${move.learnedAtLevel}`
+    return move.learnedAtLevel <= 1 ? 'Lv. 1' : `Lv. ${move.learnedAtLevel}`
   }
 
   if (move.learnMethod === 'machine') {

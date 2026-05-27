@@ -49,6 +49,7 @@ type TeamStore = {
   getActiveTeam: () => Team
   setActiveTeam: (teamId: string) => void
   addPokemon: (pokemon: TeamPokemon, slotIndex?: number) => boolean
+  addPokemonToTeam: (teamId: string, pokemon: TeamPokemon) => boolean
   removePokemon: (slotIndex: number, teamId?: string) => void
   renameTeam: (teamId: string, name: string) => void
   clearTeam: (teamId?: string) => void
@@ -94,6 +95,35 @@ export const useTeamStore = create<TeamStore>()(
               ),
             }
           }),
+        }))
+
+        return wasAdded
+      },
+      addPokemonToTeam: (teamId, pokemon) => {
+        let wasAdded = false
+
+        set((state) => ({
+          teams: state.teams.map((team) => {
+            if (team.id !== teamId) {
+              return team
+            }
+
+            const nextSlotIndex = team.slots.findIndex((slot) => slot.pokemon === null)
+
+            if (nextSlotIndex < 0) {
+              return team
+            }
+
+            wasAdded = true
+
+            return {
+              ...team,
+              slots: team.slots.map((slot, index) =>
+                index === nextSlotIndex ? { ...slot, pokemon } : slot,
+              ),
+            }
+          }),
+          activeTeamId: wasAdded ? teamId : state.activeTeamId,
         }))
 
         return wasAdded
