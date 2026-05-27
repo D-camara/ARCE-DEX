@@ -3,7 +3,13 @@ import {
   calculateTeamDefensiveAnalysis,
   calculateTypeAnalysis,
 } from '../lib/type-chart'
-import type { Pokemon, PokemonSummary } from '../types/pokemon'
+import type {
+  EvolutionChain,
+  Pokemon,
+  PokemonMove,
+  PokemonSpecies,
+  PokemonSummary,
+} from '../types/pokemon'
 import type { Team, TeamPokemon, TeamSlot } from '../types/team'
 import type { PokemonTabData } from '../components/pokemon/PokemonTabs'
 
@@ -48,16 +54,35 @@ export function uniqueSummaries(pokemons: PokemonSummary[]): PokemonSummary[] {
   return [...new Map(pokemons.map((pokemon) => [pokemon.id, pokemon])).values()]
 }
 
-export function createPokemonTabData(pokemon: Pokemon | undefined): PokemonTabData {
+function sortPokemonMoves(moves: PokemonMove[]): PokemonMove[] {
+  return [...moves].sort((left, right) => {
+    const leftLevel = left.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
+    const rightLevel = right.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
+
+    if (leftLevel !== rightLevel) {
+      return leftLevel - rightLevel
+    }
+
+    return left.displayName.localeCompare(right.displayName)
+  })
+}
+
+export function createPokemonTabData(
+  pokemon: Pokemon | undefined,
+  species: PokemonSpecies | undefined,
+  evolutionChain: EvolutionChain | undefined,
+): PokemonTabData {
   const typeAnalysis = calculateTypeAnalysis(pokemon?.types ?? [])
 
   return {
-    evolution: [],
-    moves: pokemon?.moves.slice(0, 12) ?? [],
+    currentPokemonName: pokemon?.name ?? '',
+    evolutionChain,
+    moves: sortPokemonMoves(pokemon?.moves ?? []).slice(0, 24),
     weaknesses: typeAnalysis.weaknesses,
     resistances: typeAnalysis.resistances,
     immunities: typeAnalysis.immunities,
-    forms: pokemon?.forms ?? [],
+    effectiveness: typeAnalysis.effectiveness,
+    forms: species?.varieties ?? pokemon?.forms ?? [],
   }
 }
 
@@ -79,6 +104,8 @@ export function createTeamAnalysis(team: Team) {
     coverage: calculateOffensiveCoverage(teamTypes),
   }
 }
+
+export type TeamAnalysis = ReturnType<typeof createTeamAnalysis>
 
 export function getRecentPokemon(
   history: string[],

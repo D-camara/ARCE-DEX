@@ -3,14 +3,15 @@ import { Heart, History, Menu, Users } from 'lucide-react'
 import { PokemonCard } from '../components/pokemon/PokemonCard'
 import { PokemonTabs, type PokemonTabName } from '../components/pokemon/PokemonTabs'
 import { TeamDrawer } from '../components/team/TeamDrawer'
-import { TeamAnalysisPanel } from '../components/type-analysis/TeamAnalysisPanel'
 import { ErrorState, LoadingState, Toast } from '../components/ui/StatusStates'
 import { FavoritesPanel } from '../features/favorites/FavoritesPanel'
 import { SearchExperience } from '../features/pokemon-search/SearchExperience'
 import { importTeamJson } from '../lib/export-import'
 import { normalizePokemonSearch } from '../lib/utils'
 import { usePokemon } from '../hooks/usePokemon'
+import { useEvolutionChain } from '../hooks/useEvolutionChain'
 import { usePokemonAutocompleteList } from '../hooks/usePokemonList'
+import { usePokemonSpecies } from '../hooks/usePokemonSpecies'
 import { useFavoritesStore } from '../stores/favoritesStore'
 import { useSearchHistoryStore } from '../stores/searchHistoryStore'
 import { useTeamStore } from '../stores/teamStore'
@@ -35,10 +36,14 @@ function App() {
   const [showToast, setShowToast] = useState(false)
   const [transferValue, setTransferValue] = useState('')
   const [transferMessage, setTransferMessage] = useState('Formato validado pela base tecnica.')
+  const [toastMessage, setToastMessage] = useState('')
 
   const pokemonListQuery = usePokemonAutocompleteList()
   const selectedPokemonQuery = usePokemon(selectedIdentifier)
   const selectedPokemon = selectedPokemonQuery.data
+  const selectedSpeciesQuery = usePokemonSpecies(selectedIdentifier)
+  const selectedSpecies = selectedSpeciesQuery.data
+  const evolutionChainQuery = useEvolutionChain(selectedSpecies?.evolutionChainUrl ?? null)
 
   const activeTeamId = useTeamStore((state) => state.activeTeamId)
   const teams = useTeamStore((state) => state.teams)
@@ -62,7 +67,10 @@ function App() {
   const summaryCache = uniqueSummaries([...summaries, ...selectedSummary])
   const exportValue = transferValue || exportActiveTeam()
 
-  const pokemonTabData = useMemo(() => createPokemonTabData(selectedPokemon), [selectedPokemon])
+  const pokemonTabData = useMemo(
+    () => createPokemonTabData(selectedPokemon, selectedSpecies, evolutionChainQuery.data),
+    [evolutionChainQuery.data, selectedPokemon, selectedSpecies],
+  )
   const teamAnalysis = useMemo(() => createTeamAnalysis(activeTeam), [activeTeam])
 
   const favoritePokemon = summaryCache.filter((pokemon) => favoritePokemonIds.includes(pokemon.id))
@@ -105,11 +113,22 @@ function App() {
     }
 
     const wasAdded = addPokemon(toTeamPokemon(selectedPokemon))
-    setShowToast(wasAdded)
+    setToastMessage(wasAdded ? 'Pokemon adicionado ao time.' : 'Time cheio.')
+    setShowToast(true)
 
-    if (wasAdded) {
-      window.setTimeout(() => setShowToast(false), 2400)
+    window.setTimeout(() => setShowToast(false), 2400)
+  }
+
+  function handleToggleFavorite() {
+    if (!selectedPokemon) {
+      return
     }
+
+    const willFavorite = !isFavorite(selectedPokemon.id)
+    toggleFavorite(selectedPokemon.id)
+    setToastMessage(willFavorite ? 'Pokemon favoritado.' : 'Pokemon removido dos favoritos.')
+    setShowToast(true)
+    window.setTimeout(() => setShowToast(false), 2400)
   }
 
   function handleImportTeam() {
@@ -201,7 +220,7 @@ function App() {
                 <PokemonCard
                   isFavorite={isFavorite(selectedPokemon.id)}
                   onAddToTeam={handleAddToTeam}
-                  onToggleFavorite={() => toggleFavorite(selectedPokemon.id)}
+                  onToggleFavorite={handleToggleFavorite}
                   pokemon={selectedPokemon}
                 />
                 <PokemonTabs
@@ -214,7 +233,6 @@ function App() {
           </div>
 
           <div className="secondary-column">
-            <TeamAnalysisPanel analysis={teamAnalysis} />
             <FavoritesPanel favorites={favoritePokemon} history={recentPokemon} />
           </div>
         </section>
@@ -233,13 +251,14 @@ function App() {
         onRenameTeam={renameTeam}
         onSelectTeam={setActiveTeam}
         onShowTransfer={handleShowTransfer}
+        teamAnalysis={teamAnalysis}
         teams={teams}
         transferMessage={transferMessage}
         transferMode={transferMode}
         transferValue={exportValue}
       />
 
-      {showToast && <Toast />}
+      {showToast && <Toast message={toastMessage} />}
     </div>
   )
 }

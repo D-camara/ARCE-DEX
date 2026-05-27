@@ -76,6 +76,7 @@ export type EvolutionNode = {
   name: string
   displayName: string
   speciesUrl: string
+  method: string
   evolvesTo: EvolutionNode[]
 }
 

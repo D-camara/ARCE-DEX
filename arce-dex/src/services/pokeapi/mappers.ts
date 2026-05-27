@@ -158,8 +158,53 @@ function mapEvolutionNode(node: PokeApiEvolutionNode): EvolutionNode {
     name: node.species.name,
     displayName: formatPokemonName(node.species.name),
     speciesUrl: node.species.url,
+    method: formatEvolutionMethod(node),
     evolvesTo: node.evolves_to.map(mapEvolutionNode),
   }
+}
+
+function formatEvolutionMethod(node: PokeApiEvolutionNode): string {
+  const detail = node.evolution_details[0]
+
+  if (!detail) {
+    return 'Pokemon base'
+  }
+
+  if (detail.min_level !== null) {
+    return `Evolui no nivel ${detail.min_level}`
+  }
+
+  if (detail.item) {
+    return `Evolui usando ${formatPokemonName(detail.item.name)}`
+  }
+
+  if (detail.held_item) {
+    return `Evolui segurando ${formatPokemonName(detail.held_item.name)}`
+  }
+
+  if (detail.trigger?.name === 'trade') {
+    return 'Evolui por troca'
+  }
+
+  if (detail.min_happiness !== null) {
+    const time = detail.time_of_day ? ` durante ${detail.time_of_day}` : ''
+
+    return `Evolui com alta amizade${time}`
+  }
+
+  if (detail.known_move) {
+    return `Evolui conhecendo ${formatPokemonName(detail.known_move.name)}`
+  }
+
+  if (detail.location) {
+    return `Evolui em ${formatPokemonName(detail.location.name)}`
+  }
+
+  if (detail.trigger) {
+    return `Evolui por ${formatPokemonName(detail.trigger.name)}`
+  }
+
+  return 'Metodo nao informado'
 }
 
 export function mapEvolutionChain(chain: PokeApiEvolutionChainResponse): EvolutionChain {

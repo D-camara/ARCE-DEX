@@ -37,7 +37,7 @@ export function PokemonCard({
 
       <TypeBadges types={pokemon.types} />
 
-      <dl className="pokemon-facts">
+      <dl className="pokemon-facts pokemon-facts--compact">
         <div>
           <dt>Altura</dt>
           <dd>{(pokemon.height / 10).toFixed(1)} m</dd>
@@ -45,10 +45,6 @@ export function PokemonCard({
         <div>
           <dt>Peso</dt>
           <dd>{(pokemon.weight / 10).toFixed(1)} kg</dd>
-        </div>
-        <div>
-          <dt>Função</dt>
-          <dd>Ofensivo</dd>
         </div>
       </dl>
 
@@ -65,7 +61,11 @@ export function PokemonCard({
           <Plus size={18} />
           Adicionar
         </button>
-        <button className="icon-action" type="button" onClick={onToggleFavorite}>
+        <button
+          className={isFavorite ? 'icon-action is-favorite' : 'icon-action'}
+          type="button"
+          onClick={onToggleFavorite}
+        >
           <Heart fill={isFavorite ? 'currentColor' : 'none'} size={18} />
           <span className="sr-only">Favoritar</span>
         </button>

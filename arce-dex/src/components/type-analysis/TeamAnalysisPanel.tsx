@@ -3,7 +3,7 @@ import type { OffensiveCoverage, TeamDefensiveTypeSummary } from '../../lib/type
 import type { PokemonTypeName } from '../../types/pokemon'
 import { TypeBadges } from '../pokemon/TypeBadges'
 
-type TeamAnalysisPanelProps = {
+export type TeamAnalysisPanelProps = {
   analysis: {
     defensiveRisks: TeamDefensiveTypeSummary[]
     resistances: PokemonTypeName[]

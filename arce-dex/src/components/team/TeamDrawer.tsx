@@ -2,6 +2,7 @@ import { Download, Eraser, Pencil, Trash2, Upload, X } from 'lucide-react'
 import { TeamTransferPanel } from '../../features/import-export/TeamTransferPanel'
 import type { Team } from '../../types/team'
 import { TypeBadges } from '../pokemon/TypeBadges'
+import { TeamAnalysisPanel, type TeamAnalysisPanelProps } from '../type-analysis/TeamAnalysisPanel'
 
 type TeamDrawerProps = {
   isOpen: boolean
@@ -20,6 +21,7 @@ type TeamDrawerProps = {
   transferMessage: string
   transferMode: 'export' | 'import' | null
   transferValue: string
+  teamAnalysis: TeamAnalysisPanelProps['analysis']
 }
 
 export function TeamDrawer({
@@ -39,6 +41,7 @@ export function TeamDrawer({
   transferMessage,
   transferMode,
   transferValue,
+  teamAnalysis,
 }: TeamDrawerProps) {
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
 
@@ -120,6 +123,10 @@ export function TeamDrawer({
           <Upload size={16} />
           Importar time
         </button>
+      </div>
+
+      <div className="drawer-analysis">
+        <TeamAnalysisPanel analysis={teamAnalysis} />
       </div>
 
       {transferMode && (

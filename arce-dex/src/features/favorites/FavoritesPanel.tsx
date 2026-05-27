@@ -34,10 +34,14 @@ function QuickList({
       {items.map((pokemon) => (
         <div className="quick-pokemon" key={`${title}-${pokemon.id}`}>
           <img src={pokemon.imageUrl} alt="" />
-          <span>{pokemon.displayName}</span>
-          <TypeBadges compact types={pokemon.types} />
+          <div>
+            <strong>{pokemon.displayName}</strong>
+            <small>#{String(pokemon.id).padStart(4, '0')}</small>
+            <TypeBadges compact types={pokemon.types} />
+          </div>
         </div>
       ))}
+      {items.length === 0 && <p className="empty-copy">Nenhum Pokemon nesta lista.</p>}
     </article>
   )
 }

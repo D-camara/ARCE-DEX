@@ -157,6 +157,12 @@ h3 {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.icon-action.is-favorite {
+  border-color: rgba(251, 113, 133, 0.55);
+  color: #fecdd3;
+  background: rgba(251, 113, 133, 0.16);
+}
+
 main {
   display: grid;
   gap: 16px;
@@ -328,7 +334,7 @@ main {
 }
 
 .suggestion-item > span,
-.quick-pokemon span,
+.quick-pokemon div,
 .team-slot div {
   flex: 1;
   min-width: 0;
@@ -402,6 +408,12 @@ main {
   gap: 7px;
 }
 
+.effectiveness-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
 .type-badge {
   display: inline-flex;
   align-items: center;
@@ -444,6 +456,10 @@ main {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin: 0;
+}
+
+.pokemon-facts--compact {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .pokemon-facts div {
@@ -555,10 +571,41 @@ main {
 }
 
 .evolution-line,
-.form-list {
+.form-list,
+.evolution-children {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.evolution-branch {
+  display: grid;
+  gap: 10px;
+}
+
+.evolution-children {
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+
+.evolution-node {
+  display: inline-grid;
+  gap: 3px;
+  width: fit-content;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.evolution-node.is-current {
+  border-color: rgba(56, 189, 248, 0.62);
+  background: rgba(56, 189, 248, 0.16);
+}
+
+.evolution-node small {
+  color: var(--muted);
+  font-size: 0.72rem;
 }
 
 .move-list,
@@ -636,7 +683,18 @@ main {
 }
 
 .quick-pokemon {
-  min-height: 48px;
+  align-items: flex-start;
+  min-height: 58px;
+}
+
+.quick-pokemon div {
+  display: grid;
+  gap: 4px;
+}
+
+.quick-pokemon small {
+  color: var(--muted);
+  font-size: 0.72rem;
 }
 
 .transfer-panel {
@@ -693,7 +751,7 @@ main {
   top: 0;
   right: 0;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto minmax(180px, 1fr) auto auto;
   gap: 14px;
   width: min(430px, 100%);
   height: 100svh;
@@ -763,6 +821,15 @@ main {
 
 .drawer-actions button {
   width: 100%;
+}
+
+.drawer-analysis {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.drawer-analysis .analysis-panel {
+  box-shadow: none;
 }
 
 .drawer-transfer {

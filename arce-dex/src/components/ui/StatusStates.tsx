@@ -14,6 +14,6 @@ export function SkeletonCard() {
   return <div className="skeleton-card" aria-hidden="true" />
 }
 
-export function Toast() {
-  return <div className="toast">Pokemon adicionado ao time.</div>
+export function Toast({ message = 'Acao concluida.' }: { message?: string }) {
+  return <div className="toast">{message}</div>
 }

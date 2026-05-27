@@ -1,13 +1,21 @@
 import { useState } from 'react'
-import type { PokemonForm, PokemonMove, PokemonTypeName } from '../../types/pokemon'
-import { TypeBadges } from './TypeBadges'
+import type {
+  EvolutionChain,
+  EvolutionNode,
+  PokemonForm,
+  PokemonMove,
+  PokemonTypeName,
+  TypeEffectiveness,
+} from '../../types/pokemon'
 
 export type PokemonTabData = {
-  evolution: string[]
+  currentPokemonName: string
+  evolutionChain: EvolutionChain | undefined
   moves: PokemonMove[]
   weaknesses: PokemonTypeName[]
   resistances: PokemonTypeName[]
   immunities: PokemonTypeName[]
+  effectiveness: TypeEffectiveness[]
   forms: PokemonForm[]
 }
 
@@ -49,41 +57,59 @@ export function PokemonTabs({ activeTab, data, onTabChange }: PokemonTabsProps) 
         {selectedTab === 'Info' && (
           <StateBlock
             label="success"
-            title="Resumo pronto"
-            text="Dados principais separados da camada de API e prontos para receber hooks reais."
+            title="Resumo individual"
+            text="Tipos, habilidades, status e dados defensivos deste Pokemon."
           />
         )}
         {selectedTab === 'Evolucao' && (
-          <div className="evolution-line">
-            {data.evolution.map((name) => (
-              <span key={name}>{name}</span>
-            ))}
-          </div>
+          <EvolutionTree
+            currentPokemonName={data.currentPokemonName}
+            root={data.evolutionChain?.root}
+          />
         )}
         {selectedTab === 'Golpes' && (
           <div className="move-list">
-            {data.moves.map((move) => (
-              <div key={move.name}>
-                <span>{move.displayName}</span>
-                <strong>
-                  {move.learnedAtLevel === null ? move.learnMethod : `Lv. ${move.learnedAtLevel}`}
-                </strong>
-              </div>
-            ))}
+            {data.moves.length > 0 ? (
+              data.moves.map((move) => (
+                <div key={`${move.name}-${move.learnMethod}-${move.learnedAtLevel}`}>
+                  <span>{move.displayName}</span>
+                  <strong>{formatMoveLearnMethod(move)}</strong>
+                </div>
+              ))
+            ) : (
+              <p className="empty-copy">Nenhum golpe carregado.</p>
+            )}
           </div>
         )}
         {selectedTab === 'Fraquezas' && (
           <div className="weakness-grid">
-            <TypeGroup label="Fraquezas" types={data.weaknesses} />
-            <TypeGroup label="Resiste" types={data.resistances} />
-            <TypeGroup label="Imune" types={data.immunities} />
+            <EffectivenessGroup
+              items={data.effectiveness.filter((item) => item.multiplier > 1)}
+              label="Fraquezas"
+            />
+            <EffectivenessGroup
+              items={data.effectiveness.filter(
+                (item) => item.multiplier > 0 && item.multiplier < 1,
+              )}
+              label="Resistencias"
+            />
+            <EffectivenessGroup
+              items={data.effectiveness.filter((item) => item.multiplier === 0)}
+              label="Imunidades"
+            />
           </div>
         )}
         {selectedTab === 'Formas' && (
           <div className="form-list">
-            {data.forms.map((form) => (
-              <span key={form.name}>{form.displayName}</span>
-            ))}
+            {data.forms.length > 0 ? (
+              data.forms.map((form) => (
+                <span className={form.isDefault ? 'is-current-form' : ''} key={form.name}>
+                  {form.displayName}
+                </span>
+              ))
+            ) : (
+              <p className="empty-copy">Nenhuma forma alternativa carregada.</p>
+            )}
           </div>
         )}
       </div>
@@ -91,12 +117,62 @@ export function PokemonTabs({ activeTab, data, onTabChange }: PokemonTabsProps) 
   )
 }
 
-function TypeGroup({ label, types }: { label: string; types: PokemonTypeName[] }) {
+function EffectivenessGroup({ label, items }: { label: string; items: TypeEffectiveness[] }) {
   return (
     <section>
       <h3>{label}</h3>
-      <TypeBadges types={types} />
+      {items.length > 0 ? (
+        <div className="effectiveness-badges">
+          {items.map((item) => (
+            <span className={`type-badge type-${item.type}`} key={item.type}>
+              {item.type} {formatMultiplier(item.multiplier)}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="empty-copy">Nenhum item neste grupo.</p>
+      )}
     </section>
+  )
+}
+
+function EvolutionTree({
+  currentPokemonName,
+  root,
+}: {
+  currentPokemonName: string
+  root: EvolutionNode | undefined
+}) {
+  if (!root) {
+    return <p className="empty-copy">Linha evolutiva nao carregada.</p>
+  }
+
+  return <EvolutionBranch currentPokemonName={currentPokemonName} node={root} />
+}
+
+function EvolutionBranch({
+  currentPokemonName,
+  node,
+}: {
+  currentPokemonName: string
+  node: EvolutionNode
+}) {
+  const isCurrent = node.name === currentPokemonName
+
+  return (
+    <div className="evolution-branch">
+      <span className={isCurrent ? 'evolution-node is-current' : 'evolution-node'}>
+        <strong>{node.displayName}</strong>
+        <small>{node.method}</small>
+      </span>
+      {node.evolvesTo.length > 0 && (
+        <div className="evolution-children">
+          {node.evolvesTo.map((child) => (
+            <EvolutionBranch currentPokemonName={currentPokemonName} key={child.name} node={child} />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -115,4 +191,36 @@ function StateBlock({
       <p>{text}</p>
     </div>
   )
+}
+
+function formatMultiplier(multiplier: number) {
+  if (multiplier === 0.25) {
+    return '1/4'
+  }
+
+  if (multiplier === 0.5) {
+    return '1/2'
+  }
+
+  return `${multiplier}x`
+}
+
+function formatMoveLearnMethod(move: PokemonMove) {
+  if (move.learnedAtLevel !== null && move.learnMethod === 'level-up') {
+    return `Lv. ${move.learnedAtLevel}`
+  }
+
+  if (move.learnMethod === 'machine') {
+    return 'TM'
+  }
+
+  if (move.learnMethod === 'egg') {
+    return 'Egg'
+  }
+
+  if (move.learnMethod === 'tutor') {
+    return 'Tutor'
+  }
+
+  return move.learnMethod
 }
