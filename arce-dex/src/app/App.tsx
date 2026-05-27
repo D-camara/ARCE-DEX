@@ -14,6 +14,7 @@ import { usePokemon } from '../hooks/usePokemon'
 import { useEvolutionChain } from '../hooks/useEvolutionChain'
 import { usePokemonAutocompleteList } from '../hooks/usePokemonList'
 import { usePokemonSpecies } from '../hooks/usePokemonSpecies'
+import { usePokemonSummaries } from '../hooks/usePokemonSummaries'
 import { useFavoritesStore } from '../stores/favoritesStore'
 import { useSearchHistoryStore } from '../stores/searchHistoryStore'
 import { useTeamStore } from '../stores/teamStore'
@@ -67,17 +68,34 @@ function App() {
   const isFavorite = useFavoritesStore((state) => state.isFavorite)
   const searchHistory = useSearchHistoryStore((state) => state.history)
   const addSearch = useSearchHistoryStore((state) => state.addSearch)
+  const formIdentifiers = selectedSpecies?.varieties.map((form) => form.name) ?? []
+  const relatedSummaryQuery = usePokemonSummaries([
+    ...searchHistory.slice(0, 8),
+    ...favoritePokemonIds,
+    ...formIdentifiers,
+  ])
 
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
   const summaries = pokemonListQuery.data?.results ?? []
   const selectedSummary = selectedPokemon ? [selectedPokemon] : []
   const evolutionSummaries = flattenEvolutionNodes(evolutionChainQuery.data?.root)
-  const summaryCache = mergePokemonSummaries(summaries, evolutionSummaries, selectedSummary)
+  const summaryCache = mergePokemonSummaries(
+    summaries,
+    evolutionSummaries,
+    relatedSummaryQuery.data,
+    selectedSummary,
+  )
   const exportValue = transferValue || exportActiveTeam()
 
   const pokemonTabData = useMemo(
-    () => createPokemonTabData(selectedPokemon, selectedSpecies, evolutionChainQuery.data),
-    [evolutionChainQuery.data, selectedPokemon, selectedSpecies],
+    () =>
+      createPokemonTabData(
+        selectedPokemon,
+        selectedSpecies,
+        evolutionChainQuery.data,
+        summaryCache,
+      ),
+    [evolutionChainQuery.data, selectedPokemon, selectedSpecies, summaryCache],
   )
   const teamAnalysis = useMemo(() => createTeamAnalysis(activeTeam), [activeTeam])
 
@@ -114,6 +132,13 @@ function App() {
 
     setSelectedAddTeamId(activeTeamId)
     setIsAddToTeamOpen(true)
+  }
+
+  function handleSelectPokemonIdentifier(identifier: string | number) {
+    setSelectedIdentifier(identifier)
+    setQuery('')
+    addSearch(String(identifier))
+    setIsAutocompleteOpen(false)
   }
 
   function handleConfirmAddToTeam(teamId: string) {
@@ -238,6 +263,7 @@ function App() {
               <>
                 <PokemonCard
                   isFavorite={isFavorite(selectedPokemon.id)}
+                  key={selectedPokemon.id}
                   onAddToTeam={handleAddToTeam}
                   onToggleFavorite={handleToggleFavorite}
                   pokemon={selectedPokemon}
@@ -246,6 +272,7 @@ function App() {
                   activeTab={activePokemonTab}
                   data={pokemonTabData}
                   onTabChange={setActivePokemonTab}
+                  onSelectPokemon={handleSelectPokemonIdentifier}
                 />
               </>
             )}

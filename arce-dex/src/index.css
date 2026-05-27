@@ -407,6 +407,32 @@ main {
   filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.36));
 }
 
+.pokemon-card__sprite {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.shiny-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(245, 208, 108, 0.34);
+  border-radius: 999px;
+  color: #fde68a;
+  background: rgba(245, 208, 108, 0.08);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.shiny-toggle.is-active {
+  color: #111827;
+  background: linear-gradient(135deg, #fde68a, #67e8f9);
+}
+
 .pokemon-card__media p:last-child {
   margin-top: 8px;
   color: var(--muted);
@@ -416,6 +442,8 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .effectiveness-badges {
@@ -427,6 +455,7 @@ main {
 .type-badge {
   display: inline-flex;
   align-items: center;
+  width: fit-content;
   min-height: 28px;
   padding: 0 9px;
   border-radius: 999px;
@@ -582,10 +611,15 @@ main {
 
 .evolution-line,
 .form-list,
+.form-card-list,
 .evolution-children {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.form-card-list {
+  align-items: stretch;
 }
 
 .evolution-branch {
@@ -609,6 +643,11 @@ main {
   color: var(--text);
   background: rgba(255, 255, 255, 0.04);
   text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
 }
 
 .evolution-node img {
@@ -616,6 +655,13 @@ main {
   height: 68px;
   object-fit: contain;
   justify-self: center;
+}
+
+.evolution-node:hover,
+.evolution-node:focus-visible {
+  border-color: rgba(56, 189, 248, 0.56);
+  background: rgba(56, 189, 248, 0.12);
+  transform: translateY(-1px);
 }
 
 .evolution-node.is-current {
@@ -626,6 +672,49 @@ main {
 .evolution-node small {
   color: var(--muted);
   font-size: 0.72rem;
+}
+
+.form-card {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 280px);
+  min-height: 84px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  text-align: left;
+  cursor: pointer;
+}
+
+.form-card.is-current-form {
+  border-color: rgba(56, 189, 248, 0.62);
+  background: rgba(56, 189, 248, 0.14);
+}
+
+.form-card img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+}
+
+.form-card span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.form-card small,
+.form-card em {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.form-card em {
+  font-style: normal;
 }
 
 .move-list,
@@ -757,6 +846,16 @@ main {
 .favorite-item span {
   display: grid;
   gap: 4px;
+  min-width: 0;
+}
+
+.recent-item strong,
+.favorite-item strong,
+.form-card strong,
+.evolution-node strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.12;
 }
 
 .recent-item small,
@@ -767,16 +866,22 @@ main {
 
 .favorite-item {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 42px;
   align-items: center;
   gap: 8px;
-  padding: 0;
-  border: 0;
-  background: transparent;
+  padding: 8px;
+  border: 1px solid rgba(245, 208, 108, 0.22);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(245, 208, 108, 0.08), rgba(103, 232, 249, 0.04)),
+    rgba(15, 23, 42, 0.8);
 }
 
 .favorite-item button:first-child {
   min-height: 58px;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .transfer-panel {
@@ -860,8 +965,10 @@ main {
   width: min(430px, 100%);
   height: 100svh;
   padding: 16px;
-  border-left: 1px solid var(--line);
-  background: rgba(9, 13, 20, 0.97);
+  border-left: 1px solid rgba(245, 208, 108, 0.26);
+  background:
+    radial-gradient(circle at top, rgba(245, 208, 108, 0.16), transparent 19rem),
+    linear-gradient(180deg, rgba(13, 18, 34, 0.99), rgba(5, 9, 18, 0.99));
   box-shadow: var(--shadow);
   transform: translateX(105%);
   transition: transform 0.24s ease;
@@ -882,6 +989,27 @@ main {
 .favorite-list {
   min-height: 0;
   overflow-y: auto;
+}
+
+.favorite-item button:first-child {
+  color: var(--text);
+}
+
+.favorite-item button:first-child:hover,
+.favorite-item button:first-child:focus-visible {
+  color: #fef3c7;
+}
+
+.favorites-drawer .icon-action {
+  border-color: rgba(245, 208, 108, 0.26);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.favorite-item > .icon-action {
+  width: 38px;
+  height: 38px;
+  color: #fca5a5;
+  border-radius: 14px;
 }
 
 .modal-backdrop {
