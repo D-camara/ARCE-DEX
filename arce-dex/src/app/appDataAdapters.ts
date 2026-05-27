@@ -7,6 +7,7 @@ import type {
   EvolutionChain,
   EvolutionNode,
   Pokemon,
+  PokemonForm,
   PokemonMove,
   PokemonSpecies,
   PokemonSummary,
@@ -75,6 +76,7 @@ export function createPokemonTabData(
   pokemon: Pokemon | undefined,
   species: PokemonSpecies | undefined,
   evolutionChain: EvolutionChain | undefined,
+  enrichedSummaries: PokemonSummary[] = [],
 ): PokemonTabData {
   const typeAnalysis = calculateTypeAnalysis(pokemon?.types ?? [])
 
@@ -86,7 +88,7 @@ export function createPokemonTabData(
     resistances: typeAnalysis.resistances,
     immunities: typeAnalysis.immunities,
     effectiveness: typeAnalysis.effectiveness,
-    forms: species?.varieties ?? pokemon?.forms ?? [],
+    forms: enrichPokemonForms(species?.varieties ?? pokemon?.forms ?? [], enrichedSummaries),
   }
 }
 
@@ -116,9 +118,16 @@ export function getRecentPokemon(
   summaries: PokemonSummary[],
 ): PokemonSummary[] {
   return history
-    .map((item) =>
-      summaries.find((pokemon) => pokemon.name === item || pokemon.displayName.toLowerCase() === item),
-    )
+    .map((item) => {
+      const numericItem = Number(item)
+
+      return summaries.find(
+        (pokemon) =>
+          pokemon.name === item ||
+          pokemon.displayName.toLowerCase() === item ||
+          (!Number.isNaN(numericItem) && pokemon.id === numericItem),
+      )
+    })
     .filter((pokemon): pokemon is PokemonSummary => Boolean(pokemon))
     .slice(0, 8)
 }
@@ -138,7 +147,11 @@ export function mergePokemonSummaries(...groups: PokemonSummary[][]): PokemonSum
   groups.flat().forEach((pokemon) => {
     const current = merged.get(pokemon.id)
 
-    if (!current || current.types.length === 0) {
+    if (
+      !current ||
+      (current.types.length === 0 && pokemon.types.length > 0) ||
+      (!current.imageUrl && pokemon.imageUrl)
+    ) {
       merged.set(pokemon.id, pokemon)
     }
   })
@@ -164,10 +177,26 @@ function flattenEvolutionBranch(node: EvolutionNode): PokemonSummary[] {
             name: node.name,
             displayName: node.displayName,
             sprite: node.sprite,
+            shinySprite: undefined,
             imageUrl: node.sprite,
             types: [],
           },
         ]
 
   return [...current, ...node.evolvesTo.flatMap(flattenEvolutionBranch)]
+}
+
+function enrichPokemonForms(forms: PokemonForm[], summaries: PokemonSummary[]): PokemonForm[] {
+  return forms.map((form) => {
+    const summary = summaries.find(
+      (pokemon) => pokemon.name === form.name || (form.id !== null && pokemon.id === form.id),
+    )
+
+    return {
+      ...form,
+      id: form.id ?? summary?.id ?? null,
+      sprite: form.sprite || summary?.imageUrl || summary?.sprite || '',
+      types: summary?.types ?? form.types,
+    }
+  })
 }

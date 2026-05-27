@@ -30,11 +30,47 @@ const DEFAULT_STATS: PokemonStats = {
 }
 
 function mapNamedResourceToForm(resource: PokeApiNamedResource): PokemonForm {
+  const id = getIdFromPokeApiUrl(resource.url)
+
   return {
+    id,
     name: resource.name,
     displayName: formatPokemonName(resource.name),
     url: resource.url,
+    sprite:
+      id === null
+        ? ''
+        : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+    category: getFormCategory(resource.name),
   }
+}
+
+function getFormCategory(name: string): string {
+  if (name.includes('mega')) {
+    return 'Mega'
+  }
+
+  if (name.includes('gmax') || name.includes('gigantamax')) {
+    return 'Gigantamax'
+  }
+
+  if (name.includes('alola')) {
+    return 'Alola'
+  }
+
+  if (name.includes('galar')) {
+    return 'Galar'
+  }
+
+  if (name.includes('hisui')) {
+    return 'Hisui'
+  }
+
+  if (name.includes('paldea')) {
+    return 'Paldea'
+  }
+
+  return 'Forma'
 }
 
 export function getIdFromPokeApiUrl(url: string): number | null {
@@ -67,12 +103,17 @@ export function mapPokemonSummary(pokemon: PokeApiPokemonResponse): PokemonSumma
     pokemon.sprites.other?.['official-artwork']?.front_default ??
     pokemon.sprites.front_default ??
     ''
+  const shinySprite =
+    pokemon.sprites.other?.['official-artwork']?.front_shiny ??
+    pokemon.sprites.front_shiny ??
+    undefined
 
   return {
     id: pokemon.id,
     name: pokemon.name,
     displayName: formatPokemonName(pokemon.name),
     sprite,
+    shinySprite,
     imageUrl: sprite,
     types: pokemon.types
       .sort((left, right) => left.slot - right.slot)

@@ -20,9 +20,11 @@ export type PokeApiPokemonResponse = {
     other?: {
       'official-artwork'?: {
         front_default: string | null
+        front_shiny?: string | null
       }
     }
     front_default: string | null
+    front_shiny?: string | null
   }
   types: Array<{
     slot: number
