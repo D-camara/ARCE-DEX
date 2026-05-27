@@ -1,9 +1,15 @@
 import { AlertTriangle, Shield, Swords } from 'lucide-react'
-import type { TeamAnalysisMock } from '../../features/mockPokemonData'
+import type { OffensiveCoverage, TeamDefensiveTypeSummary } from '../../lib/type-chart'
+import type { PokemonTypeName } from '../../types/pokemon'
 import { TypeBadges } from '../pokemon/TypeBadges'
 
 type TeamAnalysisPanelProps = {
-  analysis: TeamAnalysisMock
+  analysis: {
+    defensiveRisks: TeamDefensiveTypeSummary[]
+    resistances: PokemonTypeName[]
+    immunities: PokemonTypeName[]
+    coverage: OffensiveCoverage
+  }
 }
 
 export function TeamAnalysisPanel({ analysis }: TeamAnalysisPanelProps) {
@@ -20,7 +26,7 @@ export function TeamAnalysisPanel({ analysis }: TeamAnalysisPanelProps) {
           {analysis.defensiveRisks.map((risk) => (
             <div className="risk-row" key={risk.type}>
               <TypeBadges compact types={[risk.type]} />
-              <span>{risk.score}</span>
+              <span>{risk.weakTo} fracos</span>
             </div>
           ))}
         </article>
@@ -35,9 +41,9 @@ export function TeamAnalysisPanel({ analysis }: TeamAnalysisPanelProps) {
           <Swords size={18} />
           <h3>Cobertura</h3>
           <div className="coverage-grid">
-            {analysis.coverage.map((item) => (
-              <span className={item.covered ? 'is-covered' : ''} key={item.type}>
-                {item.type}
+            {analysis.coverage.superEffectiveAgainst.map((type) => (
+              <span className="is-covered" key={type}>
+                {type}
               </span>
             ))}
           </div>

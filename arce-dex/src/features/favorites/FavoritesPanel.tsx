@@ -1,10 +1,10 @@
 import { Clock, Star } from 'lucide-react'
-import type { PokemonSuggestion } from '../mockPokemonData'
+import type { PokemonSummary } from '../../types/pokemon'
 import { TypeBadges } from '../../components/pokemon/TypeBadges'
 
 type FavoritesPanelProps = {
-  favorites: PokemonSuggestion[]
-  history: PokemonSuggestion[]
+  favorites: PokemonSummary[]
+  history: PokemonSummary[]
 }
 
 export function FavoritesPanel({ favorites, history }: FavoritesPanelProps) {
@@ -22,7 +22,7 @@ function QuickList({
   title,
 }: {
   icon: React.ReactNode
-  items: PokemonSuggestion[]
+  items: PokemonSummary[]
   title: string
 }) {
   return (
@@ -34,7 +34,7 @@ function QuickList({
       {items.map((pokemon) => (
         <div className="quick-pokemon" key={`${title}-${pokemon.id}`}>
           <img src={pokemon.imageUrl} alt="" />
-          <span>{pokemon.name}</span>
+          <span>{pokemon.displayName}</span>
           <TypeBadges compact types={pokemon.types} />
         </div>
       ))}

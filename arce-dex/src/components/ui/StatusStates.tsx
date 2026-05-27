@@ -15,5 +15,5 @@ export function SkeletonCard() {
 }
 
 export function Toast() {
-  return <div className="toast">Lucario adicionado ao time visual.</div>
+  return <div className="toast">Pokemon adicionado ao time.</div>
 }

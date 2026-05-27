@@ -1,6 +1,15 @@
 import { useState } from 'react'
-import type { PokemonTabData } from '../../features/mockPokemonData'
+import type { PokemonForm, PokemonMove, PokemonTypeName } from '../../types/pokemon'
 import { TypeBadges } from './TypeBadges'
+
+export type PokemonTabData = {
+  evolution: string[]
+  moves: PokemonMove[]
+  weaknesses: PokemonTypeName[]
+  resistances: PokemonTypeName[]
+  immunities: PokemonTypeName[]
+  forms: PokemonForm[]
+}
 
 type PokemonTabsProps = {
   data: PokemonTabData
@@ -46,9 +55,10 @@ export function PokemonTabs({ data }: PokemonTabsProps) {
           <div className="move-list">
             {data.moves.map((move) => (
               <div key={move.name}>
-                <span>{move.name}</span>
-                <TypeBadges compact types={[move.type]} />
-                <strong>Lv. {move.level}</strong>
+                <span>{move.displayName}</span>
+                <strong>
+                  {move.learnedAtLevel === null ? move.learnMethod : `Lv. ${move.learnedAtLevel}`}
+                </strong>
               </div>
             ))}
           </div>
@@ -63,7 +73,7 @@ export function PokemonTabs({ data }: PokemonTabsProps) {
         {activeTab === 'Formas' && (
           <div className="form-list">
             {data.forms.map((form) => (
-              <span key={form}>{form}</span>
+              <span key={form.name}>{form.displayName}</span>
             ))}
           </div>
         )}
@@ -72,7 +82,7 @@ export function PokemonTabs({ data }: PokemonTabsProps) {
   )
 }
 
-function TypeGroup({ label, types }: { label: string; types: PokemonTabData['weaknesses'] }) {
+function TypeGroup({ label, types }: { label: string; types: PokemonTypeName[] }) {
   return (
     <section>
       <h3>{label}</h3>

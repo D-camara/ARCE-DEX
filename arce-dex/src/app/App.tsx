@@ -7,52 +7,116 @@ import { TeamAnalysisPanel } from '../components/type-analysis/TeamAnalysisPanel
 import { EmptyState, ErrorState, LoadingState, SkeletonCard, Toast } from '../components/ui/StatusStates'
 import { FavoritesPanel } from '../features/favorites/FavoritesPanel'
 import { TeamTransferPanel } from '../features/import-export/TeamTransferPanel'
-import {
-  favoritePokemon,
-  featuredPokemon,
-  mockTeams,
-  pokemonSuggestions,
-  pokemonTabData,
-  searchHistory,
-  teamAnalysis,
-  type PokemonSuggestion,
-} from '../features/mockPokemonData'
 import { SearchExperience } from '../features/pokemon-search/SearchExperience'
+import { importTeamJson } from '../lib/export-import'
+import { normalizePokemonSearch } from '../lib/utils'
+import { usePokemon } from '../hooks/usePokemon'
+import { usePokemonList } from '../hooks/usePokemonList'
+import { useFavoritesStore } from '../stores/favoritesStore'
+import { useSearchHistoryStore } from '../stores/searchHistoryStore'
+import { useTeamStore } from '../stores/teamStore'
+import type { PokemonSummary } from '../types/pokemon'
+import type { Team } from '../types/team'
+import {
+  createImportedSlots,
+  createPokemonTabData,
+  createTeamAnalysis,
+  getRecentPokemon,
+  toTeamPokemon,
+  uniqueSummaries,
+} from './appDataAdapters'
 
 function App() {
   const [query, setQuery] = useState('')
-  const [selectedPokemonId, setSelectedPokemonId] = useState(featuredPokemon.id)
+  const [selectedIdentifier, setSelectedIdentifier] = useState<string | number>(448)
   const [isTeamOpen, setIsTeamOpen] = useState(false)
-  const [activeTeamId, setActiveTeamId] = useState(mockTeams[0].id)
-  const [isFavorite, setIsFavorite] = useState(true)
   const [showToast, setShowToast] = useState(false)
+  const [transferValue, setTransferValue] = useState('')
+  const [transferMessage, setTransferMessage] = useState('Formato validado pela base tecnica.')
 
-  const selectedPokemon = useMemo(() => {
-    const suggestion = pokemonSuggestions.find((pokemon) => pokemon.id === selectedPokemonId)
+  const pokemonListQuery = usePokemonList()
+  const selectedPokemonQuery = usePokemon(selectedIdentifier)
+  const selectedPokemon = selectedPokemonQuery.data
 
-    if (!suggestion || suggestion.id === featuredPokemon.id) {
-      return featuredPokemon
+  const activeTeamId = useTeamStore((state) => state.activeTeamId)
+  const teams = useTeamStore((state) => state.teams)
+  const setActiveTeam = useTeamStore((state) => state.setActiveTeam)
+  const addPokemon = useTeamStore((state) => state.addPokemon)
+  const removePokemon = useTeamStore((state) => state.removePokemon)
+  const renameTeam = useTeamStore((state) => state.renameTeam)
+  const clearTeam = useTeamStore((state) => state.clearTeam)
+  const importTeam = useTeamStore((state) => state.importTeam)
+  const exportActiveTeam = useTeamStore((state) => state.exportActiveTeam)
+
+  const favoritePokemonIds = useFavoritesStore((state) => state.favoritePokemonIds)
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite)
+  const isFavorite = useFavoritesStore((state) => state.isFavorite)
+  const searchHistory = useSearchHistoryStore((state) => state.history)
+  const addSearch = useSearchHistoryStore((state) => state.addSearch)
+
+  const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
+  const summaries = pokemonListQuery.data?.results ?? []
+  const selectedSummary = selectedPokemon ? [selectedPokemon] : []
+  const summaryCache = uniqueSummaries([...summaries, ...selectedSummary])
+  const exportValue = transferValue || exportActiveTeam()
+
+  const pokemonTabData = useMemo(() => createPokemonTabData(selectedPokemon), [selectedPokemon])
+  const teamAnalysis = useMemo(() => createTeamAnalysis(activeTeam), [activeTeam])
+
+  const favoritePokemon = summaryCache.filter((pokemon) => favoritePokemonIds.includes(pokemon.id))
+  const recentPokemon = getRecentPokemon(searchHistory, summaryCache)
+
+  function handleSearch(value: string) {
+    const normalizedSearch = normalizePokemonSearch(value)
+
+    if (normalizedSearch !== '') {
+      setSelectedIdentifier(normalizedSearch)
+      addSearch(String(normalizedSearch))
     }
+  }
 
-    return {
-      ...featuredPokemon,
-      ...suggestion,
-      genus: 'Mock visual',
-      abilities: ['Battle Ready', 'Team Sync'],
-    }
-  }, [selectedPokemonId])
-
-  function handleSelectPokemon(pokemon: PokemonSuggestion) {
-    setSelectedPokemonId(pokemon.id)
-    setQuery(pokemon.name)
+  function handleSelectPokemon(pokemon: PokemonSummary) {
+    setSelectedIdentifier(pokemon.id)
+    setQuery(pokemon.displayName)
+    addSearch(pokemon.name)
   }
 
   function handleAddToTeam() {
-    setShowToast(true)
-    window.setTimeout(() => setShowToast(false), 2400)
+    if (!selectedPokemon) {
+      return
+    }
+
+    const wasAdded = addPokemon(toTeamPokemon(selectedPokemon))
+    setShowToast(wasAdded)
+
+    if (wasAdded) {
+      window.setTimeout(() => setShowToast(false), 2400)
+    }
   }
 
-  const exportValue = JSON.stringify(mockTeams[0], null, 2)
+  function handleImportTeam() {
+    const result = importTeamJson(exportValue)
+
+    if (!result.ok) {
+      setTransferMessage(result.error)
+      return
+    }
+
+    const importedTeam: Team = {
+      id: activeTeam.id,
+      name: result.team.name,
+      slots: createImportedSlots(result.team.pokemons, summaryCache),
+    }
+
+    importTeam(importedTeam, activeTeam.id)
+    setTransferValue('')
+    setTransferMessage('Time importado quando os Pokemon estavam no cache local.')
+  }
+
+  function handleCopyTeam() {
+    void navigator.clipboard.writeText(exportActiveTeam())
+    setTransferMessage('JSON do time copiado.')
+  }
 
   return (
     <div className="app-shell">
@@ -79,9 +143,12 @@ function App() {
 
       <main>
         <SearchExperience
+          isError={pokemonListQuery.isError}
+          isLoading={pokemonListQuery.isLoading}
           onChange={setQuery}
+          onSearch={handleSearch}
           onSelect={handleSelectPokemon}
-          suggestions={pokemonSuggestions}
+          suggestions={summaries}
           value={query}
         />
 
@@ -98,19 +165,31 @@ function App() {
 
         <section className="content-grid">
           <div className="primary-column">
-            <PokemonCard
-              isFavorite={isFavorite}
-              onAddToTeam={handleAddToTeam}
-              onToggleFavorite={() => setIsFavorite((value) => !value)}
-              pokemon={selectedPokemon}
-            />
-            <PokemonTabs data={pokemonTabData} />
+            {selectedPokemonQuery.isLoading && <LoadingState />}
+            {selectedPokemonQuery.isError && <ErrorState />}
+            {selectedPokemon && (
+              <>
+                <PokemonCard
+                  isFavorite={isFavorite(selectedPokemon.id)}
+                  onAddToTeam={handleAddToTeam}
+                  onToggleFavorite={() => toggleFavorite(selectedPokemon.id)}
+                  pokemon={selectedPokemon}
+                />
+                <PokemonTabs data={pokemonTabData} />
+              </>
+            )}
           </div>
 
           <div className="secondary-column">
             <TeamAnalysisPanel analysis={teamAnalysis} />
-            <FavoritesPanel favorites={favoritePokemon} history={searchHistory} />
-            <TeamTransferPanel exportValue={exportValue} />
+            <FavoritesPanel favorites={favoritePokemon} history={recentPokemon} />
+            <TeamTransferPanel
+              exportValue={exportValue}
+              importMessage={transferMessage}
+              onCopy={handleCopyTeam}
+              onImport={handleImportTeam}
+              onImportValueChange={setTransferValue}
+            />
             <section className="states-panel">
               <LoadingState />
               <EmptyState />
@@ -124,9 +203,12 @@ function App() {
       <TeamDrawer
         activeTeamId={activeTeamId}
         isOpen={isTeamOpen}
+        onClearTeam={clearTeam}
         onClose={() => setIsTeamOpen(false)}
-        onSelectTeam={setActiveTeamId}
-        teams={mockTeams}
+        onRemovePokemon={removePokemon}
+        onRenameTeam={renameTeam}
+        onSelectTeam={setActiveTeam}
+        teams={teams}
       />
 
       {showToast && <Toast />}

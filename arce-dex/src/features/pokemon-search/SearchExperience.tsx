@@ -1,15 +1,21 @@
 import { Search } from 'lucide-react'
-import type { PokemonSuggestion } from '../mockPokemonData'
+import type { PokemonSummary } from '../../types/pokemon'
 import { TypeBadges } from '../../components/pokemon/TypeBadges'
 
 type SearchExperienceProps = {
-  suggestions: PokemonSuggestion[]
+  suggestions: PokemonSummary[]
   value: string
+  isLoading: boolean
+  isError: boolean
   onChange: (value: string) => void
-  onSelect: (pokemon: PokemonSuggestion) => void
+  onSearch: (value: string) => void
+  onSelect: (pokemon: PokemonSummary) => void
 }
 
 export function SearchExperience({
+  isError,
+  isLoading,
+  onSearch,
   suggestions,
   value,
   onChange,
@@ -17,29 +23,40 @@ export function SearchExperience({
 }: SearchExperienceProps) {
   const normalizedValue = value.trim().toLowerCase()
   const visibleSuggestions = suggestions.filter((pokemon) =>
-    `${pokemon.name} ${pokemon.id}`.toLowerCase().includes(normalizedValue),
+    `${pokemon.name} ${pokemon.displayName} ${pokemon.id}`.toLowerCase().includes(normalizedValue),
   )
 
   return (
     <section className="search-card">
       <p className="eyebrow">Battle helper mobile</p>
       <h1>Busque, compare e monte seu time sem perder o ritmo.</h1>
-      <label className="search-box">
-        <Search size={20} />
-        <input
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="Nome, numero ou #448"
-          type="search"
-          value={value}
-        />
-      </label>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault()
+          onSearch(value)
+        }}
+      >
+        <label className="search-box">
+          <Search size={20} />
+          <input
+            onChange={(event) => onChange(event.target.value)}
+            placeholder="Nome, numero ou #448"
+            type="search"
+            value={value}
+          />
+        </label>
+      </form>
       <div className="shortcut-grid">
-        <span>Buscar Pokemon</span>
+        <button type="button" onClick={() => onSearch(value)}>
+          Buscar Pokemon
+        </button>
         <span>Montar time</span>
         <span>Ver fraquezas</span>
       </div>
       <div className="suggestion-list">
-        {visibleSuggestions.length > 0 ? (
+        {isLoading && <p className="empty-copy">Carregando Pokemon...</p>}
+        {isError && <p className="empty-copy">Nao foi possivel carregar a PokeAPI.</p>}
+        {!isLoading && !isError && visibleSuggestions.length > 0 ? (
           visibleSuggestions.map((pokemon) => (
             <button
               className="suggestion-item"
@@ -49,15 +66,16 @@ export function SearchExperience({
             >
               <img src={pokemon.imageUrl} alt="" />
               <span>
-                <strong>{pokemon.name}</strong>
+                <strong>{pokemon.displayName}</strong>
                 <small>#{String(pokemon.id).padStart(4, '0')}</small>
               </span>
               <TypeBadges compact types={pokemon.types} />
             </button>
           ))
-        ) : (
-          <p className="empty-copy">Nenhum mock encontrado para essa busca.</p>
-        )}
+        ) : null}
+        {!isLoading && !isError && visibleSuggestions.length === 0 ? (
+          <p className="empty-copy">Nenhum Pokemon encontrado para essa busca.</p>
+        ) : null}
       </div>
     </section>
   )

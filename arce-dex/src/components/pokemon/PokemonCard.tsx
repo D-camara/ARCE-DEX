@@ -1,12 +1,21 @@
 import { Heart, Plus, ShieldCheck } from 'lucide-react'
-import type { DisplayPokemon } from '../../features/mockPokemonData'
+import type { Pokemon, PokemonStatName } from '../../types/pokemon'
 import { TypeBadges } from './TypeBadges'
 
 type PokemonCardProps = {
-  pokemon: DisplayPokemon
+  pokemon: Pokemon
   isFavorite: boolean
   onAddToTeam: () => void
   onToggleFavorite: () => void
+}
+
+const statLabels: Record<PokemonStatName, string> = {
+  hp: 'HP',
+  attack: 'Atk',
+  defense: 'Def',
+  'special-attack': 'SpA',
+  'special-defense': 'SpD',
+  speed: 'Spe',
 }
 
 export function PokemonCard({
@@ -20,10 +29,10 @@ export function PokemonCard({
       <div className="pokemon-card__media">
         <div>
           <p className="eyebrow">#{String(pokemon.id).padStart(4, '0')}</p>
-          <h2>{pokemon.name}</h2>
-          <p>{pokemon.genus}</p>
+          <h2>{pokemon.displayName}</h2>
+          <p>{pokemon.types.join(' / ')}</p>
         </div>
-        <img src={pokemon.imageUrl} alt={pokemon.name} />
+        <img src={pokemon.imageUrl} alt={pokemon.displayName} />
       </div>
 
       <TypeBadges types={pokemon.types} />
@@ -31,11 +40,11 @@ export function PokemonCard({
       <dl className="pokemon-facts">
         <div>
           <dt>Altura</dt>
-          <dd>{pokemon.height}</dd>
+          <dd>{(pokemon.height / 10).toFixed(1)} m</dd>
         </div>
         <div>
           <dt>Peso</dt>
-          <dd>{pokemon.weight}</dd>
+          <dd>{(pokemon.weight / 10).toFixed(1)} kg</dd>
         </div>
         <div>
           <dt>Função</dt>
@@ -46,8 +55,8 @@ export function PokemonCard({
       <AbilityList abilities={pokemon.abilities} />
 
       <div className="stat-list">
-        {pokemon.stats.map((stat) => (
-          <StatBar key={stat.label} label={stat.label} value={stat.value} />
+        {Object.entries(pokemon.stats).map(([name, value]) => (
+          <StatBar key={name} label={statLabels[name as PokemonStatName]} value={value} />
         ))}
       </div>
 
@@ -69,11 +78,11 @@ export function PokemonCard({
   )
 }
 
-function AbilityList({ abilities }: { abilities: string[] }) {
+function AbilityList({ abilities }: { abilities: Pokemon['abilities'] }) {
   return (
     <section className="ability-list" aria-label="Habilidades">
       {abilities.map((ability) => (
-        <span key={ability}>{ability}</span>
+        <span key={ability.name}>{ability.displayName}</span>
       ))}
     </section>
   )
