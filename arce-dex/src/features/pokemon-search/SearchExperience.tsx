@@ -12,24 +12,18 @@ type SearchExperienceProps = {
   isLoading: boolean
   isError: boolean
   isAutocompleteOpen: boolean
-  canViewWeaknesses: boolean
   onChange: (value: string) => void
   onFocus: () => void
-  onMountTeam: () => void
   onSearch: (value: string) => void
   onSelect: (pokemon: PokemonSummary) => void
-  onViewWeaknesses: () => void
 }
 
 export function SearchExperience({
-  canViewWeaknesses,
   isAutocompleteOpen,
   isError,
   isLoading,
   onFocus,
-  onMountTeam,
   onSearch,
-  onViewWeaknesses,
   suggestions,
   value,
   onChange,
@@ -65,12 +59,6 @@ export function SearchExperience({
       <div className="shortcut-grid">
         <button type="button" onClick={() => onSearch(value)}>
           Buscar Pokemon
-        </button>
-        <button type="button" onClick={onMountTeam}>
-          Montar time
-        </button>
-        <button type="button" onClick={onViewWeaknesses} disabled={!canViewWeaknesses}>
-          Ver fraquezas
         </button>
       </div>
       {shouldShowSuggestions && (

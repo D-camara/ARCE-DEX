@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react'
 import { Heart, History, Menu, Users } from 'lucide-react'
 import { PokemonCard } from '../components/pokemon/PokemonCard'
 import { PokemonTabs, type PokemonTabName } from '../components/pokemon/PokemonTabs'
+import { AddToTeamDialog } from '../components/team/AddToTeamDialog'
 import { TeamDrawer } from '../components/team/TeamDrawer'
 import { ErrorState, LoadingState, Toast } from '../components/ui/StatusStates'
-import { FavoritesPanel } from '../features/favorites/FavoritesPanel'
+import { FavoritesDrawer } from '../features/favorites/FavoritesDrawer'
+import { RecentPokemonPanel } from '../features/favorites/RecentPokemonPanel'
 import { SearchExperience } from '../features/pokemon-search/SearchExperience'
 import { importTeamJson } from '../lib/export-import'
 import { normalizePokemonSearch } from '../lib/utils'
@@ -19,19 +21,24 @@ import type { PokemonSummary } from '../types/pokemon'
 import type { Team } from '../types/team'
 import {
   createImportedSlots,
+  flattenEvolutionNodes,
+  getFavoritePokemon,
   createPokemonTabData,
   createTeamAnalysis,
   getRecentPokemon,
+  mergePokemonSummaries,
   toTeamPokemon,
-  uniqueSummaries,
 } from './appDataAdapters'
 
 function App() {
   const [query, setQuery] = useState('')
   const [selectedIdentifier, setSelectedIdentifier] = useState<string | number>(448)
   const [isTeamOpen, setIsTeamOpen] = useState(false)
+  const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
+  const [isAddToTeamOpen, setIsAddToTeamOpen] = useState(false)
   const [isAutocompleteOpen, setIsAutocompleteOpen] = useState(false)
   const [activePokemonTab, setActivePokemonTab] = useState<PokemonTabName>('Info')
+  const [selectedAddTeamId, setSelectedAddTeamId] = useState('team-1')
   const [transferMode, setTransferMode] = useState<'export' | 'import' | null>(null)
   const [showToast, setShowToast] = useState(false)
   const [transferValue, setTransferValue] = useState('')
@@ -48,7 +55,7 @@ function App() {
   const activeTeamId = useTeamStore((state) => state.activeTeamId)
   const teams = useTeamStore((state) => state.teams)
   const setActiveTeam = useTeamStore((state) => state.setActiveTeam)
-  const addPokemon = useTeamStore((state) => state.addPokemon)
+  const addPokemonToTeam = useTeamStore((state) => state.addPokemonToTeam)
   const removePokemon = useTeamStore((state) => state.removePokemon)
   const renameTeam = useTeamStore((state) => state.renameTeam)
   const clearTeam = useTeamStore((state) => state.clearTeam)
@@ -64,7 +71,8 @@ function App() {
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
   const summaries = pokemonListQuery.data?.results ?? []
   const selectedSummary = selectedPokemon ? [selectedPokemon] : []
-  const summaryCache = uniqueSummaries([...summaries, ...selectedSummary])
+  const evolutionSummaries = flattenEvolutionNodes(evolutionChainQuery.data?.root)
+  const summaryCache = mergePokemonSummaries(summaries, evolutionSummaries, selectedSummary)
   const exportValue = transferValue || exportActiveTeam()
 
   const pokemonTabData = useMemo(
@@ -73,7 +81,7 @@ function App() {
   )
   const teamAnalysis = useMemo(() => createTeamAnalysis(activeTeam), [activeTeam])
 
-  const favoritePokemon = summaryCache.filter((pokemon) => favoritePokemonIds.includes(pokemon.id))
+  const favoritePokemon = getFavoritePokemon(favoritePokemonIds, summaryCache)
   const recentPokemon = getRecentPokemon(searchHistory, summaryCache)
 
   function handleSearch(value: string) {
@@ -99,22 +107,29 @@ function App() {
     setIsAutocompleteOpen(value.trim().length >= 2)
   }
 
-  function handleViewWeaknesses() {
-    if (!selectedPokemon) {
-      return
-    }
-
-    setActivePokemonTab('Fraquezas')
-  }
-
   function handleAddToTeam() {
     if (!selectedPokemon) {
       return
     }
 
-    const wasAdded = addPokemon(toTeamPokemon(selectedPokemon))
-    setToastMessage(wasAdded ? 'Pokemon adicionado ao time.' : 'Time cheio.')
+    setSelectedAddTeamId(activeTeamId)
+    setIsAddToTeamOpen(true)
+  }
+
+  function handleConfirmAddToTeam(teamId: string) {
+    if (!selectedPokemon) {
+      return
+    }
+
+    const team = teams.find((item) => item.id === teamId)
+    const wasAdded = addPokemonToTeam(teamId, toTeamPokemon(selectedPokemon))
+    setToastMessage(
+      wasAdded
+        ? `${selectedPokemon.displayName} adicionado em ${team?.name ?? 'time'}.`
+        : `${team?.name ?? 'Time'} esta cheio.`,
+    )
     setShowToast(true)
+    setIsAddToTeamOpen(!wasAdded)
 
     window.setTimeout(() => setShowToast(false), 2400)
   }
@@ -127,6 +142,13 @@ function App() {
     const willFavorite = !isFavorite(selectedPokemon.id)
     toggleFavorite(selectedPokemon.id)
     setToastMessage(willFavorite ? 'Pokemon favoritado.' : 'Pokemon removido dos favoritos.')
+    setShowToast(true)
+    window.setTimeout(() => setShowToast(false), 2400)
+  }
+
+  function handleRemoveFavorite(pokemonId: number) {
+    toggleFavorite(pokemonId)
+    setToastMessage('Pokemon removido dos favoritos.')
     setShowToast(true)
     window.setTimeout(() => setShowToast(false), 2400)
   }
@@ -172,7 +194,7 @@ function App() {
           </span>
         </div>
         <nav aria-label="Atalhos">
-          <button type="button" aria-label="Favoritos">
+          <button type="button" aria-label="Favoritos" onClick={() => setIsFavoritesOpen(true)}>
             <Heart size={18} />
           </button>
           <button type="button" aria-label="Historico">
@@ -186,16 +208,13 @@ function App() {
 
       <main>
         <SearchExperience
-          canViewWeaknesses={Boolean(selectedPokemon)}
           isAutocompleteOpen={isAutocompleteOpen}
           isError={pokemonListQuery.isError}
           isLoading={pokemonListQuery.isLoading}
           onChange={handleSearchChange}
           onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
-          onMountTeam={() => setIsTeamOpen(true)}
           onSearch={handleSearch}
           onSelect={handleSelectPokemon}
-          onViewWeaknesses={handleViewWeaknesses}
           suggestions={summaries}
           value={query}
         />
@@ -205,7 +224,7 @@ function App() {
             <Menu size={18} />
             Meu Time
           </button>
-          <button type="button">
+          <button type="button" onClick={() => setIsFavoritesOpen(true)}>
             <Heart size={18} />
             Favoritos
           </button>
@@ -233,10 +252,31 @@ function App() {
           </div>
 
           <div className="secondary-column">
-            <FavoritesPanel favorites={favoritePokemon} history={recentPokemon} />
+            <RecentPokemonPanel onSelect={handleSelectPokemon} pokemon={recentPokemon} />
           </div>
         </section>
       </main>
+
+      <AddToTeamDialog
+        isOpen={isAddToTeamOpen}
+        onClose={() => setIsAddToTeamOpen(false)}
+        onConfirm={handleConfirmAddToTeam}
+        onSelectTeam={setSelectedAddTeamId}
+        pokemon={selectedPokemon}
+        selectedTeamId={selectedAddTeamId}
+        teams={teams}
+      />
+
+      <FavoritesDrawer
+        favorites={favoritePokemon}
+        isOpen={isFavoritesOpen}
+        onClose={() => setIsFavoritesOpen(false)}
+        onRemove={handleRemoveFavorite}
+        onSelect={(pokemon) => {
+          handleSelectPokemon(pokemon)
+          setIsFavoritesOpen(false)
+        }}
+      />
 
       <TeamDrawer
         activeTeamId={activeTeamId}

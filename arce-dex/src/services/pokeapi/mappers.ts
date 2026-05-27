@@ -154,10 +154,17 @@ export function mapPokemonSpecies(species: PokeApiPokemonSpeciesResponse): Pokem
 }
 
 function mapEvolutionNode(node: PokeApiEvolutionNode): EvolutionNode {
+  const id = getIdFromPokeApiUrl(node.species.url)
+
   return {
+    id,
     name: node.species.name,
     displayName: formatPokemonName(node.species.name),
     speciesUrl: node.species.url,
+    sprite:
+      id === null
+        ? ''
+        : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
     method: formatEvolutionMethod(node),
     evolvesTo: node.evolves_to.map(mapEvolutionNode),
   }
@@ -171,37 +178,37 @@ function formatEvolutionMethod(node: PokeApiEvolutionNode): string {
   }
 
   if (detail.min_level !== null) {
-    return `Evolui no nivel ${detail.min_level}`
+    return `Lv. ${detail.min_level}`
   }
 
   if (detail.item) {
-    return `Evolui usando ${formatPokemonName(detail.item.name)}`
+    return formatPokemonName(detail.item.name)
   }
 
   if (detail.held_item) {
-    return `Evolui segurando ${formatPokemonName(detail.held_item.name)}`
+    return `Hold ${formatPokemonName(detail.held_item.name)}`
   }
 
   if (detail.trigger?.name === 'trade') {
-    return 'Evolui por troca'
+    return 'Trade'
   }
 
   if (detail.min_happiness !== null) {
     const time = detail.time_of_day ? ` durante ${detail.time_of_day}` : ''
 
-    return `Evolui com alta amizade${time}`
+    return `High friendship${time}`
   }
 
   if (detail.known_move) {
-    return `Evolui conhecendo ${formatPokemonName(detail.known_move.name)}`
+    return `Know ${formatPokemonName(detail.known_move.name)}`
   }
 
   if (detail.location) {
-    return `Evolui em ${formatPokemonName(detail.location.name)}`
+    return formatPokemonName(detail.location.name)
   }
 
   if (detail.trigger) {
-    return `Evolui por ${formatPokemonName(detail.trigger.name)}`
+    return formatPokemonName(detail.trigger.name)
   }
 
   return 'Metodo nao informado'

@@ -73,9 +73,11 @@ export type PokemonSpecies = {
 }
 
 export type EvolutionNode = {
+  id: number | null
   name: string
   displayName: string
   speciesUrl: string
+  sprite: string
   method: string
   evolvesTo: EvolutionNode[]
 }

@@ -5,6 +5,7 @@ import {
 } from '../lib/type-chart'
 import type {
   EvolutionChain,
+  EvolutionNode,
   Pokemon,
   PokemonMove,
   PokemonSpecies,
@@ -55,7 +56,10 @@ export function uniqueSummaries(pokemons: PokemonSummary[]): PokemonSummary[] {
 }
 
 function sortPokemonMoves(moves: PokemonMove[]): PokemonMove[] {
-  return [...moves].sort((left, right) => {
+  const naturalMoves = moves.filter((move) => move.learnMethod === 'level-up')
+  const uniqueMoves = [...new Map(naturalMoves.map((move) => [move.name, move])).values()]
+
+  return uniqueMoves.sort((left, right) => {
     const leftLevel = left.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
     const rightLevel = right.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
 
@@ -77,7 +81,7 @@ export function createPokemonTabData(
   return {
     currentPokemonName: pokemon?.name ?? '',
     evolutionChain,
-    moves: sortPokemonMoves(pokemon?.moves ?? []).slice(0, 24),
+    moves: sortPokemonMoves(pokemon?.moves ?? []).slice(0, 32),
     weaknesses: typeAnalysis.weaknesses,
     resistances: typeAnalysis.resistances,
     immunities: typeAnalysis.immunities,
@@ -116,4 +120,54 @@ export function getRecentPokemon(
       summaries.find((pokemon) => pokemon.name === item || pokemon.displayName.toLowerCase() === item),
     )
     .filter((pokemon): pokemon is PokemonSummary => Boolean(pokemon))
+    .slice(0, 8)
+}
+
+export function getFavoritePokemon(
+  favoriteIds: number[],
+  summaries: PokemonSummary[],
+): PokemonSummary[] {
+  return favoriteIds
+    .map((id) => summaries.find((pokemon) => pokemon.id === id))
+    .filter((pokemon): pokemon is PokemonSummary => Boolean(pokemon))
+}
+
+export function mergePokemonSummaries(...groups: PokemonSummary[][]): PokemonSummary[] {
+  const merged = new Map<number, PokemonSummary>()
+
+  groups.flat().forEach((pokemon) => {
+    const current = merged.get(pokemon.id)
+
+    if (!current || current.types.length === 0) {
+      merged.set(pokemon.id, pokemon)
+    }
+  })
+
+  return [...merged.values()]
+}
+
+export function flattenEvolutionNodes(root: EvolutionNode | undefined): PokemonSummary[] {
+  if (!root) {
+    return []
+  }
+
+  return flattenEvolutionBranch(root)
+}
+
+function flattenEvolutionBranch(node: EvolutionNode): PokemonSummary[] {
+  const current =
+    node.id === null
+      ? []
+      : [
+          {
+            id: node.id,
+            name: node.name,
+            displayName: node.displayName,
+            sprite: node.sprite,
+            imageUrl: node.sprite,
+            types: [],
+          },
+        ]
+
+  return [...current, ...node.evolvesTo.flatMap(flattenEvolutionBranch)]
 }
