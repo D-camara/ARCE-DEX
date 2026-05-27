@@ -15,6 +15,7 @@ export type PokeApiPokemonResponse = {
   name: string
   height: number
   weight: number
+  species: PokeApiNamedResource
   sprites: {
     other?: {
       'official-artwork'?: {
@@ -28,12 +29,64 @@ export type PokeApiPokemonResponse = {
     type: PokeApiNamedResource
   }>
   abilities: Array<{
+    is_hidden: boolean
     ability: PokeApiNamedResource
+  }>
+  stats: Array<{
+    base_stat: number
+    stat: PokeApiNamedResource
   }>
   moves: Array<{
     move: PokeApiNamedResource
     version_group_details: Array<{
       level_learned_at: number
+      move_learn_method: PokeApiNamedResource
     }>
   }>
+  forms: PokeApiNamedResource[]
+}
+
+export type PokeApiPokemonSpeciesResponse = {
+  id: number
+  name: string
+  evolution_chain: {
+    url: string
+  } | null
+  varieties: Array<{
+    is_default: boolean
+    pokemon: PokeApiNamedResource
+  }>
+}
+
+export type PokeApiEvolutionChainResponse = {
+  id: number
+  chain: PokeApiEvolutionNode
+}
+
+export type PokeApiEvolutionNode = {
+  species: PokeApiNamedResource
+  evolves_to: PokeApiEvolutionNode[]
+}
+
+export type PokeApiPokemonFormResponse = {
+  id: number
+  name: string
+  is_default: boolean
+  pokemon: PokeApiNamedResource
+  sprites: {
+    front_default: string | null
+  }
+}
+
+export type PokeApiTypeResponse = {
+  id: number
+  name: string
+  damage_relations: {
+    double_damage_from: PokeApiNamedResource[]
+    double_damage_to: PokeApiNamedResource[]
+    half_damage_from: PokeApiNamedResource[]
+    half_damage_to: PokeApiNamedResource[]
+    no_damage_from: PokeApiNamedResource[]
+    no_damage_to: PokeApiNamedResource[]
+  }
 }
