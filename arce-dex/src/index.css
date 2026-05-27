@@ -107,7 +107,8 @@ h3 {
 .card-actions,
 .drawer-actions,
 .transfer-actions,
-.mobile-action-strip {
+.mobile-action-strip,
+.transfer-panel header {
   display: flex;
   align-items: center;
 }
@@ -166,8 +167,7 @@ main {
 .tabs-card,
 .analysis-panel,
 .quick-panel article,
-.transfer-panel,
-.states-panel {
+.transfer-panel {
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: rgba(17, 24, 39, 0.82);
@@ -228,8 +228,7 @@ main {
 .suggestion-list,
 .team-slots,
 .analysis-grid,
-.quick-panel,
-.states-panel {
+.quick-panel {
   display: grid;
   gap: 10px;
 }
@@ -585,8 +584,7 @@ main {
 }
 
 .analysis-panel,
-.transfer-panel,
-.states-panel {
+.transfer-panel {
   padding: 14px;
 }
 
@@ -644,6 +642,16 @@ main {
 .transfer-panel {
   display: grid;
   gap: 12px;
+}
+
+.transfer-panel header {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.transfer-panel--compact {
+  border-color: rgba(56, 189, 248, 0.28);
+  background: rgba(15, 23, 42, 0.98);
 }
 
 .transfer-panel textarea {
@@ -748,11 +756,23 @@ main {
 }
 
 .drawer-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
 .drawer-actions button {
-  flex: 1;
+  width: 100%;
+}
+
+.drawer-transfer {
+  position: fixed;
+  z-index: 35;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  max-width: 430px;
+  margin: 0 auto;
 }
 
 .toast {

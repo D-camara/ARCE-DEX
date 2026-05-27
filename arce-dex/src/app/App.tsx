@@ -4,9 +4,8 @@ import { PokemonCard } from '../components/pokemon/PokemonCard'
 import { PokemonTabs, type PokemonTabName } from '../components/pokemon/PokemonTabs'
 import { TeamDrawer } from '../components/team/TeamDrawer'
 import { TeamAnalysisPanel } from '../components/type-analysis/TeamAnalysisPanel'
-import { EmptyState, ErrorState, LoadingState, SkeletonCard, Toast } from '../components/ui/StatusStates'
+import { ErrorState, LoadingState, Toast } from '../components/ui/StatusStates'
 import { FavoritesPanel } from '../features/favorites/FavoritesPanel'
-import { TeamTransferPanel } from '../features/import-export/TeamTransferPanel'
 import { SearchExperience } from '../features/pokemon-search/SearchExperience'
 import { importTeamJson } from '../lib/export-import'
 import { normalizePokemonSearch } from '../lib/utils'
@@ -32,6 +31,7 @@ function App() {
   const [isTeamOpen, setIsTeamOpen] = useState(false)
   const [isAutocompleteOpen, setIsAutocompleteOpen] = useState(false)
   const [activePokemonTab, setActivePokemonTab] = useState<PokemonTabName>('Info')
+  const [transferMode, setTransferMode] = useState<'export' | 'import' | null>(null)
   const [showToast, setShowToast] = useState(false)
   const [transferValue, setTransferValue] = useState('')
   const [transferMessage, setTransferMessage] = useState('Formato validado pela base tecnica.')
@@ -136,6 +136,12 @@ function App() {
     setTransferMessage('JSON do time copiado.')
   }
 
+  function handleShowTransfer(mode: 'export' | 'import') {
+    setTransferMode(mode)
+    setTransferValue('')
+    setTransferMessage('')
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -210,19 +216,6 @@ function App() {
           <div className="secondary-column">
             <TeamAnalysisPanel analysis={teamAnalysis} />
             <FavoritesPanel favorites={favoritePokemon} history={recentPokemon} />
-            <TeamTransferPanel
-              exportValue={exportValue}
-              importMessage={transferMessage}
-              onCopy={handleCopyTeam}
-              onImport={handleImportTeam}
-              onImportValueChange={setTransferValue}
-            />
-            <section className="states-panel">
-              <LoadingState />
-              <EmptyState />
-              <ErrorState />
-              <SkeletonCard />
-            </section>
           </div>
         </section>
       </main>
@@ -231,11 +224,19 @@ function App() {
         activeTeamId={activeTeamId}
         isOpen={isTeamOpen}
         onClearTeam={clearTeam}
+        onCloseTransfer={() => setTransferMode(null)}
         onClose={() => setIsTeamOpen(false)}
+        onCopyTeam={handleCopyTeam}
+        onImportTeam={handleImportTeam}
+        onImportValueChange={setTransferValue}
         onRemovePokemon={removePokemon}
         onRenameTeam={renameTeam}
         onSelectTeam={setActiveTeam}
+        onShowTransfer={handleShowTransfer}
         teams={teams}
+        transferMessage={transferMessage}
+        transferMode={transferMode}
+        transferValue={exportValue}
       />
 
       {showToast && <Toast />}

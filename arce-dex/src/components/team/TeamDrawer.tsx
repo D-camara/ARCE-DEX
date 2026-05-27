@@ -1,4 +1,5 @@
-import { Eraser, Pencil, Trash2, X } from 'lucide-react'
+import { Download, Eraser, Pencil, Trash2, Upload, X } from 'lucide-react'
+import { TeamTransferPanel } from '../../features/import-export/TeamTransferPanel'
 import type { Team } from '../../types/team'
 import { TypeBadges } from '../pokemon/TypeBadges'
 
@@ -8,9 +9,17 @@ type TeamDrawerProps = {
   activeTeamId: string
   onClose: () => void
   onClearTeam: (teamId: string) => void
+  onCloseTransfer: () => void
+  onCopyTeam: () => void
+  onImportTeam: () => void
+  onImportValueChange: (value: string) => void
   onRemovePokemon: (slotIndex: number, teamId: string) => void
   onRenameTeam: (teamId: string, name: string) => void
   onSelectTeam: (teamId: string) => void
+  onShowTransfer: (mode: 'export' | 'import') => void
+  transferMessage: string
+  transferMode: 'export' | 'import' | null
+  transferValue: string
 }
 
 export function TeamDrawer({
@@ -19,9 +28,17 @@ export function TeamDrawer({
   activeTeamId,
   onClose,
   onClearTeam,
+  onCloseTransfer,
+  onCopyTeam,
+  onImportTeam,
+  onImportValueChange,
   onRemovePokemon,
   onRenameTeam,
   onSelectTeam,
+  onShowTransfer,
+  transferMessage,
+  transferMode,
+  transferValue,
 }: TeamDrawerProps) {
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
 
@@ -95,7 +112,29 @@ export function TeamDrawer({
           <Eraser size={16} />
           Limpar
         </button>
+        <button type="button" onClick={() => onShowTransfer('export')}>
+          <Download size={16} />
+          Exportar time
+        </button>
+        <button type="button" onClick={() => onShowTransfer('import')}>
+          <Upload size={16} />
+          Importar time
+        </button>
       </div>
+
+      {transferMode && (
+        <div className="drawer-transfer">
+          <TeamTransferPanel
+            exportValue={transferValue}
+            importMessage={transferMessage}
+            mode={transferMode}
+            onClose={onCloseTransfer}
+            onCopy={onCopyTeam}
+            onImport={onImportTeam}
+            onImportValueChange={onImportValueChange}
+          />
+        </div>
+      )}
     </aside>
   )
 }
