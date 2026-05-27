@@ -1,0 +1,94 @@
+import { Search } from 'lucide-react'
+import type { PokemonSummary } from '../../types/pokemon'
+import { TypeBadges } from '../../components/pokemon/TypeBadges'
+import {
+  getPokemonAutocompleteSuggestions,
+  normalizePokemonSearchText,
+} from '../../lib/search'
+
+type SearchExperienceProps = {
+  suggestions: PokemonSummary[]
+  value: string
+  isLoading: boolean
+  isError: boolean
+  isAutocompleteOpen: boolean
+  onChange: (value: string) => void
+  onFocus: () => void
+  onSearch: (value: string) => void
+  onSelect: (pokemon: PokemonSummary) => void
+}
+
+export function SearchExperience({
+  isAutocompleteOpen,
+  isError,
+  isLoading,
+  onFocus,
+  onSearch,
+  suggestions,
+  value,
+  onChange,
+  onSelect,
+}: SearchExperienceProps) {
+  const normalizedValue = normalizePokemonSearchText(value)
+  const shouldShowSuggestions = isAutocompleteOpen && normalizedValue.length >= 2
+  const visibleSuggestions = shouldShowSuggestions
+    ? getPokemonAutocompleteSuggestions(value, suggestions)
+    : []
+
+  return (
+    <section className="search-card">
+      <p className="eyebrow">Battle helper mobile</p>
+      <h1>Busque, compare e monte seu time sem perder o ritmo.</h1>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault()
+          onSearch(value)
+        }}
+      >
+        <label className="search-box">
+          <Search size={20} />
+          <input
+            onChange={(event) => onChange(event.target.value)}
+            onFocus={onFocus}
+            placeholder="Nome, numero ou #448"
+            type="search"
+            value={value}
+          />
+        </label>
+      </form>
+      <div className="shortcut-grid">
+        <button type="button" onClick={() => onSearch(value)}>
+          Buscar Pokemon
+        </button>
+      </div>
+      {shouldShowSuggestions && (
+        <div className="suggestion-list">
+          {isLoading && <p className="empty-copy">Carregando Pokemon...</p>}
+          {isError && <p className="empty-copy">Nao foi possivel carregar a PokeAPI.</p>}
+          {!isLoading && !isError && visibleSuggestions.length > 0 ? (
+            visibleSuggestions.map((pokemon) => (
+              <button
+                className="suggestion-item"
+                key={pokemon.name}
+                onClick={() => onSelect(pokemon)}
+                type="button"
+              >
+                {pokemon.imageUrl ? <img src={pokemon.imageUrl} alt="" /> : <span aria-hidden />}
+                <span>
+                  <strong>{pokemon.displayName}</strong>
+                  <small>
+                    {pokemon.id > 0 ? `#${String(pokemon.id).padStart(4, '0')}` : pokemon.name}
+                  </small>
+                </span>
+                <TypeBadges compact types={pokemon.types} />
+              </button>
+            ))
+          ) : null}
+          {!isLoading && !isError && visibleSuggestions.length === 0 ? (
+            <p className="empty-copy">Nenhum Pokemon encontrado para essa busca.</p>
+          ) : null}
+        </div>
+      )}
+    </section>
+  )
+}

@@ -1,3 +1,5 @@
+export { resolvePokemonSearchInput as normalizePokemonSearch } from '../search'
+
 export function formatPokemonName(name: string) {
   return name
     .split('-')

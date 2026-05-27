@@ -1,14 +1,24 @@
-import { useMemo } from 'react'
-import type { PokemonMove } from '../types/pokemon'
+import { useQuery } from '@tanstack/react-query'
+import { findPokemon } from '../services/pokeapi/endpoints'
+import { mapPokemonDetail } from '../services/pokeapi/mappers'
+import { normalizePokemonSearch } from '../lib/utils'
 
-export function usePokemonMoves(moves: PokemonMove[] = [], search = '') {
-  return useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase()
+export function usePokemonMoves(identifier: string | number | null, search = '') {
+  const normalizedIdentifier =
+    typeof identifier === 'string' ? normalizePokemonSearch(identifier) : identifier
 
-    if (!normalizedSearch) {
-      return moves
-    }
+  return useQuery({
+    queryKey: ['pokemon-moves', normalizedIdentifier, search],
+    queryFn: async () => {
+      const pokemon = mapPokemonDetail(await findPokemon(normalizedIdentifier as string | number))
+      const normalizedSearch = search.trim().toLowerCase()
 
-    return moves.filter((move) => move.name.includes(normalizedSearch))
-  }, [moves, search])
+      if (!normalizedSearch) {
+        return pokemon.moves
+      }
+
+      return pokemon.moves.filter((move) => move.name.includes(normalizedSearch))
+    },
+    enabled: normalizedIdentifier !== null && normalizedIdentifier !== '',
+  })
 }
