@@ -2,6 +2,7 @@ import type {
   PokeApiEvolutionChainResponse,
   PokeApiAbilityResponse,
   PokeApiListResponse,
+  PokeApiMoveResponse,
   PokeApiPokemonFormResponse,
   PokeApiPokemonResponse,
   PokeApiResolvedPokemonResponse,
@@ -89,4 +90,8 @@ export function getType(identifier: string | number) {
 
 export function getAbility(identifier: string | number) {
   return pokeApiGet<PokeApiAbilityResponse>(`/ability/${identifier}`)
+}
+
+export function getMove(identifier: string | number) {
+  return pokeApiGet<PokeApiMoveResponse>(`/move/${identifier}`)
 }

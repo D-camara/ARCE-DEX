@@ -72,12 +72,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
         {selectedTab === 'Golpes' && (
           <div className="move-list">
             {data.moves.length > 0 ? (
-              data.moves.map((move) => (
-                <div key={`${move.name}-${move.learnMethod}-${move.learnedAtLevel}`}>
-                  <span>{move.displayName}</span>
-                  <strong>{formatMoveLearnMethod(move)}</strong>
-                </div>
-              ))
+              data.moves.map((move) => <MoveCard key={move.name} move={move} />)
             ) : (
               <p className="empty-copy">Nenhum golpe carregado.</p>
             )}
@@ -247,22 +242,48 @@ function formatMultiplier(multiplier: number) {
   return `${multiplier}x`
 }
 
-function formatMoveLearnMethod(move: PokemonMove) {
-  if (move.learnedAtLevel !== null && move.learnMethod === 'level-up') {
-    return move.learnedAtLevel <= 1 ? 'Lv. 1' : `Lv. ${move.learnedAtLevel}`
+function MoveCard({ move }: { move: PokemonMove }) {
+  return (
+    <article className="move-card">
+      <header>
+        <h3>{move.displayName}</h3>
+        <strong>{formatMoveLevel(move)}</strong>
+      </header>
+      <div className="move-card__badges">
+        {move.type && <span className={`type-badge type-${move.type}`}>{move.type}</span>}
+        {move.category && (
+          <span className={`move-category move-category--${move.category}`}>
+            {move.categoryLabel ?? move.category}
+          </span>
+        )}
+      </div>
+      <dl className="move-card__stats">
+        <div>
+          <dt>Power</dt>
+          <dd>{formatMoveValue(move.power)}</dd>
+        </div>
+        <div>
+          <dt>Accuracy</dt>
+          <dd>{formatMoveValue(move.accuracy)}</dd>
+        </div>
+        <div>
+          <dt>PP</dt>
+          <dd>{formatMoveValue(move.pp)}</dd>
+        </div>
+      </dl>
+      <p>{move.shortEffect || move.effect || 'Descricao nao informada'}</p>
+    </article>
+  )
+}
+
+function formatMoveLevel(move: PokemonMove) {
+  if (move.learnedAtLevel === null) {
+    return 'Lv. ?'
   }
 
-  if (move.learnMethod === 'machine') {
-    return 'TM'
-  }
+  return move.learnedAtLevel <= 1 ? 'Lv. 1' : `Lv. ${move.learnedAtLevel}`
+}
 
-  if (move.learnMethod === 'egg') {
-    return 'Egg'
-  }
-
-  if (move.learnMethod === 'tutor') {
-    return 'Tutor'
-  }
-
-  return move.learnMethod
+function formatMoveValue(value: number | null | undefined) {
+  return value ?? '-'
 }

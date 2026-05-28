@@ -15,13 +15,14 @@ import type {
   PokeApiEvolutionChainResponse,
   PokeApiAbilityResponse,
   PokeApiEvolutionNode,
+  PokeApiMoveResponse,
   PokeApiNamedResource,
   PokeApiPokemonResponse,
   PokeApiResolvedPokemonResponse,
   PokeApiPokemonSpeciesResponse,
 } from '../../types/pokeapi'
 import type { TeamPokemon } from '../../types/team'
-import { formatPokemonName } from '../../lib/utils'
+import { formatGenerationName, formatPokemonName } from '../../lib/utils'
 
 const DEFAULT_STATS: PokemonStats = {
   hp: 0,
@@ -196,19 +197,47 @@ export function mapPokemonDetail(pokemon: PokeApiPokemonResponse): Pokemon {
 }
 
 export function mapAbilityDetail(ability: PokeApiAbilityResponse): AbilityDetail {
-  const effectEntry = ability.effect_entries.find((entry) => entry.language.name === 'en')
-  const flavorEntry = ability.flavor_text_entries.find((entry) => entry.language.name === 'en')
+  const effectEntry = findLocalizedEntry(ability.effect_entries)
+  const flavorEntry = findLocalizedEntry(ability.flavor_text_entries)
 
   return {
     id: ability.id,
     name: ability.name,
     displayName: formatPokemonName(ability.name),
-    generation: formatPokemonName(ability.generation.name),
+    generation: formatGenerationName(ability.generation.name),
     shortEffect: effectEntry?.short_effect ?? 'Descricao nao encontrada para esta habilidade.',
     effect: effectEntry?.effect ?? 'Descricao nao encontrada para esta habilidade.',
     flavorText:
       flavorEntry?.flavor_text.replace(/\s+/g, ' ') ??
       'Flavor text nao encontrado para esta habilidade.',
+  }
+}
+
+export function mapMoveDetail(move: PokeApiMoveResponse): PokemonMove {
+  const effectEntry = findLocalizedEntry(move.effect_entries)
+  const shortEffect = cleanEffectText(
+    effectEntry?.short_effect ?? 'Descricao nao informada',
+    move.effect_chance,
+  )
+  const effect = cleanEffectText(
+    effectEntry?.effect ?? effectEntry?.short_effect ?? 'Descricao nao informada',
+    move.effect_chance,
+  )
+  const category = move.damage_class.name as PokemonMove['category']
+
+  return {
+    name: move.name,
+    displayName: formatPokemonName(move.name),
+    learnedAtLevel: null,
+    learnMethod: 'level-up',
+    type: move.type.name as PokemonTypeName,
+    category,
+    categoryLabel: formatPokemonName(move.damage_class.name),
+    power: move.power,
+    accuracy: move.accuracy,
+    pp: move.pp,
+    shortEffect,
+    effect,
   }
 }
 
@@ -223,7 +252,7 @@ export function mapPokemonSpecies(species: PokeApiPokemonSpeciesResponse): Pokem
     isBaby: species.is_baby,
     isLegendary: species.is_legendary,
     isMythical: species.is_mythical,
-    generation: formatPokemonName(species.generation.name),
+    generation: formatGenerationName(species.generation.name),
     eggGroups: species.egg_groups.map((group) => formatPokemonName(group.name)),
     evolutionChainUrl: species.evolution_chain?.url ?? null,
     varieties: species.varieties.map(({ is_default, pokemon }) => ({
@@ -231,6 +260,21 @@ export function mapPokemonSpecies(species: PokeApiPokemonSpeciesResponse): Pokem
       isDefault: is_default,
     })),
   }
+}
+
+function findLocalizedEntry<T extends { language: PokeApiNamedResource }>(entries: T[]): T | undefined {
+  return (
+    entries.find((entry) => entry.language.name === 'pt-BR') ??
+    entries.find((entry) => entry.language.name === 'pt-br') ??
+    entries.find((entry) => entry.language.name === 'pt') ??
+    entries.find((entry) => entry.language.name === 'en')
+  )
+}
+
+function cleanEffectText(text: string, effectChance: number | null) {
+  const chance = effectChance === null ? '' : String(effectChance)
+
+  return text.replace(/\$effect_chance/g, chance).replace(/\s+/g, ' ')
 }
 
 function mapEvolutionNode(node: PokeApiEvolutionNode): EvolutionNode {

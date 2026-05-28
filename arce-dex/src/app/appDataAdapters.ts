@@ -31,11 +31,24 @@ export function uniqueSummaries(pokemons: PokemonSummary[]): PokemonSummary[] {
   return [...new Map(pokemons.map((pokemon) => [pokemon.id, pokemon])).values()]
 }
 
-function sortPokemonMoves(moves: PokemonMove[]): PokemonMove[] {
+export function preparePokemonLevelUpMoves(moves: PokemonMove[]): PokemonMove[] {
   const naturalMoves = moves.filter((move) => move.learnMethod === 'level-up')
-  const uniqueMoves = [...new Map(naturalMoves.map((move) => [move.name, move])).values()]
+  const uniqueMoves = [...naturalMoves]
+    .sort((left, right) => {
+      const leftLevel = left.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
+      const rightLevel = right.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
 
-  return uniqueMoves.sort((left, right) => {
+      return leftLevel - rightLevel
+    })
+    .reduce<Map<string, PokemonMove>>((movesByName, move) => {
+      if (!movesByName.has(move.name)) {
+        movesByName.set(move.name, move)
+      }
+
+      return movesByName
+    }, new Map())
+
+  return [...uniqueMoves.values()].sort((left, right) => {
     const leftLevel = left.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
     const rightLevel = right.learnedAtLevel ?? Number.MAX_SAFE_INTEGER
 
@@ -52,6 +65,7 @@ export function createPokemonTabData(
   species: PokemonSpecies | undefined,
   evolutionChain: EvolutionChain | undefined,
   enrichedSummaries: PokemonSummary[] = [],
+  moveDetails: PokemonMove[] = [],
 ): PokemonTabData {
   const typeAnalysis = calculateTypeAnalysis(pokemon?.types ?? [])
 
@@ -59,13 +73,25 @@ export function createPokemonTabData(
     currentPokemonName: pokemon?.name ?? '',
     evolutionChain,
     infoItems: createPokemonInfoItems(species),
-    moves: sortPokemonMoves(pokemon?.moves ?? []).slice(0, 32),
+    moves: enrichPokemonMoves(
+      preparePokemonLevelUpMoves(pokemon?.moves ?? []).slice(0, 32),
+      moveDetails,
+    ),
     weaknesses: typeAnalysis.weaknesses,
     resistances: typeAnalysis.resistances,
     immunities: typeAnalysis.immunities,
     effectiveness: typeAnalysis.effectiveness,
     forms: enrichPokemonForms(species?.varieties ?? pokemon?.forms ?? [], enrichedSummaries),
   }
+}
+
+function enrichPokemonMoves(moves: PokemonMove[], moveDetails: PokemonMove[]): PokemonMove[] {
+  const detailsByName = new Map(moveDetails.map((move) => [move.name, move]))
+
+  return moves.map((move) => ({
+    ...detailsByName.get(move.name),
+    ...move,
+  }))
 }
 
 function createPokemonInfoItems(species: PokemonSpecies | undefined) {

@@ -14,6 +14,7 @@ import { usePokemon } from '../hooks/usePokemon'
 import { useAbility } from '../hooks/useAbility'
 import { useEvolutionChain } from '../hooks/useEvolutionChain'
 import { usePokemonAutocompleteList } from '../hooks/usePokemonList'
+import { useMovesDetails } from '../hooks/useMovesDetails'
 import { usePokemonSpecies } from '../hooks/usePokemonSpecies'
 import { usePokemonSummaries } from '../hooks/usePokemonSummaries'
 import { useFavoritesStore } from '../stores/favoritesStore'
@@ -26,6 +27,7 @@ import {
   createPokemonTabData,
   getRecentPokemon,
   mergePokemonSummaries,
+  preparePokemonLevelUpMoves,
   toTeamPokemon,
 } from './appDataAdapters'
 
@@ -49,6 +51,18 @@ function App() {
   const selectedSpeciesQuery = usePokemonSpecies(selectedIdentifier)
   const selectedSpecies = selectedSpeciesQuery.data
   const evolutionChainQuery = useEvolutionChain(selectedSpecies?.evolutionChainUrl ?? null)
+  const baseMoves = useMemo(
+    () => preparePokemonLevelUpMoves(selectedPokemon?.moves ?? []).slice(0, 32),
+    [selectedPokemon],
+  )
+  const moveDetailQueries = useMovesDetails(baseMoves)
+  const moveDetails = useMemo(
+    () =>
+      moveDetailQueries
+        .map((query) => query.data)
+        .filter((move): move is NonNullable<typeof move> => Boolean(move)),
+    [moveDetailQueries],
+  )
 
   const activeTeamId = useTeamStore((state) => state.activeTeamId)
   const teams = useTeamStore((state) => state.teams)
@@ -88,8 +102,9 @@ function App() {
         selectedSpecies,
         evolutionChainQuery.data,
         summaryCache,
+        moveDetails,
       ),
-    [evolutionChainQuery.data, selectedPokemon, selectedSpecies, summaryCache],
+    [evolutionChainQuery.data, moveDetails, selectedPokemon, selectedSpecies, summaryCache],
   )
   const favoritePokemon = getFavoritePokemon(favoritePokemonIds, summaryCache)
   const recentPokemon = getRecentPokemon(searchHistory, summaryCache)
