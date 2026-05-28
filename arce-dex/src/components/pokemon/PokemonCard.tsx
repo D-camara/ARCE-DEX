@@ -1,4 +1,5 @@
-import { Heart, Plus, ShieldCheck } from 'lucide-react'
+import { useState } from 'react'
+import { Heart, Plus, ShieldCheck, Sparkles } from 'lucide-react'
 import type { Pokemon, PokemonStatName } from '../../types/pokemon'
 import { TypeBadges } from './TypeBadges'
 
@@ -24,6 +25,9 @@ export function PokemonCard({
   onAddToTeam,
   onToggleFavorite,
 }: PokemonCardProps) {
+  const [isShiny, setIsShiny] = useState(false)
+  const displayedSprite = isShiny && pokemon.shinySprite ? pokemon.shinySprite : pokemon.imageUrl
+
   return (
     <article className="pokemon-card">
       <div className="pokemon-card__media">
@@ -32,7 +36,19 @@ export function PokemonCard({
           <h2>{pokemon.displayName}</h2>
           <p>{pokemon.types.join(' / ')}</p>
         </div>
-        <img src={pokemon.imageUrl} alt={pokemon.displayName} />
+        <div className="pokemon-card__sprite">
+          <img src={displayedSprite} alt={pokemon.displayName} />
+          {pokemon.shinySprite && (
+            <button
+              className={isShiny ? 'shiny-toggle is-active' : 'shiny-toggle'}
+              onClick={() => setIsShiny((value) => !value)}
+              type="button"
+            >
+              <Sparkles size={15} />
+              {isShiny ? 'Mostrar normal' : 'Mostrar shiny'}
+            </button>
+          )}
+        </div>
       </div>
 
       <TypeBadges types={pokemon.types} />

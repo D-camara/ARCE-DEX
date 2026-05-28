@@ -7,47 +7,23 @@ import type {
   EvolutionChain,
   EvolutionNode,
   Pokemon,
+  PokemonForm,
   PokemonMove,
   PokemonSpecies,
   PokemonSummary,
 } from '../types/pokemon'
-import type { Team, TeamPokemon, TeamSlot } from '../types/team'
+import type { Team, TeamPokemon } from '../types/team'
 import type { PokemonTabData } from '../components/pokemon/PokemonTabs'
+import { normalizeCompetitivePokemon } from '../lib/stats'
 
 export function toTeamPokemon(pokemon: Pokemon): TeamPokemon {
-  return {
+  return normalizeCompetitivePokemon({
     id: pokemon.id,
     name: pokemon.name,
     displayName: pokemon.displayName,
     sprite: pokemon.sprite,
     types: pokemon.types,
-  }
-}
-
-function summaryToTeamPokemon(pokemon: PokemonSummary): TeamPokemon {
-  return {
-    id: pokemon.id,
-    name: pokemon.name,
-    displayName: pokemon.displayName,
-    sprite: pokemon.sprite,
-    types: pokemon.types,
-  }
-}
-
-export function createImportedSlots(
-  pokemons: Array<string | number>,
-  summaries: PokemonSummary[],
-): TeamSlot[] {
-  return Array.from({ length: 6 }, (_, index) => {
-    const identifier = pokemons[index]
-    const summary = summaries.find(
-      (pokemon) => pokemon.name === identifier || pokemon.id === identifier,
-    )
-
-    return {
-      id: `import-slot-${index + 1}`,
-      pokemon: summary ? summaryToTeamPokemon(summary) : null,
-    }
+    baseStats: pokemon.stats,
   })
 }
 
@@ -75,19 +51,56 @@ export function createPokemonTabData(
   pokemon: Pokemon | undefined,
   species: PokemonSpecies | undefined,
   evolutionChain: EvolutionChain | undefined,
+  enrichedSummaries: PokemonSummary[] = [],
 ): PokemonTabData {
   const typeAnalysis = calculateTypeAnalysis(pokemon?.types ?? [])
 
   return {
     currentPokemonName: pokemon?.name ?? '',
     evolutionChain,
+    infoItems: createPokemonInfoItems(species),
     moves: sortPokemonMoves(pokemon?.moves ?? []).slice(0, 32),
     weaknesses: typeAnalysis.weaknesses,
     resistances: typeAnalysis.resistances,
     immunities: typeAnalysis.immunities,
     effectiveness: typeAnalysis.effectiveness,
-    forms: species?.varieties ?? pokemon?.forms ?? [],
+    forms: enrichPokemonForms(species?.varieties ?? pokemon?.forms ?? [], enrichedSummaries),
   }
+}
+
+function createPokemonInfoItems(species: PokemonSpecies | undefined) {
+  if (!species) {
+    return []
+  }
+
+  return [
+    { label: 'Geracao', value: species.generation },
+    { label: 'Taxa de captura', value: String(species.captureRate) },
+    { label: 'Genero', value: formatGenderRate(species.genderRate) },
+    { label: 'Grupo de ovos', value: species.eggGroups.join(', ') || 'Nao informado' },
+    { label: 'Lendario', value: formatBoolean(species.isLegendary) },
+    { label: 'Mitico', value: formatBoolean(species.isMythical) },
+    { label: 'Baby', value: formatBoolean(species.isBaby) },
+    {
+      label: 'Felicidade base',
+      value: species.baseHappiness === null ? 'Nao informado' : String(species.baseHappiness),
+    },
+  ]
+}
+
+function formatBoolean(value: boolean) {
+  return value ? 'Sim' : 'Nao'
+}
+
+function formatGenderRate(genderRate: number) {
+  if (genderRate < 0) {
+    return 'Sem genero'
+  }
+
+  const femaleRate = (genderRate / 8) * 100
+  const maleRate = 100 - femaleRate
+
+  return `${maleRate}% macho / ${femaleRate}% femea`
 }
 
 export function createTeamAnalysis(team: Team) {
@@ -116,9 +129,16 @@ export function getRecentPokemon(
   summaries: PokemonSummary[],
 ): PokemonSummary[] {
   return history
-    .map((item) =>
-      summaries.find((pokemon) => pokemon.name === item || pokemon.displayName.toLowerCase() === item),
-    )
+    .map((item) => {
+      const numericItem = Number(item)
+
+      return summaries.find(
+        (pokemon) =>
+          pokemon.name === item ||
+          pokemon.displayName.toLowerCase() === item ||
+          (!Number.isNaN(numericItem) && pokemon.id === numericItem),
+      )
+    })
     .filter((pokemon): pokemon is PokemonSummary => Boolean(pokemon))
     .slice(0, 8)
 }
@@ -138,7 +158,11 @@ export function mergePokemonSummaries(...groups: PokemonSummary[][]): PokemonSum
   groups.flat().forEach((pokemon) => {
     const current = merged.get(pokemon.id)
 
-    if (!current || current.types.length === 0) {
+    if (
+      !current ||
+      (current.types.length === 0 && pokemon.types.length > 0) ||
+      (!current.imageUrl && pokemon.imageUrl)
+    ) {
       merged.set(pokemon.id, pokemon)
     }
   })
@@ -164,10 +188,26 @@ function flattenEvolutionBranch(node: EvolutionNode): PokemonSummary[] {
             name: node.name,
             displayName: node.displayName,
             sprite: node.sprite,
+            shinySprite: undefined,
             imageUrl: node.sprite,
             types: [],
           },
         ]
 
   return [...current, ...node.evolvesTo.flatMap(flattenEvolutionBranch)]
+}
+
+function enrichPokemonForms(forms: PokemonForm[], summaries: PokemonSummary[]): PokemonForm[] {
+  return forms.map((form) => {
+    const summary = summaries.find(
+      (pokemon) => pokemon.name === form.name || (form.id !== null && pokemon.id === form.id),
+    )
+
+    return {
+      ...form,
+      id: form.id ?? summary?.id ?? null,
+      sprite: form.sprite || summary?.imageUrl || summary?.sprite || '',
+      types: summary?.types ?? form.types,
+    }
+  })
 }

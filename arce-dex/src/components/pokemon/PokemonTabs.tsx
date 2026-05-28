@@ -11,6 +11,10 @@ import type {
 export type PokemonTabData = {
   currentPokemonName: string
   evolutionChain: EvolutionChain | undefined
+  infoItems: Array<{
+    label: string
+    value: string
+  }>
   moves: PokemonMove[]
   weaknesses: PokemonTypeName[]
   resistances: PokemonTypeName[]
@@ -23,12 +27,13 @@ type PokemonTabsProps = {
   data: PokemonTabData
   activeTab?: PokemonTabName
   onTabChange?: (tab: PokemonTabName) => void
+  onSelectPokemon?: (identifier: string | number) => void
 }
 
 const tabs = ['Info', 'Evolucao', 'Golpes', 'Fraquezas', 'Formas'] as const
 export type PokemonTabName = (typeof tabs)[number]
 
-export function PokemonTabs({ activeTab, data, onTabChange }: PokemonTabsProps) {
+export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: PokemonTabsProps) {
   const [internalActiveTab, setInternalActiveTab] = useState<PokemonTabName>('Info')
   const selectedTab = activeTab ?? internalActiveTab
 
@@ -55,15 +60,12 @@ export function PokemonTabs({ activeTab, data, onTabChange }: PokemonTabsProps) 
       </div>
       <div className="tab-panel">
         {selectedTab === 'Info' && (
-          <StateBlock
-            label="success"
-            title="Resumo individual"
-            text="Tipos, habilidades, status e dados defensivos deste Pokemon."
-          />
+          <InfoPanel items={data.infoItems} />
         )}
         {selectedTab === 'Evolucao' && (
           <EvolutionTree
             currentPokemonName={data.currentPokemonName}
+            onSelectPokemon={onSelectPokemon}
             root={data.evolutionChain?.root}
           />
         )}
@@ -100,20 +102,56 @@ export function PokemonTabs({ activeTab, data, onTabChange }: PokemonTabsProps) 
           </div>
         )}
         {selectedTab === 'Formas' && (
-          <div className="form-list">
+          <div className="form-card-list">
             {data.forms.length > 0 ? (
               data.forms.map((form) => (
-                <span className={form.isDefault ? 'is-current-form' : ''} key={form.name}>
-                  {form.displayName}
-                </span>
+                <button
+                  className={form.name === data.currentPokemonName ? 'form-card is-current-form' : 'form-card'}
+                  key={form.name}
+                  onClick={() => onSelectPokemon?.(form.name)}
+                  type="button"
+                >
+                  {form.sprite && <img src={form.sprite} alt="" />}
+                  <span>
+                    <strong>{form.displayName}</strong>
+                    {form.id !== null && <small>#{String(form.id).padStart(4, '0')}</small>}
+                    <em>{form.category}</em>
+                    {form.types && form.types.length > 0 && (
+                      <div className="type-badges type-badges--compact">
+                        {form.types.map((type) => (
+                          <span className={`type-badge type-${type}`} key={type}>
+                            {type}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </span>
+                </button>
               ))
             ) : (
-              <p className="empty-copy">Nenhuma forma alternativa carregada.</p>
+              <p className="empty-copy">Nenhuma forma alternativa encontrada para este Pokemon.</p>
             )}
           </div>
         )}
       </div>
     </section>
+  )
+}
+
+function InfoPanel({ items }: { items: PokemonTabData['infoItems'] }) {
+  if (items.length === 0) {
+    return <p className="empty-copy">Dados extras nao carregados.</p>
+  }
+
+  return (
+    <dl className="info-grid">
+      {items.map((item) => (
+        <div key={item.label}>
+          <dt>{item.label}</dt>
+          <dd>{item.value || 'Nao informado'}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }
 
@@ -138,58 +176,61 @@ function EffectivenessGroup({ label, items }: { label: string; items: TypeEffect
 
 function EvolutionTree({
   currentPokemonName,
+  onSelectPokemon,
   root,
 }: {
   currentPokemonName: string
+  onSelectPokemon?: (identifier: string | number) => void
   root: EvolutionNode | undefined
 }) {
   if (!root) {
     return <p className="empty-copy">Linha evolutiva nao carregada.</p>
   }
 
-  return <EvolutionBranch currentPokemonName={currentPokemonName} node={root} />
+  return (
+    <EvolutionBranch
+      currentPokemonName={currentPokemonName}
+      node={root}
+      onSelectPokemon={onSelectPokemon}
+    />
+  )
 }
 
 function EvolutionBranch({
   currentPokemonName,
   node,
+  onSelectPokemon,
 }: {
   currentPokemonName: string
   node: EvolutionNode
+  onSelectPokemon?: (identifier: string | number) => void
 }) {
   const isCurrent = node.name === currentPokemonName
 
   return (
     <div className="evolution-branch">
-      <button className={isCurrent ? 'evolution-node is-current' : 'evolution-node'} type="button">
+      <button
+        className={isCurrent ? 'evolution-node is-current' : 'evolution-node'}
+        onClick={() => onSelectPokemon?.(node.name)}
+        type="button"
+      >
         {node.sprite && <img src={node.sprite} alt="" />}
         <strong>{node.displayName}</strong>
+        {node.id !== null && <small>#{String(node.id).padStart(4, '0')}</small>}
         <small>{node.method}</small>
       </button>
       {node.evolvesTo.length > 0 && (
         <div className="evolution-children">
           {node.evolvesTo.map((child) => (
-            <EvolutionBranch currentPokemonName={currentPokemonName} key={child.name} node={child} />
+            <EvolutionBranch
+              currentPokemonName={currentPokemonName}
+              key={child.name}
+              node={child}
+              onSelectPokemon={onSelectPokemon}
+            />
           ))}
         </div>
       )}
-    </div>
-  )
-}
-
-function StateBlock({
-  label,
-  title,
-  text,
-}: {
-  label: 'loading' | 'empty' | 'error' | 'success'
-  title: string
-  text: string
-}) {
-  return (
-    <div className={`state-block state-block--${label}`}>
-      <strong>{title}</strong>
-      <p>{text}</p>
     </div>
   )
 }

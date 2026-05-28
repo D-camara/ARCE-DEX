@@ -41,6 +41,7 @@ export type PokemonSummary = {
   name: string
   displayName: string
   sprite: string
+  shinySprite?: string
   imageUrl: string
   types: PokemonTypeName[]
 }
@@ -68,6 +69,14 @@ export type PokemonSpecies = {
   id: number
   name: string
   displayName: string
+  baseHappiness: number | null
+  captureRate: number
+  genderRate: number
+  isBaby: boolean
+  isLegendary: boolean
+  isMythical: boolean
+  generation: string
+  eggGroups: string[]
   evolutionChainUrl: string | null
   varieties: PokemonForm[]
 }
@@ -88,9 +97,13 @@ export type EvolutionChain = {
 }
 
 export type PokemonForm = {
+  id: number | null
   name: string
   displayName: string
   url: string
+  sprite: string
+  category: string
+  types?: PokemonTypeName[]
   isDefault?: boolean
 }
 
