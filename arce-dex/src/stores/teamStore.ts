@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { exportTeam } from '../lib/export-import'
+import { normalizeCompetitivePokemon } from '../lib/stats'
 import { createLocalForageStateStorage } from '../lib/storage'
 import type { Team, TeamPokemon, TeamSlot } from '../types/team'
 
@@ -31,7 +31,9 @@ function normalizeTeamSlots(team: Team, teamIndex: number): TeamSlot[] {
 
   return slots.map((slot, index) => ({
     ...slot,
-    pokemon: team.slots[index]?.pokemon ?? null,
+    pokemon: team.slots[index]?.pokemon
+      ? normalizeCompetitivePokemon(team.slots[index].pokemon)
+      : null,
   }))
 }
 
@@ -43,6 +45,27 @@ function normalizeTeam(team: Team, teamIndex: number): Team {
   }
 }
 
+function normalizeTeams(teams: Team[] | undefined): Team[] {
+  const defaultTeams = createDefaultTeams()
+
+  return defaultTeams.map((defaultTeam, index) =>
+    normalizeTeam(teams?.[index] ?? defaultTeam, index),
+  )
+}
+
+function normalizePersistedState(
+  state: Partial<Pick<TeamStore, 'activeTeamId' | 'teams'>>,
+): Pick<TeamStore, 'activeTeamId' | 'teams'> {
+  const teams = normalizeTeams(state.teams)
+  const fallbackTeamId = teams[0].id
+  const activeTeamId =
+    state.activeTeamId && teams.some((team) => team.id === state.activeTeamId)
+      ? state.activeTeamId
+      : fallbackTeamId
+
+  return { activeTeamId, teams }
+}
+
 type TeamStore = {
   activeTeamId: string
   teams: Team[]
@@ -50,11 +73,14 @@ type TeamStore = {
   setActiveTeam: (teamId: string) => void
   addPokemon: (pokemon: TeamPokemon, slotIndex?: number) => boolean
   addPokemonToTeam: (teamId: string, pokemon: TeamPokemon) => boolean
+  updatePokemonInTeam: (
+    teamId: string,
+    slotIndex: number,
+    updates: Partial<TeamPokemon>,
+  ) => void
   removePokemon: (slotIndex: number, teamId?: string) => void
   renameTeam: (teamId: string, name: string) => void
   clearTeam: (teamId?: string) => void
-  importTeam: (team: Team, teamId?: string) => void
-  exportActiveTeam: () => string
 }
 
 export const useTeamStore = create<TeamStore>()(
@@ -91,7 +117,9 @@ export const useTeamStore = create<TeamStore>()(
             return {
               ...team,
               slots: team.slots.map((slot, index) =>
-                index === nextSlotIndex ? { ...slot, pokemon } : slot,
+                index === nextSlotIndex
+                  ? { ...slot, pokemon: normalizeCompetitivePokemon(pokemon) }
+                  : slot,
               ),
             }
           }),
@@ -119,7 +147,9 @@ export const useTeamStore = create<TeamStore>()(
             return {
               ...team,
               slots: team.slots.map((slot, index) =>
-                index === nextSlotIndex ? { ...slot, pokemon } : slot,
+                index === nextSlotIndex
+                  ? { ...slot, pokemon: normalizeCompetitivePokemon(pokemon) }
+                  : slot,
               ),
             }
           }),
@@ -128,6 +158,34 @@ export const useTeamStore = create<TeamStore>()(
 
         return wasAdded
       },
+      updatePokemonInTeam: (teamId, slotIndex, updates) =>
+        set((state) => ({
+          teams: state.teams.map((team) =>
+            team.id === teamId
+              ? {
+                  ...team,
+                  slots: team.slots.map((slot, index) => {
+                    if (index !== slotIndex || !slot.pokemon) {
+                      return slot
+                    }
+
+                    return {
+                      ...slot,
+                      pokemon: normalizeCompetitivePokemon({
+                        ...slot.pokemon,
+                        ...updates,
+                        id: slot.pokemon.id,
+                        name: slot.pokemon.name,
+                        displayName: slot.pokemon.displayName,
+                        sprite: slot.pokemon.sprite,
+                        types: slot.pokemon.types,
+                      }),
+                    }
+                  }),
+                }
+              : team,
+          ),
+        })),
       removePokemon: (slotIndex, teamId) =>
         set((state) => {
           const targetTeamId = teamId ?? state.activeTeamId
@@ -161,23 +219,16 @@ export const useTeamStore = create<TeamStore>()(
             ),
           }
         }),
-      importTeam: (team, teamId) =>
-        set((state) => {
-          const targetTeamId = teamId ?? state.activeTeamId
-
-          return {
-            teams: state.teams.map((currentTeam, index) =>
-              currentTeam.id === targetTeamId
-                ? normalizeTeam({ ...team, id: currentTeam.id }, index)
-                : currentTeam,
-            ),
-          }
-        }),
-      exportActiveTeam: () => exportTeam(get().getActiveTeam()),
     }),
     {
       name: 'arce-dex:team-store',
       storage: createJSONStorage(() => createLocalForageStateStorage()),
+      merge: (persistedState, currentState) => ({
+        ...currentState,
+        ...normalizePersistedState(
+          (persistedState ?? {}) as Partial<Pick<TeamStore, 'activeTeamId' | 'teams'>>,
+        ),
+      }),
     },
   ),
 )

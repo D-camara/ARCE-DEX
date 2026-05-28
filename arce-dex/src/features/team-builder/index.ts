@@ -1,1 +1,1 @@
-export {}
+export { TeamLabView } from './TeamLabView'

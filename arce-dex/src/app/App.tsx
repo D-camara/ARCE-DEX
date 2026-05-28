@@ -3,12 +3,11 @@ import { Heart, History, Menu, Users } from 'lucide-react'
 import { PokemonCard } from '../components/pokemon/PokemonCard'
 import { PokemonTabs, type PokemonTabName } from '../components/pokemon/PokemonTabs'
 import { AddToTeamDialog } from '../components/team/AddToTeamDialog'
-import { TeamDrawer } from '../components/team/TeamDrawer'
 import { ErrorState, LoadingState, Toast } from '../components/ui/StatusStates'
 import { FavoritesDrawer } from '../features/favorites/FavoritesDrawer'
 import { RecentPokemonPanel } from '../features/favorites/RecentPokemonPanel'
 import { SearchExperience } from '../features/pokemon-search/SearchExperience'
-import { importTeamJson } from '../lib/export-import'
+import { TeamLabView } from '../features/team-builder'
 import { normalizePokemonSearch } from '../lib/utils'
 import { usePokemon } from '../hooks/usePokemon'
 import { useEvolutionChain } from '../hooks/useEvolutionChain'
@@ -19,13 +18,10 @@ import { useFavoritesStore } from '../stores/favoritesStore'
 import { useSearchHistoryStore } from '../stores/searchHistoryStore'
 import { useTeamStore } from '../stores/teamStore'
 import type { PokemonSummary } from '../types/pokemon'
-import type { Team } from '../types/team'
 import {
-  createImportedSlots,
   flattenEvolutionNodes,
   getFavoritePokemon,
   createPokemonTabData,
-  createTeamAnalysis,
   getRecentPokemon,
   mergePokemonSummaries,
   toTeamPokemon,
@@ -33,17 +29,14 @@ import {
 
 function App() {
   const [query, setQuery] = useState('')
+  const [activeView, setActiveView] = useState<'dex' | 'team-lab'>('dex')
   const [selectedIdentifier, setSelectedIdentifier] = useState<string | number>(448)
-  const [isTeamOpen, setIsTeamOpen] = useState(false)
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
   const [isAddToTeamOpen, setIsAddToTeamOpen] = useState(false)
   const [isAutocompleteOpen, setIsAutocompleteOpen] = useState(false)
   const [activePokemonTab, setActivePokemonTab] = useState<PokemonTabName>('Info')
   const [selectedAddTeamId, setSelectedAddTeamId] = useState('team-1')
-  const [transferMode, setTransferMode] = useState<'export' | 'import' | null>(null)
   const [showToast, setShowToast] = useState(false)
-  const [transferValue, setTransferValue] = useState('')
-  const [transferMessage, setTransferMessage] = useState('Formato validado pela base tecnica.')
   const [toastMessage, setToastMessage] = useState('')
 
   const pokemonListQuery = usePokemonAutocompleteList()
@@ -60,8 +53,7 @@ function App() {
   const removePokemon = useTeamStore((state) => state.removePokemon)
   const renameTeam = useTeamStore((state) => state.renameTeam)
   const clearTeam = useTeamStore((state) => state.clearTeam)
-  const importTeam = useTeamStore((state) => state.importTeam)
-  const exportActiveTeam = useTeamStore((state) => state.exportActiveTeam)
+  const updatePokemonInTeam = useTeamStore((state) => state.updatePokemonInTeam)
 
   const favoritePokemonIds = useFavoritesStore((state) => state.favoritePokemonIds)
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite)
@@ -75,7 +67,6 @@ function App() {
     ...formIdentifiers,
   ])
 
-  const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
   const summaries = pokemonListQuery.data?.results ?? []
   const selectedSummary = selectedPokemon ? [selectedPokemon] : []
   const evolutionSummaries = flattenEvolutionNodes(evolutionChainQuery.data?.root)
@@ -85,7 +76,6 @@ function App() {
     relatedSummaryQuery.data,
     selectedSummary,
   )
-  const exportValue = transferValue || exportActiveTeam()
 
   const pokemonTabData = useMemo(
     () =>
@@ -97,8 +87,6 @@ function App() {
       ),
     [evolutionChainQuery.data, selectedPokemon, selectedSpecies, summaryCache],
   )
-  const teamAnalysis = useMemo(() => createTeamAnalysis(activeTeam), [activeTeam])
-
   const favoritePokemon = getFavoritePokemon(favoritePokemonIds, summaryCache)
   const recentPokemon = getRecentPokemon(searchHistory, summaryCache)
 
@@ -178,36 +166,6 @@ function App() {
     window.setTimeout(() => setShowToast(false), 2400)
   }
 
-  function handleImportTeam() {
-    const result = importTeamJson(exportValue)
-
-    if (!result.ok) {
-      setTransferMessage(result.error)
-      return
-    }
-
-    const importedTeam: Team = {
-      id: activeTeam.id,
-      name: result.team.name,
-      slots: createImportedSlots(result.team.pokemons, summaryCache),
-    }
-
-    importTeam(importedTeam, activeTeam.id)
-    setTransferValue('')
-    setTransferMessage('Time importado quando os Pokemon estavam no cache local.')
-  }
-
-  function handleCopyTeam() {
-    void navigator.clipboard.writeText(exportActiveTeam())
-    setTransferMessage('JSON do time copiado.')
-  }
-
-  function handleShowTransfer(mode: 'export' | 'import') {
-    setTransferMode(mode)
-    setTransferValue('')
-    setTransferMessage('')
-  }
-
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -225,64 +183,77 @@ function App() {
           <button type="button" aria-label="Historico">
             <History size={18} />
           </button>
-          <button type="button" aria-label="Abrir Meu Time" onClick={() => setIsTeamOpen(true)}>
+          <button type="button" aria-label="Abrir Meu Time" onClick={() => setActiveView('team-lab')}>
             <Users size={18} />
           </button>
         </nav>
       </header>
 
-      <main>
-        <SearchExperience
-          isAutocompleteOpen={isAutocompleteOpen}
-          isError={pokemonListQuery.isError}
-          isLoading={pokemonListQuery.isLoading}
-          onChange={handleSearchChange}
-          onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
-          onSearch={handleSearch}
-          onSelect={handleSelectPokemon}
-          suggestions={summaries}
-          value={query}
+      {activeView === 'team-lab' ? (
+        <TeamLabView
+          activeTeamId={activeTeamId}
+          onBack={() => setActiveView('dex')}
+          onClearTeam={clearTeam}
+          onRemovePokemon={removePokemon}
+          onRenameTeam={renameTeam}
+          onSelectTeam={setActiveTeam}
+          onUpdatePokemon={updatePokemonInTeam}
+          teams={teams}
         />
+      ) : (
+        <main>
+          <SearchExperience
+            isAutocompleteOpen={isAutocompleteOpen}
+            isError={pokemonListQuery.isError}
+            isLoading={pokemonListQuery.isLoading}
+            onChange={handleSearchChange}
+            onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
+            onSearch={handleSearch}
+            onSelect={handleSelectPokemon}
+            suggestions={summaries}
+            value={query}
+          />
 
-        <section className="mobile-action-strip">
-          <button type="button" onClick={() => setIsTeamOpen(true)}>
-            <Menu size={18} />
-            Meu Time
-          </button>
-          <button type="button" onClick={() => setIsFavoritesOpen(true)}>
-            <Heart size={18} />
-            Favoritos
-          </button>
-        </section>
+          <section className="mobile-action-strip">
+            <button type="button" onClick={() => setActiveView('team-lab')}>
+              <Menu size={18} />
+              Meu Time
+            </button>
+            <button type="button" onClick={() => setIsFavoritesOpen(true)}>
+              <Heart size={18} />
+              Favoritos
+            </button>
+          </section>
 
-        <section className="content-grid">
-          <div className="primary-column">
-            {selectedPokemonQuery.isLoading && <LoadingState />}
-            {selectedPokemonQuery.isError && <ErrorState />}
-            {selectedPokemon && (
-              <>
-                <PokemonCard
-                  isFavorite={isFavorite(selectedPokemon.id)}
-                  key={selectedPokemon.id}
-                  onAddToTeam={handleAddToTeam}
-                  onToggleFavorite={handleToggleFavorite}
-                  pokemon={selectedPokemon}
-                />
-                <PokemonTabs
-                  activeTab={activePokemonTab}
-                  data={pokemonTabData}
-                  onTabChange={setActivePokemonTab}
-                  onSelectPokemon={handleSelectPokemonIdentifier}
-                />
-              </>
-            )}
-          </div>
+          <section className="content-grid">
+            <div className="primary-column">
+              {selectedPokemonQuery.isLoading && <LoadingState />}
+              {selectedPokemonQuery.isError && <ErrorState />}
+              {selectedPokemon && (
+                <>
+                  <PokemonCard
+                    isFavorite={isFavorite(selectedPokemon.id)}
+                    key={selectedPokemon.id}
+                    onAddToTeam={handleAddToTeam}
+                    onToggleFavorite={handleToggleFavorite}
+                    pokemon={selectedPokemon}
+                  />
+                  <PokemonTabs
+                    activeTab={activePokemonTab}
+                    data={pokemonTabData}
+                    onTabChange={setActivePokemonTab}
+                    onSelectPokemon={handleSelectPokemonIdentifier}
+                  />
+                </>
+              )}
+            </div>
 
-          <div className="secondary-column">
-            <RecentPokemonPanel onSelect={handleSelectPokemon} pokemon={recentPokemon} />
-          </div>
-        </section>
-      </main>
+            <div className="secondary-column">
+              <RecentPokemonPanel onSelect={handleSelectPokemon} pokemon={recentPokemon} />
+            </div>
+          </section>
+        </main>
+      )}
 
       <AddToTeamDialog
         isOpen={isAddToTeamOpen}
@@ -303,26 +274,6 @@ function App() {
           handleSelectPokemon(pokemon)
           setIsFavoritesOpen(false)
         }}
-      />
-
-      <TeamDrawer
-        activeTeamId={activeTeamId}
-        isOpen={isTeamOpen}
-        onClearTeam={clearTeam}
-        onCloseTransfer={() => setTransferMode(null)}
-        onClose={() => setIsTeamOpen(false)}
-        onCopyTeam={handleCopyTeam}
-        onImportTeam={handleImportTeam}
-        onImportValueChange={setTransferValue}
-        onRemovePokemon={removePokemon}
-        onRenameTeam={renameTeam}
-        onSelectTeam={setActiveTeam}
-        onShowTransfer={handleShowTransfer}
-        teamAnalysis={teamAnalysis}
-        teams={teams}
-        transferMessage={transferMessage}
-        transferMode={transferMode}
-        transferValue={exportValue}
       />
 
       {showToast && <Toast message={toastMessage} />}
