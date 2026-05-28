@@ -76,14 +76,20 @@ export type PokeApiMoveResponse = {
   id: number
   name: string
   accuracy: number | null
-  power: number | null
+  effect_chance: number | null
   pp: number | null
-  damage_class: PokeApiNamedResource
+  power: number | null
   type: PokeApiNamedResource
+  damage_class: PokeApiNamedResource
   effect_entries: Array<{
     effect: string
     short_effect: string
     language: PokeApiNamedResource
+  }>
+  flavor_text_entries: Array<{
+    flavor_text: string
+    language: PokeApiNamedResource
+    version_group: PokeApiNamedResource
   }>
 }
 
