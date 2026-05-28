@@ -296,7 +296,7 @@ export function TeamPokemonEditor({
                         {learnMethodBadge}
                       </span>
                       {moveDetail.learnedAtLevel !== null
-                        ? ` ? Lv. ${moveDetail.learnedAtLevel}`
+                        ? ` · Lv. ${moveDetail.learnedAtLevel}`
                         : ''}
                     </p>
                   </div>
@@ -305,8 +305,8 @@ export function TeamPokemonEditor({
                     <span className={`move-method-badge method-${learnMethodBadge.toLowerCase()}`}>
                       {learnMethodBadge}
                     </span>
-                    {move.displayName} ? {move.learnMethod}
-                    {move.learnedAtLevel !== null ? ` ? Lv. ${move.learnedAtLevel}` : ''}
+                    {move.displayName} · {move.learnMethod}
+                    {move.learnedAtLevel !== null ? ` · Lv. ${move.learnedAtLevel}` : ''}
                   </p>
                 ) : (
                   <p className="move-meta">Selecione um golpe retornado pela PokeAPI.</p>

@@ -1,4 +1,9 @@
-import type { PokemonTypeName, TypeEffectiveness } from '../../types/pokemon'
+import type {
+  MoveDetail,
+  PokemonMoveCategory,
+  PokemonTypeName,
+  TypeEffectiveness,
+} from '../../types/pokemon'
 import type { Team, TeamPokemon } from '../../types/team'
 
 export type TypeAnalysis = {
@@ -20,6 +25,15 @@ export type OffensiveCoverage = {
   superEffectiveAgainst: PokemonTypeName[]
   resistedBy: PokemonTypeName[]
   noEffectAgainst: PokemonTypeName[]
+}
+
+export type TeamOffensiveProfile = {
+  coverage: OffensiveCoverage
+  attackingTypes: PokemonTypeName[]
+  moveCount: number
+  pokemonWithoutMoves: number
+  usedFallbackTypes: boolean
+  categoryCounts: Record<PokemonMoveCategory, number>
 }
 
 export const ALL_POKEMON_TYPES: PokemonTypeName[] = [
@@ -281,4 +295,56 @@ export function calculateOffensiveCoverage(
       ),
     ),
   }
+}
+
+export function calculateTeamOffensiveProfile(
+  pokemons: TeamPokemon[],
+  moveDetails: Record<string, MoveDetail> = {},
+): TeamOffensiveProfile {
+  const moveTypes = pokemons.flatMap((pokemon) =>
+    (pokemon.moves ?? []).flatMap((moveName) => {
+      const move = moveDetails[normalizeMoveName(moveName)]
+
+      return move ? [move.type] : []
+    }),
+  )
+  const hasMoveTypes = moveTypes.length > 0
+  const attackingTypes = hasMoveTypes
+    ? moveTypes
+    : pokemons.flatMap((pokemon) => pokemon.types)
+
+  return {
+    attackingTypes: [...new Set(attackingTypes)],
+    coverage: calculateOffensiveCoverage(attackingTypes),
+    moveCount: pokemons.reduce((total, pokemon) => total + (pokemon.moves ?? []).length, 0),
+    pokemonWithoutMoves: pokemons.filter((pokemon) => (pokemon.moves ?? []).length === 0).length,
+    usedFallbackTypes: !hasMoveTypes,
+    categoryCounts: summarizeMoveCategories(pokemons, moveDetails),
+  }
+}
+
+function summarizeMoveCategories(
+  pokemons: TeamPokemon[],
+  moveDetails: Record<string, MoveDetail>,
+): Record<PokemonMoveCategory, number> {
+  return pokemons.reduce<Record<PokemonMoveCategory, number>>(
+    (summary, pokemon) =>
+      (pokemon.moves ?? []).reduce<Record<PokemonMoveCategory, number>>((nextSummary, moveName) => {
+        const move = moveDetails[normalizeMoveName(moveName)]
+
+        if (!move) {
+          return nextSummary
+        }
+
+        return {
+          ...nextSummary,
+          [move.category]: nextSummary[move.category] + 1,
+        }
+      }, summary),
+    { physical: 0, special: 0, status: 0 },
+  )
+}
+
+function normalizeMoveName(moveName: string): string {
+  return moveName.trim().toLowerCase().replace(/[_\s]+/g, '-')
 }
