@@ -4,6 +4,7 @@ import { TeamLabAnalysis } from '../../components/team/TeamLabAnalysis'
 import { TeamPokemonEditor } from '../../components/team/TeamPokemonEditor'
 import { TeamSlotCard } from '../../components/team/TeamSlotCard'
 import { usePokemon } from '../../hooks/usePokemon'
+import { useMoveDetails } from '../../hooks/usePokemonMoves'
 import type { Team, TeamPokemon } from '../../types/team'
 
 type TeamLabViewProps = {
@@ -43,6 +44,12 @@ export function TeamLabView({
   const selectedBaseStats = selectedPokemon?.baseStats ?? selectedPokemonQuery.data?.stats
   const selectedAbilityOptions = selectedPokemonQuery.data?.abilities
   const selectedMoveOptions = selectedPokemonQuery.data?.moves
+  const selectedMoveDetailsQuery = useMoveDetails(
+    selectedPokemon?.moves ?? [],
+    selectedMoveOptions ?? [],
+  )
+  const teamMoveNames = activeTeam.slots.flatMap((slot) => slot.pokemon?.moves ?? [])
+  const teamMoveDetailsQuery = useMoveDetails(teamMoveNames, [], 24)
   const filledSlots = activeTeam.slots.filter((slot) => slot.pokemon).length
 
   useEffect(() => {
@@ -62,6 +69,7 @@ export function TeamLabView({
         <TeamPokemonEditor
           abilityOptions={selectedAbilityOptions}
           fetchedBaseStats={selectedBaseStats}
+          moveDetails={selectedMoveDetailsQuery.data}
           moveOptions={selectedMoveOptions}
           pokemon={selectedPokemon}
           onChange={(updates) => onUpdatePokemon(activeTeam.id, selectedSlotIndex, updates)}
@@ -70,7 +78,7 @@ export function TeamLabView({
     }
 
     if (activeTab === 'Analise') {
-      return <TeamLabAnalysis team={activeTeam} />
+      return <TeamLabAnalysis moveDetails={teamMoveDetailsQuery.data} team={activeTeam} />
     }
 
     return (
@@ -97,9 +105,11 @@ export function TeamLabView({
     onUpdatePokemon,
     selectedAbilityOptions,
     selectedBaseStats,
+    selectedMoveDetailsQuery.data,
     selectedMoveOptions,
     selectedPokemon,
     selectedSlotIndex,
+    teamMoveDetailsQuery.data,
   ])
 
   function handleRenameTeam() {
