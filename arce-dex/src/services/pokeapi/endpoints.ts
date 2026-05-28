@@ -1,5 +1,6 @@
 import type {
   PokeApiEvolutionChainResponse,
+  PokeApiAbilityResponse,
   PokeApiListResponse,
   PokeApiMoveResponse,
   PokeApiPokemonFormResponse,
@@ -86,8 +87,6 @@ export function getPokemonMoves(identifier: string | number) {
 export function getType(identifier: string | number) {
   return pokeApiGet<PokeApiTypeResponse>(`/type/${identifier}`)
 }
-<<<<<<< Updated upstream
-=======
 
 export function getAbility(identifier: string | number) {
   return pokeApiGet<PokeApiAbilityResponse>(`/ability/${identifier}`)
@@ -96,4 +95,3 @@ export function getAbility(identifier: string | number) {
 export function getMove(identifier: string | number) {
   return pokeApiGet<PokeApiMoveResponse>(`/move/${identifier}`)
 }
->>>>>>> Stashed changes

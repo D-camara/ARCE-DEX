@@ -1,11 +1,8 @@
 import type {
   EvolutionChain,
   EvolutionNode,
-<<<<<<< Updated upstream
-=======
   AbilityDetail,
   MoveDetail,
->>>>>>> Stashed changes
   Pokemon,
   PokemonAbility,
   PokemonMoveCategory,
@@ -18,6 +15,7 @@ import type {
 } from '../../types/pokemon'
 import type {
   PokeApiEvolutionChainResponse,
+  PokeApiAbilityResponse,
   PokeApiEvolutionNode,
   PokeApiMoveResponse,
   PokeApiNamedResource,
@@ -191,6 +189,7 @@ export function mapPokemonDetail(pokemon: PokeApiPokemonResponse): Pokemon {
     ...mapPokemonSummary(pokemon),
     height: pokemon.height,
     weight: pokemon.weight,
+    cryUrl: pokemon.cries.latest ?? pokemon.cries.legacy ?? undefined,
     abilities: pokemon.abilities.map(mapPokemonAbility),
     stats: mapPokemonStats(pokemon),
     moves: pokemon.moves.map(mapPokemonMove),
@@ -198,9 +197,6 @@ export function mapPokemonDetail(pokemon: PokeApiPokemonResponse): Pokemon {
     forms: pokemon.forms.map(mapNamedResourceToForm),
   }
 }
-
-<<<<<<< Updated upstream
-=======
 export function mapAbilityDetail(ability: PokeApiAbilityResponse): AbilityDetail {
   const effectEntry = ability.effect_entries.find((entry) => entry.language.name === 'en')
   const flavorEntry = ability.flavor_text_entries.find((entry) => entry.language.name === 'en')
@@ -252,8 +248,6 @@ function mapMoveCategory(value: string): PokemonMoveCategory {
 
   return 'status'
 }
-
->>>>>>> Stashed changes
 export function mapPokemonSpecies(species: PokeApiPokemonSpeciesResponse): PokemonSpecies {
   return {
     id: species.id,

@@ -126,6 +126,10 @@ function createPokemonResponse({
     stats: [],
     moves: [],
     forms: [],
+    cries: {
+      latest: null,
+      legacy: null,
+    },
   }
 }
 

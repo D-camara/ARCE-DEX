@@ -50,6 +50,26 @@ export type PokeApiPokemonResponse = {
     }>
   }>
   forms: PokeApiNamedResource[]
+  cries: {
+    latest: string | null
+    legacy: string | null
+  }
+}
+
+export type PokeApiAbilityResponse = {
+  id: number
+  name: string
+  generation: PokeApiNamedResource
+  effect_entries: Array<{
+    effect: string
+    short_effect: string
+    language: PokeApiNamedResource
+  }>
+  flavor_text_entries: Array<{
+    flavor_text: string
+    language: PokeApiNamedResource
+    version_group: PokeApiNamedResource
+  }>
 }
 
 export type PokeApiMoveResponse = {

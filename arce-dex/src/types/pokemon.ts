@@ -26,6 +26,16 @@ export type PokemonAbility = {
   isHidden: boolean
 }
 
+export type AbilityDetail = {
+  id: number
+  name: string
+  displayName: string
+  generation: string
+  shortEffect: string
+  effect: string
+  flavorText: string
+}
+
 export type PokemonStatName =
   | 'hp'
   | 'attack'
@@ -75,6 +85,7 @@ export type HeldItemOption = {
 export type Pokemon = PokemonSummary & {
   height: number
   weight: number
+  cryUrl?: string
   abilities: PokemonAbility[]
   stats: PokemonStats
   moves: PokemonMove[]
