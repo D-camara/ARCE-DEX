@@ -1,8 +1,14 @@
 import type {
   EvolutionChain,
   EvolutionNode,
+<<<<<<< Updated upstream
+=======
+  AbilityDetail,
+  MoveDetail,
+>>>>>>> Stashed changes
   Pokemon,
   PokemonAbility,
+  PokemonMoveCategory,
   PokemonForm,
   PokemonMove,
   PokemonSpecies,
@@ -13,6 +19,7 @@ import type {
 import type {
   PokeApiEvolutionChainResponse,
   PokeApiEvolutionNode,
+  PokeApiMoveResponse,
   PokeApiNamedResource,
   PokeApiPokemonResponse,
   PokeApiResolvedPokemonResponse,
@@ -192,6 +199,61 @@ export function mapPokemonDetail(pokemon: PokeApiPokemonResponse): Pokemon {
   }
 }
 
+<<<<<<< Updated upstream
+=======
+export function mapAbilityDetail(ability: PokeApiAbilityResponse): AbilityDetail {
+  const effectEntry = ability.effect_entries.find((entry) => entry.language.name === 'en')
+  const flavorEntry = ability.flavor_text_entries.find((entry) => entry.language.name === 'en')
+
+  return {
+    id: ability.id,
+    name: ability.name,
+    displayName: formatPokemonName(ability.name),
+    generation: formatPokemonName(ability.generation.name),
+    shortEffect: effectEntry?.short_effect ?? 'Descricao nao encontrada para esta habilidade.',
+    effect: effectEntry?.effect ?? 'Descricao nao encontrada para esta habilidade.',
+    flavorText:
+      flavorEntry?.flavor_text.replace(/\s+/g, ' ') ??
+      'Flavor text nao encontrado para esta habilidade.',
+  }
+}
+
+export function mapMoveDetail(
+  move: PokeApiMoveResponse,
+  learnedMove?: PokemonMove,
+): MoveDetail {
+  const effectEntry = move.effect_entries.find((entry) => entry.language.name === 'en')
+
+  return {
+    name: move.name,
+    displayName: formatPokemonName(move.name),
+    learnedAtLevel: learnedMove?.learnedAtLevel ?? null,
+    learnMethod: learnedMove?.learnMethod ?? 'unknown',
+    type: move.type.name as MoveDetail['type'],
+    category: mapMoveCategory(move.damage_class.name),
+    power: move.power,
+    accuracy: move.accuracy,
+    pp: move.pp,
+    shortEffect: effectEntry ? cleanMoveEffectText(effectEntry.short_effect) : undefined,
+  }
+}
+
+function cleanMoveEffectText(value: string): string {
+  return value
+    .replace(/\$effect_chance%?\s*/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function mapMoveCategory(value: string): PokemonMoveCategory {
+  if (value === 'physical' || value === 'special' || value === 'status') {
+    return value
+  }
+
+  return 'status'
+}
+
+>>>>>>> Stashed changes
 export function mapPokemonSpecies(species: PokeApiPokemonSpeciesResponse): PokemonSpecies {
   return {
     id: species.id,

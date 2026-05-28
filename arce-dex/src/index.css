@@ -1333,6 +1333,13 @@ main {
   gap: 10px;
 }
 
+.editor-card {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
 .editor-section-header {
   display: flex;
   align-items: center;
@@ -1356,6 +1363,117 @@ main {
   background: rgba(251, 113, 133, 0.14);
 }
 
+.editor-help,
+.editor-alert,
+.move-meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.editor-help strong {
+  color: var(--text);
+}
+
+.editor-alert {
+  padding: 9px 10px;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: 12px;
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.item-option-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.item-option-strip button,
+.move-row > button {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  background: rgba(15, 23, 42, 0.76);
+  padding: 0 10px;
+  font-size: 0.78rem;
+}
+
+.move-row {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.move-row > button {
+  justify-self: start;
+}
+
+.move-detail-card {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-radius: 12px;
+  background: rgba(14, 165, 233, 0.06);
+}
+
+.move-detail-card > div:first-child,
+.move-detail-card dl {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.move-detail-card > div:first-child > span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.move-detail-card dl {
+  margin: 0;
+}
+
+.move-detail-card dl div {
+  display: grid;
+  min-width: 54px;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.36);
+}
+
+.move-detail-card dt {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.move-detail-card dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.move-detail-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
 .stat-editor-row {
   display: grid;
   grid-template-columns: 74px 1fr 1fr;
@@ -1371,6 +1489,33 @@ main {
   grid-column: 1 / -1;
   color: var(--soft);
   font-size: 0.78rem;
+}
+
+.hidden-power-panel .type-badge {
+  text-transform: capitalize;
+}
+
+.hp-iv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hp-iv-grid span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  background: rgba(2, 6, 23, 0.36);
+  font-size: 0.8rem;
+}
+
+.hp-iv-grid strong {
+  color: var(--text);
 }
 
 .notes-field textarea {

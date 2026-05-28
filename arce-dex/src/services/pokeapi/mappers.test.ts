@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { PokeApiPokemonResponse } from '../../types/pokeapi'
-import { getPokemonSprite, mapPokemonSummary } from './mappers'
+import type { PokeApiMoveResponse, PokeApiPokemonResponse } from '../../types/pokeapi'
+import { getPokemonSprite, mapMoveDetail, mapPokemonSummary } from './mappers'
 
 describe('pokeapi mappers', () => {
   it('uses official artwork before other sprite fallbacks', () => {
@@ -57,6 +57,28 @@ describe('pokeapi mappers', () => {
     expect(getPokemonSprite(pokemon)).toBe('')
     expect(mapPokemonSummary(pokemon).imageUrl).toBe('')
   })
+
+  it('maps detailed move data from PokeAPI', () => {
+    expect(
+      mapMoveDetail(createMoveResponse(), {
+        name: 'flamethrower',
+        displayName: 'Flamethrower',
+        learnedAtLevel: 32,
+        learnMethod: 'level-up',
+      }),
+    ).toEqual({
+      name: 'flamethrower',
+      displayName: 'Flamethrower',
+      learnedAtLevel: 32,
+      learnMethod: 'level-up',
+      type: 'fire',
+      category: 'special',
+      power: 90,
+      accuracy: 100,
+      pp: 15,
+      shortEffect: 'Has a chance to burn the target.',
+    })
+  })
 })
 
 function createPokemonResponse({
@@ -104,5 +126,33 @@ function createPokemonResponse({
     stats: [],
     moves: [],
     forms: [],
+  }
+}
+
+function createMoveResponse(): PokeApiMoveResponse {
+  return {
+    id: 53,
+    name: 'flamethrower',
+    accuracy: 100,
+    power: 90,
+    pp: 15,
+    damage_class: {
+      name: 'special',
+      url: 'https://pokeapi.co/api/v2/move-damage-class/3/',
+    },
+    type: {
+      name: 'fire',
+      url: 'https://pokeapi.co/api/v2/type/10/',
+    },
+    effect_entries: [
+      {
+        effect: 'Has a $effect_chance% chance to burn the target.',
+        short_effect: 'Has a $effect_chance% chance to burn the target.',
+        language: {
+          name: 'en',
+          url: 'https://pokeapi.co/api/v2/language/9/',
+        },
+      },
+    ],
   }
 }

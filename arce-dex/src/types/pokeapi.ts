@@ -52,6 +52,21 @@ export type PokeApiPokemonResponse = {
   forms: PokeApiNamedResource[]
 }
 
+export type PokeApiMoveResponse = {
+  id: number
+  name: string
+  accuracy: number | null
+  power: number | null
+  pp: number | null
+  damage_class: PokeApiNamedResource
+  type: PokeApiNamedResource
+  effect_entries: Array<{
+    effect: string
+    short_effect: string
+    language: PokeApiNamedResource
+  }>
+}
+
 export type PokeApiPokemonSpeciesResponse = {
   id: number
   name: string
