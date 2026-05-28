@@ -12,43 +12,18 @@ import type {
   PokemonSpecies,
   PokemonSummary,
 } from '../types/pokemon'
-import type { Team, TeamPokemon, TeamSlot } from '../types/team'
+import type { Team, TeamPokemon } from '../types/team'
 import type { PokemonTabData } from '../components/pokemon/PokemonTabs'
+import { normalizeCompetitivePokemon } from '../lib/stats'
 
 export function toTeamPokemon(pokemon: Pokemon): TeamPokemon {
-  return {
+  return normalizeCompetitivePokemon({
     id: pokemon.id,
     name: pokemon.name,
     displayName: pokemon.displayName,
     sprite: pokemon.sprite,
     types: pokemon.types,
-  }
-}
-
-function summaryToTeamPokemon(pokemon: PokemonSummary): TeamPokemon {
-  return {
-    id: pokemon.id,
-    name: pokemon.name,
-    displayName: pokemon.displayName,
-    sprite: pokemon.sprite,
-    types: pokemon.types,
-  }
-}
-
-export function createImportedSlots(
-  pokemons: Array<string | number>,
-  summaries: PokemonSummary[],
-): TeamSlot[] {
-  return Array.from({ length: 6 }, (_, index) => {
-    const identifier = pokemons[index]
-    const summary = summaries.find(
-      (pokemon) => pokemon.name === identifier || pokemon.id === identifier,
-    )
-
-    return {
-      id: `import-slot-${index + 1}`,
-      pokemon: summary ? summaryToTeamPokemon(summary) : null,
-    }
+    baseStats: pokemon.stats,
   })
 }
 
