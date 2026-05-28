@@ -51,6 +51,14 @@ export type PokeApiPokemonResponse = {
 export type PokeApiPokemonSpeciesResponse = {
   id: number
   name: string
+  base_happiness: number | null
+  capture_rate: number
+  gender_rate: number
+  is_baby: boolean
+  is_legendary: boolean
+  is_mythical: boolean
+  generation: PokeApiNamedResource
+  egg_groups: PokeApiNamedResource[]
   evolution_chain: {
     url: string
   } | null

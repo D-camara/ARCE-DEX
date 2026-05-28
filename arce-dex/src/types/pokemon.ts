@@ -69,6 +69,14 @@ export type PokemonSpecies = {
   id: number
   name: string
   displayName: string
+  baseHappiness: number | null
+  captureRate: number
+  genderRate: number
+  isBaby: boolean
+  isLegendary: boolean
+  isMythical: boolean
+  generation: string
+  eggGroups: string[]
   evolutionChainUrl: string | null
   varieties: PokemonForm[]
 }

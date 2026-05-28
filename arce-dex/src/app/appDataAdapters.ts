@@ -83,6 +83,7 @@ export function createPokemonTabData(
   return {
     currentPokemonName: pokemon?.name ?? '',
     evolutionChain,
+    infoItems: createPokemonInfoItems(species),
     moves: sortPokemonMoves(pokemon?.moves ?? []).slice(0, 32),
     weaknesses: typeAnalysis.weaknesses,
     resistances: typeAnalysis.resistances,
@@ -90,6 +91,41 @@ export function createPokemonTabData(
     effectiveness: typeAnalysis.effectiveness,
     forms: enrichPokemonForms(species?.varieties ?? pokemon?.forms ?? [], enrichedSummaries),
   }
+}
+
+function createPokemonInfoItems(species: PokemonSpecies | undefined) {
+  if (!species) {
+    return []
+  }
+
+  return [
+    { label: 'Geracao', value: species.generation },
+    { label: 'Taxa de captura', value: String(species.captureRate) },
+    { label: 'Genero', value: formatGenderRate(species.genderRate) },
+    { label: 'Grupo de ovos', value: species.eggGroups.join(', ') || 'Nao informado' },
+    { label: 'Lendario', value: formatBoolean(species.isLegendary) },
+    { label: 'Mitico', value: formatBoolean(species.isMythical) },
+    { label: 'Baby', value: formatBoolean(species.isBaby) },
+    {
+      label: 'Felicidade base',
+      value: species.baseHappiness === null ? 'Nao informado' : String(species.baseHappiness),
+    },
+  ]
+}
+
+function formatBoolean(value: boolean) {
+  return value ? 'Sim' : 'Nao'
+}
+
+function formatGenderRate(genderRate: number) {
+  if (genderRate < 0) {
+    return 'Sem genero'
+  }
+
+  const femaleRate = (genderRate / 8) * 100
+  const maleRate = 100 - femaleRate
+
+  return `${maleRate}% macho / ${femaleRate}% femea`
 }
 
 export function createTeamAnalysis(team: Team) {

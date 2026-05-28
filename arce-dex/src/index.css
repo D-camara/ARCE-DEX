@@ -455,19 +455,24 @@ main {
 .type-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   width: fit-content;
+  min-width: auto;
+  max-width: max-content;
   min-height: 28px;
-  padding: 0 9px;
+  padding: 0.35rem 0.65rem;
   border-radius: 999px;
   color: #071018;
   font-size: 0.72rem;
   font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
   text-transform: uppercase;
 }
 
 .type-badges--compact .type-badge {
   min-height: 22px;
-  padding: 0 7px;
+  padding: 0.28rem 0.52rem;
   font-size: 0.62rem;
 }
 
@@ -607,6 +612,36 @@ main {
 
 .state-block p {
   color: var(--muted);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0;
+}
+
+.info-grid div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.info-grid dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.info-grid dd {
+  margin: 0;
+  color: var(--text);
+  font-weight: 800;
 }
 
 .evolution-line,
