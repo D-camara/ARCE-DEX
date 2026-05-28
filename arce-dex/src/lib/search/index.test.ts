@@ -93,7 +93,7 @@ describe('pokemon search resolver', () => {
       autocompleteSummaries[6],
     )
     expect(getPokemonAutocompleteSuggestions('gmax', autocompleteSummaries)[0]).toBe(
-      autocompleteSummaries[5],
+      autocompleteSummaries[9],
     )
     expect(getPokemonAutocompleteSuggestions('alolan', autocompleteSummaries)[0]).toBe(
       autocompleteSummaries[10],

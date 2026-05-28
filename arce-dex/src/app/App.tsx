@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Heart, History, Menu, Users } from 'lucide-react'
+import { Heart, Menu } from 'lucide-react'
 import { AbilityDetailsDialog } from '../components/pokemon/AbilityDetailsDialog'
 import { PokemonCard } from '../components/pokemon/PokemonCard'
 import { PokemonTabs, type PokemonTabName } from '../components/pokemon/PokemonTabs'
@@ -10,6 +10,7 @@ import { RecentPokemonPanel } from '../features/favorites/RecentPokemonPanel'
 import { SearchExperience } from '../features/pokemon-search/SearchExperience'
 import { TeamLabView } from '../features/team-builder'
 import { normalizePokemonSearch } from '../lib/utils'
+import { getPokemonAutocompleteSuggestions } from '../lib/search'
 import { usePokemon } from '../hooks/usePokemon'
 import { useAbility } from '../hooks/useAbility'
 import { useEvolutionChain } from '../hooks/useEvolutionChain'
@@ -79,17 +80,25 @@ function App() {
   const searchHistory = useSearchHistoryStore((state) => state.history)
   const addSearch = useSearchHistoryStore((state) => state.addSearch)
   const formIdentifiers = selectedSpecies?.varieties.map((form) => form.name) ?? []
+  const summaries = useMemo(() => pokemonListQuery.data?.results ?? [], [pokemonListQuery.data])
+  const visibleAutocompleteSuggestions = useMemo(
+    () => getPokemonAutocompleteSuggestions(query, summaries),
+    [query, summaries],
+  )
+  const autocompleteSummaryQuery = usePokemonSummaries(
+    visibleAutocompleteSuggestions.map((pokemon) => pokemon.name),
+  )
   const relatedSummaryQuery = usePokemonSummaries([
     ...searchHistory.slice(0, 8),
     ...favoritePokemonIds,
     ...formIdentifiers,
   ])
 
-  const summaries = pokemonListQuery.data?.results ?? []
   const selectedSummary = selectedPokemon ? [selectedPokemon] : []
   const evolutionSummaries = flattenEvolutionNodes(evolutionChainQuery.data?.root)
   const summaryCache = mergePokemonSummaries(
     summaries,
+    autocompleteSummaryQuery.data,
     evolutionSummaries,
     relatedSummaryQuery.data,
     selectedSummary,
@@ -115,6 +124,7 @@ function App() {
     if (normalizedSearch !== '') {
       setSelectedIdentifier(normalizedSearch)
       addSearch(String(normalizedSearch))
+      setActiveView('dex')
       setIsAutocompleteOpen(false)
     }
   }
@@ -123,6 +133,7 @@ function App() {
     setSelectedIdentifier(pokemon.name)
     setQuery(pokemon.displayName)
     addSearch(pokemon.name)
+    setActiveView('dex')
     setActivePokemonTab('Info')
     setIsAutocompleteOpen(false)
   }
@@ -202,24 +213,26 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div>
+        <div className="topbar__brand">
           <span className="brand-mark">A</span>
           <span>
-            <strong>ARCE-DEX</strong>
-            <small>mobile battle helper</small>
+            <strong>Archivum Arceus</strong>
+            <small>Pokemon battle helper</small>
           </span>
         </div>
-        <nav aria-label="Atalhos">
-          <button type="button" aria-label="Favoritos" onClick={() => setIsFavoritesOpen(true)}>
-            <Heart size={18} />
-          </button>
-          <button type="button" aria-label="Historico">
-            <History size={18} />
-          </button>
-          <button type="button" aria-label="Abrir Meu Time" onClick={() => setActiveView('team-lab')}>
-            <Users size={18} />
-          </button>
-        </nav>
+        <div className="topbar__search">
+          <SearchExperience
+            isAutocompleteOpen={isAutocompleteOpen}
+            isError={pokemonListQuery.isError}
+            isLoading={pokemonListQuery.isLoading}
+            onChange={handleSearchChange}
+            onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
+            onSearch={handleSearch}
+            onSelect={handleSelectPokemon}
+            suggestions={summaryCache}
+            value={query}
+          />
+        </div>
       </header>
 
       {activeView === 'team-lab' ? (
@@ -235,18 +248,6 @@ function App() {
         />
       ) : (
         <main>
-          <SearchExperience
-            isAutocompleteOpen={isAutocompleteOpen}
-            isError={pokemonListQuery.isError}
-            isLoading={pokemonListQuery.isLoading}
-            onChange={handleSearchChange}
-            onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
-            onSearch={handleSearch}
-            onSelect={handleSelectPokemon}
-            suggestions={summaries}
-            value={query}
-          />
-
           <section className="mobile-action-strip">
             <button type="button" onClick={() => setActiveView('team-lab')}>
               <Menu size={18} />

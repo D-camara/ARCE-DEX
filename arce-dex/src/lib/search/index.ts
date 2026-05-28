@@ -235,10 +235,13 @@ export function getPokemonAutocompleteSuggestions(
     )
     .filter((pokemon): pokemon is PokemonSummary => Boolean(pokemon))
 
-  return uniquePokemonSummaries([...aliasMatches, ...candidateMatches, ...listMatches]).slice(
-    0,
-    maxItems,
-  )
+  return uniquePokemonSummaries([...aliasMatches, ...candidateMatches, ...listMatches])
+    .sort((left, right) => getSortableDexNumber(left) - getSortableDexNumber(right))
+    .slice(0, maxItems)
+}
+
+function getSortableDexNumber(pokemon: PokemonSummary): number {
+  return pokemon.id > 0 ? pokemon.id : Number.MAX_SAFE_INTEGER
 }
 
 function getExactAliasCandidates(normalizedInput: string): string[] {
