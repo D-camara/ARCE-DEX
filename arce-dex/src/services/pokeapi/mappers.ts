@@ -1,6 +1,7 @@
 import type {
   EvolutionChain,
   EvolutionNode,
+  AbilityDetail,
   Pokemon,
   PokemonAbility,
   PokemonForm,
@@ -12,6 +13,7 @@ import type {
 } from '../../types/pokemon'
 import type {
   PokeApiEvolutionChainResponse,
+  PokeApiAbilityResponse,
   PokeApiEvolutionNode,
   PokeApiNamedResource,
   PokeApiPokemonResponse,
@@ -173,11 +175,29 @@ export function mapPokemonDetail(pokemon: PokeApiPokemonResponse): Pokemon {
     ...mapPokemonSummary(pokemon),
     height: pokemon.height,
     weight: pokemon.weight,
+    cryUrl: pokemon.cries.latest ?? pokemon.cries.legacy ?? undefined,
     abilities: pokemon.abilities.map(mapPokemonAbility),
     stats: mapPokemonStats(pokemon),
     moves: pokemon.moves.map(mapPokemonMove),
     speciesUrl: pokemon.species.url,
     forms: pokemon.forms.map(mapNamedResourceToForm),
+  }
+}
+
+export function mapAbilityDetail(ability: PokeApiAbilityResponse): AbilityDetail {
+  const effectEntry = ability.effect_entries.find((entry) => entry.language.name === 'en')
+  const flavorEntry = ability.flavor_text_entries.find((entry) => entry.language.name === 'en')
+
+  return {
+    id: ability.id,
+    name: ability.name,
+    displayName: formatPokemonName(ability.name),
+    generation: formatPokemonName(ability.generation.name),
+    shortEffect: effectEntry?.short_effect ?? 'Descricao nao encontrada para esta habilidade.',
+    effect: effectEntry?.effect ?? 'Descricao nao encontrada para esta habilidade.',
+    flavorText:
+      flavorEntry?.flavor_text.replace(/\s+/g, ' ') ??
+      'Flavor text nao encontrado para esta habilidade.',
   }
 }
 

@@ -416,7 +416,8 @@ main {
   gap: 8px;
 }
 
-.shiny-toggle {
+.shiny-toggle,
+.cry-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -434,6 +435,12 @@ main {
 .shiny-toggle.is-active {
   color: #111827;
   background: linear-gradient(135deg, #fde68a, #67e8f9);
+}
+
+.cry-button {
+  border-color: rgba(56, 189, 248, 0.34);
+  color: #bae6fd;
+  background: rgba(56, 189, 248, 0.08);
 }
 
 .pokemon-card__media p:last-child {
@@ -526,7 +533,7 @@ main {
   gap: 8px;
 }
 
-.ability-list span,
+.ability-list button,
 .form-list span,
 .evolution-line span {
   padding: 8px 10px;
@@ -534,6 +541,19 @@ main {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   color: var(--soft);
+}
+
+.ability-list button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.ability-list button:hover,
+.ability-list button:focus-visible {
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #e0f2fe;
 }
 
 .stat-list {
@@ -914,6 +934,64 @@ main {
     rgba(15, 23, 42, 0.8);
 }
 
+.favorite-card {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 82px;
+  padding: 12px;
+  border: 1px solid rgba(245, 208, 108, 0.24);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(245, 208, 108, 0.09), rgba(103, 232, 249, 0.04)),
+    rgba(15, 23, 42, 0.84);
+  cursor: pointer;
+}
+
+.favorite-card:hover,
+.favorite-card:focus-visible {
+  border-color: rgba(245, 208, 108, 0.5);
+  background:
+    linear-gradient(135deg, rgba(245, 208, 108, 0.14), rgba(103, 232, 249, 0.06)),
+    rgba(15, 23, 42, 0.92);
+}
+
+.favorite-card__sprite {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.favorite-card__content {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.favorite-card__name {
+  overflow-wrap: anywhere;
+  line-height: 1.1;
+}
+
+.favorite-card__number {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.favorite-card__remove {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 14px;
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.08);
+}
+
 .favorite-item button:first-child {
   min-height: 58px;
   padding: 0;
@@ -1018,6 +1096,55 @@ main {
   border-radius: 16px;
   background: rgba(9, 13, 20, 0.98);
   box-shadow: var(--shadow);
+}
+
+.ability-dialog {
+  display: grid;
+  gap: 14px;
+  width: min(560px, 100%);
+  max-height: min(720px, 92svh);
+  margin: 0 auto;
+  padding: 16px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(9, 13, 20, 0.98);
+  box-shadow: var(--shadow);
+}
+
+.ability-dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ability-detail-content {
+  display: grid;
+  gap: 12px;
+}
+
+.ability-detail-content section {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ability-detail-content p {
+  color: var(--soft);
+}
+
+.ability-detail-content > span {
+  width: fit-content;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #e0f2fe;
+  background: rgba(56, 189, 248, 0.13);
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 .team-choice {

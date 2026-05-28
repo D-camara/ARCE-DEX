@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Heart, History, Menu, Users } from 'lucide-react'
+import { AbilityDetailsDialog } from '../components/pokemon/AbilityDetailsDialog'
 import { PokemonCard } from '../components/pokemon/PokemonCard'
 import { PokemonTabs, type PokemonTabName } from '../components/pokemon/PokemonTabs'
 import { AddToTeamDialog } from '../components/team/AddToTeamDialog'
@@ -10,6 +11,7 @@ import { SearchExperience } from '../features/pokemon-search/SearchExperience'
 import { TeamLabView } from '../features/team-builder'
 import { normalizePokemonSearch } from '../lib/utils'
 import { usePokemon } from '../hooks/usePokemon'
+import { useAbility } from '../hooks/useAbility'
 import { useEvolutionChain } from '../hooks/useEvolutionChain'
 import { usePokemonAutocompleteList } from '../hooks/usePokemonList'
 import { usePokemonSpecies } from '../hooks/usePokemonSpecies'
@@ -38,10 +40,12 @@ function App() {
   const [selectedAddTeamId, setSelectedAddTeamId] = useState('team-1')
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
+  const [selectedAbilityName, setSelectedAbilityName] = useState<string | null>(null)
 
   const pokemonListQuery = usePokemonAutocompleteList()
   const selectedPokemonQuery = usePokemon(selectedIdentifier)
   const selectedPokemon = selectedPokemonQuery.data
+  const selectedAbilityQuery = useAbility(selectedAbilityName)
   const selectedSpeciesQuery = usePokemonSpecies(selectedIdentifier)
   const selectedSpecies = selectedSpeciesQuery.data
   const evolutionChainQuery = useEvolutionChain(selectedSpecies?.evolutionChainUrl ?? null)
@@ -166,6 +170,20 @@ function App() {
     window.setTimeout(() => setShowToast(false), 2400)
   }
 
+  function handlePlayCry() {
+    if (!selectedPokemon?.cryUrl) {
+      return
+    }
+
+    const audio = new Audio(selectedPokemon.cryUrl)
+
+    void audio.play().catch(() => {
+      setToastMessage('Nao foi possivel tocar o cry agora.')
+      setShowToast(true)
+      window.setTimeout(() => setShowToast(false), 2400)
+    })
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -235,6 +253,8 @@ function App() {
                     isFavorite={isFavorite(selectedPokemon.id)}
                     key={selectedPokemon.id}
                     onAddToTeam={handleAddToTeam}
+                    onPlayCry={handlePlayCry}
+                    onSelectAbility={setSelectedAbilityName}
                     onToggleFavorite={handleToggleFavorite}
                     pokemon={selectedPokemon}
                   />
@@ -274,6 +294,14 @@ function App() {
           handleSelectPokemon(pokemon)
           setIsFavoritesOpen(false)
         }}
+      />
+
+      <AbilityDetailsDialog
+        ability={selectedAbilityQuery.data}
+        isError={selectedAbilityQuery.isError}
+        isLoading={selectedAbilityQuery.isLoading}
+        isOpen={selectedAbilityName !== null}
+        onClose={() => setSelectedAbilityName(null)}
       />
 
       {showToast && <Toast message={toastMessage} />}
