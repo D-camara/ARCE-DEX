@@ -33,6 +33,7 @@ body {
   min-width: 320px;
   min-height: 100svh;
   margin: 0;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 32rem),
     linear-gradient(180deg, #0d1320 0%, #070a10 100%);
@@ -43,6 +44,13 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+input,
+select,
+textarea {
+  min-width: 0;
+  font-size: 1rem;
 }
 
 button {
@@ -202,6 +210,23 @@ main {
   box-shadow: var(--shadow);
 }
 
+.search-card,
+.pokemon-card,
+.tabs-card,
+.analysis-panel,
+.recent-panel,
+.team-lab-hero,
+.team-lab-toolbar,
+.team-lab-slot,
+.team-editor-panel,
+.team-lab-analysis article,
+.editor-card,
+.favorite-card,
+.add-team-dialog,
+.ability-dialog {
+  min-width: 0;
+}
+
 .search-card {
   position: relative;
   display: grid;
@@ -316,6 +341,7 @@ main {
 
 .search-box input {
   width: 100%;
+  min-height: 44px;
   border: 0;
   outline: 0;
   color: #f8fafc;
@@ -608,6 +634,7 @@ main {
 
 .mobile-action-strip button {
   flex: 1;
+  min-width: 0;
 }
 
 .content-grid {
@@ -630,12 +657,13 @@ main {
 
 .pokemon-card__media {
   display: grid;
-  grid-template-columns: 1fr minmax(112px, 38%);
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 
 .pokemon-card__media img {
+  width: min(176px, 54vw);
   filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.36));
 }
 
@@ -663,7 +691,7 @@ main {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 10px;
   border: 1px solid rgba(245, 208, 108, 0.34);
   border-radius: 999px;
@@ -777,6 +805,7 @@ main {
 .ability-list button,
 .form-list span,
 .evolution-line span {
+  min-height: 44px;
   padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -826,6 +855,8 @@ main {
 }
 
 .card-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 46px 46px;
   gap: 8px;
 }
 
@@ -848,7 +879,7 @@ main {
 }
 
 .tab-list button {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -1138,11 +1169,12 @@ main {
 
 .risk-row {
   justify-content: space-between;
+  min-width: 0;
 }
 
 .coverage-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
   gap: 8px;
 }
 
@@ -1285,7 +1317,7 @@ main {
 
 .favorite-card {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) 42px;
+  grid-template-columns: 50px minmax(0, 1fr) 44px;
   align-items: center;
   gap: 12px;
   width: 100%;
@@ -1332,8 +1364,8 @@ main {
 
 .favorite-card__remove {
   display: inline-grid;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 1px solid rgba(248, 113, 113, 0.3);
   border-radius: 14px;
@@ -1373,9 +1405,10 @@ main {
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 14px;
-  width: min(430px, 100%);
+  width: min(430px, 100vw);
   height: 100svh;
-  padding: 16px;
+  padding: 14px;
+  overflow: hidden;
   border-left: 1px solid rgba(245, 208, 108, 0.26);
   background:
     radial-gradient(circle at top, rgba(245, 208, 108, 0.16), transparent 19rem),
@@ -1429,7 +1462,7 @@ main {
   inset: 0;
   display: grid;
   align-items: end;
-  padding: 14px;
+  padding: 10px;
   background: rgba(2, 6, 23, 0.64);
 }
 
@@ -1498,10 +1531,15 @@ main {
 
 .team-choice {
   display: grid;
-  grid-template-columns: 34px 1fr auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
   color: var(--text);
+}
+
+.team-choice strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .team-choice.is-active {
@@ -1529,6 +1567,7 @@ main {
 }
 
 .team-choice em {
+  grid-column: 2 / -1;
   color: #fecdd3;
   font-style: normal;
 }
@@ -1536,7 +1575,7 @@ main {
 .team-slot-preview {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
+  gap: clamp(4px, 1.8vw, 8px);
 }
 
 .team-slot-preview span {
@@ -1564,11 +1603,11 @@ main {
 .team-tabs {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
+  gap: clamp(4px, 1.8vw, 8px);
 }
 
 .team-tabs button {
-  min-height: 42px;
+  min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.04);
@@ -1613,20 +1652,21 @@ main {
 
 .team-lab-view {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .team-lab-hero,
 .team-lab-toolbar,
 .team-editor-panel {
   display: grid;
-  gap: 14px;
-  padding: 16px;
+  gap: 12px;
+  padding: 14px;
 }
 
 .team-lab-hero h1 {
   max-width: none;
-  font-size: clamp(2rem, 12vw, 4rem);
+  overflow-wrap: anywhere;
+  font-size: clamp(1.9rem, 10vw, 4rem);
 }
 
 .team-lab-hero p:last-child,
@@ -1644,7 +1684,7 @@ main {
   justify-content: center;
   gap: 8px;
   width: fit-content;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
@@ -1655,11 +1695,12 @@ main {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
 }
 
 .lab-tab-list button {
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -1683,10 +1724,14 @@ main {
 
 .team-lab-slot {
   display: grid;
-  grid-template-columns: 54px 1fr;
+  grid-template-columns: 50px minmax(0, 1fr);
   gap: 12px;
   min-height: 112px;
   padding: 12px;
+}
+
+.team-lab-slot > div {
+  min-width: 0;
 }
 
 .team-lab-slot.is-selected {
@@ -1713,7 +1758,7 @@ main {
 
 .slot-meta {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
   gap: 8px;
   margin: 10px 0 0;
 }
@@ -1766,7 +1811,7 @@ main {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
   background: rgba(255, 255, 255, 0.04);
@@ -1777,6 +1822,12 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
+}
+
+.team-editor-panel header > div,
+.editor-section-header > * {
+  min-width: 0;
 }
 
 .editor-grid label,
@@ -1795,7 +1846,7 @@ main {
 .stat-editor-row input,
 .notes-field textarea {
   width: 100%;
-  min-height: 42px;
+  min-height: 46px;
   border: 1px solid var(--line);
   border-radius: 12px;
   color: var(--text);
@@ -1820,6 +1871,7 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .ev-total {
@@ -1877,7 +1929,7 @@ main {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 32px;
+  min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--text);
@@ -1893,6 +1945,7 @@ main {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: rgba(15, 23, 42, 0.48);
+  min-width: 0;
 }
 
 .move-row > button {
@@ -1997,7 +2050,7 @@ main {
 
 .stat-editor-row {
   display: grid;
-  grid-template-columns: 74px 1fr 1fr;
+  grid-template-columns: minmax(56px, 0.55fr) repeat(2, minmax(0, 1fr));
   align-items: end;
   gap: 8px;
   padding: 10px;
@@ -2018,7 +2071,7 @@ main {
 
 .hp-iv-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
   gap: 8px;
 }
 
@@ -2059,9 +2112,19 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  min-width: 0;
   padding: 8px 10px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.04);
+}
+
+.speed-rank span,
+.team-lab-analysis article p,
+.move-detail-card p,
+.editor-help,
+.editor-alert,
+.move-meta {
+  overflow-wrap: anywhere;
 }
 
 .toast {
@@ -2093,6 +2156,28 @@ main {
 @keyframes shimmer {
   to {
     background-position: -200% 0;
+  }
+}
+
+@media (min-width: 430px) {
+  .pokemon-card__media {
+    grid-template-columns: 1fr minmax(132px, 38%);
+    gap: 12px;
+  }
+
+  .pokemon-card__media img {
+    width: auto;
+  }
+
+  .team-lab-view {
+    gap: 14px;
+  }
+
+  .team-lab-hero,
+  .team-lab-toolbar,
+  .team-editor-panel {
+    gap: 14px;
+    padding: 16px;
   }
 }
 
