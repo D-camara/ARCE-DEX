@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import type { PokeApiPokemonResponse } from '../../types/pokeapi'
-import { getPokemonSprite, mapPokemonSummary } from './mappers'
+import type {
+  PokeApiAbilityResponse,
+  PokeApiMoveResponse,
+  PokeApiPokemonResponse,
+  PokeApiPokemonSpeciesResponse,
+} from '../../types/pokeapi'
+import {
+  getPokemonSprite,
+  mapAbilityDetail,
+  mapMoveDetail,
+  mapPokemonSpecies,
+  mapPokemonSummary,
+} from './mappers'
 
 describe('pokeapi mappers', () => {
   it('uses official artwork before other sprite fallbacks', () => {
@@ -57,6 +68,39 @@ describe('pokeapi mappers', () => {
     expect(getPokemonSprite(pokemon)).toBe('')
     expect(mapPokemonSummary(pokemon).imageUrl).toBe('')
   })
+
+  it('formats generation roman numerals in uppercase', () => {
+    const species = createPokemonSpeciesResponse()
+
+    expect(mapPokemonSpecies(species).generation).toBe('Generation VII')
+  })
+
+  it('uses localized ability text without translating the ability name', () => {
+    const ability = createAbilityResponse()
+
+    expect(mapAbilityDetail(ability)).toMatchObject({
+      displayName: 'Technician',
+      generation: 'Generation IV',
+      shortEffect: 'Aumenta golpes fracos.',
+      effect: 'Aumenta golpes de poder baixo.',
+      flavorText: 'Texto em portugues.',
+    })
+  })
+
+  it('maps move details with friendly fallbacks', () => {
+    const move = createMoveResponse()
+
+    expect(mapMoveDetail(move)).toMatchObject({
+      name: 'growl',
+      displayName: 'Growl',
+      type: 'normal',
+      category: 'status',
+      power: null,
+      accuracy: 100,
+      pp: 40,
+      shortEffect: 'Descricao nao informada',
+    })
+  })
 })
 
 function createPokemonResponse({
@@ -108,5 +152,70 @@ function createPokemonResponse({
       latest: null,
       legacy: null,
     },
+  }
+}
+
+function createPokemonSpeciesResponse(): PokeApiPokemonSpeciesResponse {
+  return {
+    id: 1,
+    name: 'bulbasaur',
+    base_happiness: 50,
+    capture_rate: 45,
+    gender_rate: 1,
+    is_baby: false,
+    is_legendary: false,
+    is_mythical: false,
+    generation: {
+      name: 'generation-vii',
+      url: 'https://pokeapi.co/api/v2/generation/7/',
+    },
+    egg_groups: [],
+    evolution_chain: null,
+    varieties: [],
+  }
+}
+
+function createAbilityResponse(): PokeApiAbilityResponse {
+  return {
+    id: 101,
+    name: 'technician',
+    generation: {
+      name: 'generation-iv',
+      url: 'https://pokeapi.co/api/v2/generation/4/',
+    },
+    effect_entries: [
+      {
+        effect: 'Boosts weak moves.',
+        short_effect: 'Boosts weak moves.',
+        language: { name: 'en', url: 'https://pokeapi.co/api/v2/language/9/' },
+      },
+      {
+        effect: 'Aumenta golpes de poder baixo.',
+        short_effect: 'Aumenta golpes fracos.',
+        language: { name: 'pt-BR', url: 'https://pokeapi.co/api/v2/language/10/' },
+      },
+    ],
+    flavor_text_entries: [
+      {
+        flavor_text: 'Texto em portugues.',
+        language: { name: 'pt-BR', url: 'https://pokeapi.co/api/v2/language/10/' },
+        version_group: { name: 'scarlet-violet', url: '' },
+      },
+    ],
+  }
+}
+
+function createMoveResponse(): PokeApiMoveResponse {
+  return {
+    id: 45,
+    name: 'growl',
+    accuracy: 100,
+    effect_chance: null,
+    pp: 40,
+    power: null,
+    type: { name: 'normal', url: 'https://pokeapi.co/api/v2/type/1/' },
+    damage_class: { name: 'status', url: 'https://pokeapi.co/api/v2/move-damage-class/1/' },
+    effect_entries: [],
+    flavor_text_entries: [],
   }
 }

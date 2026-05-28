@@ -61,6 +61,14 @@ export type PokemonMove = {
   displayName: string
   learnedAtLevel: number | null
   learnMethod: string
+  type?: PokemonTypeName
+  category?: 'physical' | 'special' | 'status'
+  categoryLabel?: string
+  power?: number | null
+  accuracy?: number | null
+  pp?: number | null
+  shortEffect?: string
+  effect?: string
 }
 
 export type Pokemon = PokemonSummary & {
