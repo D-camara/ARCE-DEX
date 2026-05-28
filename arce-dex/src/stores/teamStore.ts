@@ -45,6 +45,96 @@ function normalizeTeam(team: Team, teamIndex: number): Team {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function isTeamPokemon(value: unknown): value is TeamPokemon {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'number' &&
+    typeof value.name === 'string' &&
+    typeof value.displayName === 'string' &&
+    typeof value.sprite === 'string' &&
+    Array.isArray(value.types)
+  )
+}
+
+function createSlotsFromPokemonList(pokemonList: unknown, teamIndex: number): TeamSlot[] | null {
+  if (!Array.isArray(pokemonList)) {
+    return null
+  }
+
+  const slots = createEmptySlots(teamIndex)
+
+  return slots.map((slot, index) => {
+    const pokemon = pokemonList[index]
+
+    return {
+      ...slot,
+      pokemon: isTeamPokemon(pokemon) ? normalizeCompetitivePokemon(pokemon) : null,
+    }
+  })
+}
+
+function parseImportedTeam(payload: string, fallbackTeam: Team, teamIndex: number): Team | null {
+  let parsed: unknown
+
+  try {
+    parsed = JSON.parse(payload)
+  } catch {
+    return null
+  }
+
+  const imported = isRecord(parsed) && isRecord(parsed.team) ? parsed.team : parsed
+
+  if (!isRecord(imported)) {
+    return null
+  }
+
+  if (Array.isArray(imported.slots)) {
+    return normalizeTeam(
+      {
+        id: fallbackTeam.id,
+        name: typeof imported.name === 'string' ? imported.name : fallbackTeam.name,
+        slots: imported.slots as TeamSlot[],
+      },
+      teamIndex,
+    )
+  }
+
+  const slots = createSlotsFromPokemonList(imported.pokemon ?? imported.pokemons, teamIndex)
+
+  if (!slots) {
+    return null
+  }
+
+  return {
+    id: fallbackTeam.id,
+    name: typeof imported.name === 'string' ? imported.name.trim() || fallbackTeam.name : fallbackTeam.name,
+    slots,
+  }
+}
+
+function exportTeam(team: Team): string {
+  return JSON.stringify(
+    {
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      team: {
+        id: team.id,
+        name: team.name,
+        slots: team.slots.map((slot) => ({
+          id: slot.id,
+          pokemon: slot.pokemon ? normalizeCompetitivePokemon(slot.pokemon) : null,
+        })),
+      },
+    },
+    null,
+    2,
+  )
+}
+
 function normalizeTeams(teams: Team[] | undefined): Team[] {
   const defaultTeams = createDefaultTeams()
 
@@ -81,6 +171,8 @@ type TeamStore = {
   removePokemon: (slotIndex: number, teamId?: string) => void
   renameTeam: (teamId: string, name: string) => void
   clearTeam: (teamId?: string) => void
+  exportActiveTeam: () => string
+  importTeam: (payload: string, teamId?: string) => boolean
 }
 
 export const useTeamStore = create<TeamStore>()(
@@ -219,6 +311,33 @@ export const useTeamStore = create<TeamStore>()(
             ),
           }
         }),
+      exportActiveTeam: () => exportTeam(get().getActiveTeam()),
+      importTeam: (payload, teamId) => {
+        let wasImported = false
+
+        set((state) => {
+          const targetTeamId = teamId ?? state.activeTeamId
+
+          return {
+            teams: state.teams.map((team, index) => {
+              if (team.id !== targetTeamId) {
+                return team
+              }
+
+              const importedTeam = parseImportedTeam(payload, team, index)
+
+              if (!importedTeam) {
+                return team
+              }
+
+              wasImported = true
+              return importedTeam
+            }),
+          }
+        })
+
+        return wasImported
+      },
     }),
     {
       name: 'arce-dex:team-store',
