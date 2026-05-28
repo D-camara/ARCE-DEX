@@ -20,6 +20,40 @@ const REGION_ALIASES: Record<string, string> = {
 }
 
 export const POKEMON_SEARCH_ALIASES: PokemonSearchAlias[] = [
+  createAlias('Toxtricity', 'toxtricity-amped', ['toxtricity']),
+  createAlias('Toxtricity Amped', 'toxtricity-amped', [
+    'toxtricity amped',
+    'amped toxtricity',
+    'toxtricity amped form',
+    'amped form toxtricity',
+  ]),
+  createAlias('Toxtricity Low Key', 'toxtricity-low-key', [
+    'toxtricity low key',
+    'toxtricity low-key',
+    'low key toxtricity',
+    'low-key toxtricity',
+    'toxtricity low key form',
+    'low key form toxtricity',
+  ]),
+  createAlias('Toxtricity G-Max Amped', 'toxtricity-amped-gmax', [
+    'gmax toxtricity',
+    'g-max toxtricity',
+    'gigantamax toxtricity',
+    'toxtricity gmax',
+    'toxtricity g-max',
+    'toxtricity gigantamax',
+    'gmax toxtricity amped',
+    'gigantamax toxtricity amped',
+    'toxtricity amped gmax',
+  ]),
+  createAlias('Toxtricity G-Max Low Key', 'toxtricity-low-key-gmax', [
+    'gmax toxtricity low key',
+    'g-max toxtricity low key',
+    'gigantamax toxtricity low key',
+    'toxtricity low key gmax',
+    'toxtricity low-key gmax',
+    'low key toxtricity gmax',
+  ]),
   createAlias('Charizard Mega X', 'charizard-mega-x', [
     'mega charizard x',
     'charizard mega x',
@@ -72,11 +106,33 @@ export const POKEMON_SEARCH_ALIASES: PokemonSearchAlias[] = [
     'slowbro galar',
     'slowbro-galar',
   ]),
-  createAlias('Tauros Paldea', 'tauros-paldea', [
+  createAlias('Tauros Paldea Combat', 'tauros-paldea-combat-breed', [
     'paldean tauros',
     'tauros paldea',
     'tauros-paldea',
   ]),
+  createAlias('Tauros Paldea Combat', 'tauros-paldea-combat-breed', [
+    'paldean tauros combat',
+    'tauros paldea combat',
+    'tauros combat paldea',
+  ]),
+  createAlias('Tauros Paldea Blaze', 'tauros-paldea-blaze-breed', [
+    'paldean tauros blaze',
+    'tauros paldea blaze',
+    'tauros blaze paldea',
+  ]),
+  createAlias('Tauros Paldea Aqua', 'tauros-paldea-aqua-breed', [
+    'paldean tauros aqua',
+    'tauros paldea aqua',
+    'tauros aqua paldea',
+  ]),
+  createAlias('Mr Mime', 'mr-mime', ['mr mime']),
+  createAlias('Mime Jr', 'mime-jr', ['mime jr']),
+  createAlias('Porygon Z', 'porygon-z', ['porygon z']),
+  createAlias('Ho Oh', 'ho-oh', ['ho oh']),
+  createAlias('Jangmo O', 'jangmo-o', ['jangmo o']),
+  createAlias('Hakamo O', 'hakamo-o', ['hakamo o']),
+  createAlias('Kommo O', 'kommo-o', ['kommo o']),
 ]
 
 function createAlias(

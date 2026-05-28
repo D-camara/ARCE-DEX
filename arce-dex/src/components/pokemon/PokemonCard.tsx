@@ -37,7 +37,13 @@ export function PokemonCard({
           <p>{pokemon.types.join(' / ')}</p>
         </div>
         <div className="pokemon-card__sprite">
-          <img src={displayedSprite} alt={pokemon.displayName} />
+          {displayedSprite ? (
+            <img src={displayedSprite} alt={pokemon.displayName} />
+          ) : (
+            <span className="pokemon-card__sprite-placeholder" aria-hidden>
+              ?
+            </span>
+          )}
           {pokemon.shinySprite && (
             <button
               className={isShiny ? 'shiny-toggle is-active' : 'shiny-toggle'}

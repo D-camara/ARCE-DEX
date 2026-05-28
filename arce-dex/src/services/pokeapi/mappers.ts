@@ -15,6 +15,7 @@ import type {
   PokeApiEvolutionNode,
   PokeApiNamedResource,
   PokeApiPokemonResponse,
+  PokeApiResolvedPokemonResponse,
   PokeApiPokemonSpeciesResponse,
 } from '../../types/pokeapi'
 import type { TeamPokemon } from '../../types/team'
@@ -99,12 +100,10 @@ export function mapPokemonListResource(resource: PokeApiNamedResource): PokemonS
 }
 
 export function mapPokemonSummary(pokemon: PokeApiPokemonResponse): PokemonSummary {
-  const sprite =
-    pokemon.sprites.other?.['official-artwork']?.front_default ??
-    pokemon.sprites.front_default ??
-    ''
+  const sprite = getPokemonSprite(pokemon)
   const shinySprite =
     pokemon.sprites.other?.['official-artwork']?.front_shiny ??
+    pokemon.sprites.other?.home?.front_shiny ??
     pokemon.sprites.front_shiny ??
     undefined
 
@@ -119,6 +118,18 @@ export function mapPokemonSummary(pokemon: PokeApiPokemonResponse): PokemonSumma
       .sort((left, right) => left.slot - right.slot)
       .map(({ type }) => type.name as PokemonTypeName),
   }
+}
+
+export function getPokemonSprite(pokemon: PokeApiPokemonResponse): string {
+  const resolvedPokemon = pokemon as PokeApiResolvedPokemonResponse
+
+  return (
+    pokemon.sprites.other?.['official-artwork']?.front_default ??
+    pokemon.sprites.other?.home?.front_default ??
+    pokemon.sprites.front_default ??
+    resolvedPokemon.formSprite ??
+    ''
+  )
 }
 
 export function mapPokemonToTeamPokemon(pokemon: PokeApiPokemonResponse): TeamPokemon {
