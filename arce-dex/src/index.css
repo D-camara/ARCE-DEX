@@ -416,6 +416,18 @@ main {
   gap: 8px;
 }
 
+.pokemon-card__sprite-placeholder {
+  display: grid;
+  width: min(180px, 42vw);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px dashed rgba(148, 163, 184, 0.32);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 3rem;
+  font-weight: 800;
+}
+
 .shiny-toggle,
 .cry-button {
   display: inline-flex;

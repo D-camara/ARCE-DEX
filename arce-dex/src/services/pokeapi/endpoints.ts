@@ -4,6 +4,7 @@ import type {
   PokeApiListResponse,
   PokeApiPokemonFormResponse,
   PokeApiPokemonResponse,
+  PokeApiResolvedPokemonResponse,
   PokeApiPokemonSpeciesResponse,
   PokeApiTypeResponse,
 } from '../../types/pokeapi'
@@ -26,6 +27,22 @@ export async function findPokemon(identifier: string | number) {
   for (const candidate of candidates) {
     try {
       return await getPokemon(candidate)
+    } catch (error) {
+      lastError = error
+    }
+
+    if (typeof candidate !== 'string') {
+      continue
+    }
+
+    try {
+      const form = await getPokemonForm(candidate)
+      const pokemon = await getPokemon(form.pokemon.name)
+
+      return {
+        ...pokemon,
+        formSprite: form.sprites.front_default,
+      } satisfies PokeApiResolvedPokemonResponse
     } catch (error) {
       lastError = error
     }

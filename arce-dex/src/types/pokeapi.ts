@@ -22,6 +22,10 @@ export type PokeApiPokemonResponse = {
         front_default: string | null
         front_shiny?: string | null
       }
+      home?: {
+        front_default: string | null
+        front_shiny?: string | null
+      }
     }
     front_default: string | null
     front_shiny?: string | null
@@ -121,6 +125,10 @@ export type PokeApiPokemonFormResponse = {
   sprites: {
     front_default: string | null
   }
+}
+
+export type PokeApiResolvedPokemonResponse = PokeApiPokemonResponse & {
+  formSprite?: string | null
 }
 
 export type PokeApiTypeResponse = {
