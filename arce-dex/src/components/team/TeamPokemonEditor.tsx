@@ -1,3 +1,4 @@
+import { Package } from 'lucide-react'
 import type {
   MoveDetail,
   PokemonAbility,
@@ -229,6 +230,7 @@ export function TeamPokemonEditor({
         </div>
         {selectedHeldItem ? (
           <p className="editor-help">
+            <Package className="held-item-inline-icon" size={15} />
             <strong>{selectedHeldItem.displayName}</strong>
             {selectedHeldItem.shortEffect ? `: ${selectedHeldItem.shortEffect}` : ''}
           </p>
@@ -238,6 +240,7 @@ export function TeamPokemonEditor({
         <div className="item-option-strip">
           {visibleHeldItems.map((item) => (
             <button key={item.id} type="button" onClick={() => onChange({ item: item.name })}>
+              <Package size={14} />
               {item.displayName}
             </button>
           ))}
@@ -254,6 +257,8 @@ export function TeamPokemonEditor({
             const moveName = moves[moveIndex] ?? ''
             const moveDetail = getMoveDetail(moveName)
             const move = getMoveOption(moveName)
+            const learnMethod = moveDetail?.learnMethod ?? move?.learnMethod ?? 'unknown'
+            const learnMethodBadge = getLearnMethodBadge(learnMethod)
 
             return (
               <div className="move-row" key={moveIndex}>
@@ -287,7 +292,9 @@ export function TeamPokemonEditor({
                     </dl>
                     <p>{moveDetail.shortEffect ?? 'Sem efeito curto encontrado na PokeAPI.'}</p>
                     <p className="move-meta">
-                      {moveDetail.learnMethod}
+                      <span className={`move-method-badge method-${learnMethodBadge.toLowerCase()}`}>
+                        {learnMethodBadge}
+                      </span>
                       {moveDetail.learnedAtLevel !== null
                         ? ` · Lv. ${moveDetail.learnedAtLevel}`
                         : ''}
@@ -295,6 +302,9 @@ export function TeamPokemonEditor({
                   </div>
                 ) : move ? (
                   <p className="move-meta">
+                    <span className={`move-method-badge method-${learnMethodBadge.toLowerCase()}`}>
+                      {learnMethodBadge}
+                    </span>
                     {move.displayName} · {move.learnMethod}
                     {move.learnedAtLevel !== null ? ` · Lv. ${move.learnedAtLevel}` : ''}
                   </p>
@@ -396,4 +406,34 @@ export function TeamPokemonEditor({
 
 function normalizeMoveName(moveName: string): string {
   return moveName.trim().toLowerCase().replace(/[_\s]+/g, '-')
+}
+
+function getLearnMethodBadge(method: string): 'Level' | 'TM' | 'HM' | 'TR' | 'Tutor' | 'Egg' | 'Unknown' {
+  const normalizedMethod = method.trim().toLowerCase()
+
+  if (normalizedMethod === 'level-up' || normalizedMethod.includes('level')) {
+    return 'Level'
+  }
+
+  if (normalizedMethod === 'egg') {
+    return 'Egg'
+  }
+
+  if (normalizedMethod.includes('tutor')) {
+    return 'Tutor'
+  }
+
+  if (normalizedMethod.includes('hm')) {
+    return 'HM'
+  }
+
+  if (normalizedMethod.includes('tr')) {
+    return 'TR'
+  }
+
+  if (normalizedMethod === 'machine' || normalizedMethod.includes('tm')) {
+    return 'TM'
+  }
+
+  return 'Unknown'
 }

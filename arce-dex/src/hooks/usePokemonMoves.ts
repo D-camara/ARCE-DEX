@@ -24,8 +24,12 @@ export function usePokemonMoves(identifier: string | number | null, search = '')
   })
 }
 
-export function useMoveDetails(moveNames: string[], moveOptions: PokemonMove[] = []) {
-  const normalizedMoveNames = normalizeMoveNames(moveNames)
+export function useMoveDetails(
+  moveNames: string[],
+  moveOptions: PokemonMove[] = [],
+  maxMoves = 4,
+) {
+  const normalizedMoveNames = normalizeMoveNames(moveNames, maxMoves)
 
   return useQuery({
     queryKey: ['move-details', normalizedMoveNames],
@@ -49,7 +53,7 @@ export function useMoveDetails(moveNames: string[], moveOptions: PokemonMove[] =
   })
 }
 
-function normalizeMoveNames(moveNames: string[]): string[] {
+function normalizeMoveNames(moveNames: string[], maxMoves: number): string[] {
   return [
     ...new Set(
       moveNames
@@ -61,5 +65,5 @@ function normalizeMoveNames(moveNames: string[]): string[] {
         )
         .filter(Boolean),
     ),
-  ].slice(0, 4)
+  ].slice(0, maxMoves)
 }

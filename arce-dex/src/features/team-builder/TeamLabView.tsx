@@ -48,6 +48,8 @@ export function TeamLabView({
     selectedPokemon?.moves ?? [],
     selectedMoveOptions ?? [],
   )
+  const teamMoveNames = activeTeam.slots.flatMap((slot) => slot.pokemon?.moves ?? [])
+  const teamMoveDetailsQuery = useMoveDetails(teamMoveNames, [], 24)
   const filledSlots = activeTeam.slots.filter((slot) => slot.pokemon).length
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export function TeamLabView({
     }
 
     if (activeTab === 'Analise') {
-      return <TeamLabAnalysis team={activeTeam} />
+      return <TeamLabAnalysis moveDetails={teamMoveDetailsQuery.data} team={activeTeam} />
     }
 
     return (
@@ -107,6 +109,7 @@ export function TeamLabView({
     selectedMoveOptions,
     selectedPokemon,
     selectedSlotIndex,
+    teamMoveDetailsQuery.data,
   ])
 
   function handleRenameTeam() {

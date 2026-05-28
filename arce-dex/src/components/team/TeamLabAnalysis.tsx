@@ -1,18 +1,20 @@
 import { AlertTriangle, Gauge, Shield, Swords, Users } from 'lucide-react'
 import {
   ALL_POKEMON_TYPES,
-  calculateOffensiveCoverage,
+  calculateTeamOffensiveProfile,
   calculateTeamDefensiveAnalysis,
 } from '../../lib/type-chart'
 import { calculateFinalStats } from '../../lib/stats'
+import type { MoveDetail } from '../../types/pokemon'
 import type { Team, TeamPokemon } from '../../types/team'
 import { TypeBadges } from '../pokemon/TypeBadges'
 
 type TeamLabAnalysisProps = {
   team: Team
+  moveDetails?: Record<string, MoveDetail>
 }
 
-export function TeamLabAnalysis({ team }: TeamLabAnalysisProps) {
+export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps) {
   const pokemons = team.slots.flatMap((slot) => (slot.pokemon ? [slot.pokemon] : []))
   const defensiveSummary = calculateTeamDefensiveAnalysis(team)
   const commonWeaknesses = defensiveSummary
@@ -24,12 +26,17 @@ export function TeamLabAnalysis({ team }: TeamLabAnalysisProps) {
   const immunities = defensiveSummary
     .filter((summary) => summary.immune > 0)
     .map((summary) => summary.type)
-  const teamTypes = pokemons.flatMap((pokemon) => pokemon.types)
-  const coverage = calculateOffensiveCoverage(teamTypes)
+  const offensiveProfile = calculateTeamOffensiveProfile(pokemons, moveDetails)
+  const coverage = offensiveProfile.coverage
   const speedRows = getSpeedRows(pokemons)
   const roles = summarizeRoles(pokemons)
   const moves = pokemons.flatMap((pokemon) => pokemon.moves ?? [])
   const uniqueMoves = [...new Set(moves)]
+  const knownMoveCategories = Object.values(offensiveProfile.categoryCounts).reduce(
+    (total, count) => total + count,
+    0,
+  )
+  const unknownMoveCount = Math.max(0, uniqueMoves.length - knownMoveCategories)
   const uncoveredTypes = ALL_POKEMON_TYPES.filter(
     (type) => !coverage.superEffectiveAgainst.includes(type),
   )
@@ -62,6 +69,20 @@ export function TeamLabAnalysis({ team }: TeamLabAnalysisProps) {
         <Swords size={18} />
         <h3>Ofensiva</h3>
         <p>{uniqueMoves.length}/24 golpes cadastrados.</p>
+        <p>
+          {offensiveProfile.usedFallbackTypes
+            ? 'Cobertura estimada pelos tipos dos Pokemon.'
+            : 'Cobertura calculada pelos tipos dos golpes escolhidos.'}
+        </p>
+        <p>Tipos ofensivos</p>
+        <TypeBadges compact types={offensiveProfile.attackingTypes} />
+        <p>Divisao dos golpes</p>
+        <div className="move-category-grid">
+          <span>Physical <strong>{offensiveProfile.categoryCounts.physical}</strong></span>
+          <span>Special <strong>{offensiveProfile.categoryCounts.special}</strong></span>
+          <span>Status <strong>{offensiveProfile.categoryCounts.status}</strong></span>
+          <span>Desconhecido <strong>{unknownMoveCount}</strong></span>
+        </div>
         <div className="coverage-grid">
           {coverage.superEffectiveAgainst.map((type) => (
             <span className="is-covered" key={type}>
@@ -71,8 +92,10 @@ export function TeamLabAnalysis({ team }: TeamLabAnalysisProps) {
         </div>
         <p>Pouco cobertos</p>
         <TypeBadges compact types={uncoveredTypes} />
-        {moves.length === 0 ? (
-          <p className="empty-copy">Cadastre golpes no editor para refinar a leitura ofensiva.</p>
+        {offensiveProfile.pokemonWithoutMoves > 0 ? (
+          <p className="empty-copy">
+            {offensiveProfile.pokemonWithoutMoves} Pokemon sem golpes cadastrados.
+          </p>
         ) : null}
       </article>
 

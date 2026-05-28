@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
   calculateOffensiveCoverage,
+  calculateTeamOffensiveProfile,
   calculateTeamDefensiveAnalysis,
   calculateTypeAnalysis,
   getTypeEffectiveness,
 } from '.'
+import type { MoveDetail } from '../../types/pokemon'
 import type { TeamPokemon } from '../../types/team'
 
 describe('type-chart', () => {
@@ -70,4 +72,73 @@ describe('type-chart', () => {
       expect.arrayContaining(['fire', 'electric', 'rock', 'steel']),
     )
   })
+
+  it('uses selected move types for team offensive profile', () => {
+    const profile = calculateTeamOffensiveProfile(
+      [
+        {
+          id: 6,
+          name: 'charizard',
+          displayName: 'Charizard',
+          sprite: '',
+          types: ['fire', 'flying'],
+          moves: ['flamethrower', 'air-slash', 'dragon-dance'],
+        },
+      ],
+      {
+        flamethrower: createMoveDetail('flamethrower', 'fire', 'special'),
+        'air-slash': createMoveDetail('air-slash', 'flying', 'special'),
+        'dragon-dance': createMoveDetail('dragon-dance', 'dragon', 'status'),
+      },
+    )
+
+    expect(profile.usedFallbackTypes).toBe(false)
+    expect(profile.attackingTypes).toEqual(['fire', 'flying', 'dragon'])
+    expect(profile.categoryCounts).toEqual({
+      physical: 0,
+      special: 2,
+      status: 1,
+    })
+    expect(profile.coverage.superEffectiveAgainst).toContain('grass')
+  })
+
+  it('falls back to Pokemon types when move details are unavailable', () => {
+    const profile = calculateTeamOffensiveProfile([
+      {
+        id: 25,
+        name: 'pikachu',
+        displayName: 'Pikachu',
+        sprite: '',
+        types: ['electric'],
+        moves: ['unknown-move'],
+      },
+    ])
+
+    expect(profile.usedFallbackTypes).toBe(true)
+    expect(profile.attackingTypes).toEqual(['electric'])
+    expect(profile.categoryCounts).toEqual({
+      physical: 0,
+      special: 0,
+      status: 0,
+    })
+    expect(profile.coverage.superEffectiveAgainst).toContain('water')
+  })
 })
+
+function createMoveDetail(
+  name: string,
+  type: MoveDetail['type'],
+  category: MoveDetail['category'],
+): MoveDetail {
+  return {
+    name,
+    displayName: name,
+    learnedAtLevel: null,
+    learnMethod: 'unknown',
+    type,
+    category,
+    power: null,
+    accuracy: null,
+    pp: null,
+  }
+}
