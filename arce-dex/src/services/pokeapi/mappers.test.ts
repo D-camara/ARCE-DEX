@@ -69,6 +69,30 @@ describe('pokeapi mappers', () => {
     expect(mapPokemonSummary(pokemon).imageUrl).toBe('')
   })
 
+  it('maps detailed move data from PokeAPI', () => {
+    expect(
+      mapMoveDetail(createFlamethrowerResponse(), {
+        name: 'flamethrower',
+        displayName: 'Flamethrower',
+        learnedAtLevel: 32,
+        learnMethod: 'level-up',
+      }),
+    ).toEqual({
+      name: 'flamethrower',
+      displayName: 'Flamethrower',
+      learnedAtLevel: 32,
+      learnMethod: 'level-up',
+      type: 'fire',
+      category: 'special',
+      power: 90,
+      accuracy: 100,
+      pp: 15,
+      categoryLabel: 'Special',
+      shortEffect: 'Has a 10% chance to burn the target.',
+      effect: 'Has a 10% chance to burn the target.',
+    })
+  })
+
   it('formats generation roman numerals in uppercase', () => {
     const species = createPokemonSpeciesResponse()
 
@@ -152,6 +176,36 @@ function createPokemonResponse({
       latest: null,
       legacy: null,
     },
+  }
+}
+
+function createFlamethrowerResponse(): PokeApiMoveResponse {
+  return {
+    id: 53,
+    name: 'flamethrower',
+    accuracy: 100,
+    effect_chance: 10,
+    power: 90,
+    pp: 15,
+    damage_class: {
+      name: 'special',
+      url: 'https://pokeapi.co/api/v2/move-damage-class/3/',
+    },
+    type: {
+      name: 'fire',
+      url: 'https://pokeapi.co/api/v2/type/10/',
+    },
+    effect_entries: [
+      {
+        effect: 'Has a $effect_chance% chance to burn the target.',
+        short_effect: 'Has a $effect_chance% chance to burn the target.',
+        language: {
+          name: 'en',
+          url: 'https://pokeapi.co/api/v2/language/9/',
+        },
+      },
+    ],
+    flavor_text_entries: [],
   }
 }
 

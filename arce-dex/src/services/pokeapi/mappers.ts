@@ -2,8 +2,10 @@ import type {
   EvolutionChain,
   EvolutionNode,
   AbilityDetail,
+  MoveDetail,
   Pokemon,
   PokemonAbility,
+  PokemonMoveCategory,
   PokemonForm,
   PokemonMove,
   PokemonSpecies,
@@ -195,7 +197,6 @@ export function mapPokemonDetail(pokemon: PokeApiPokemonResponse): Pokemon {
     forms: pokemon.forms.map(mapNamedResourceToForm),
   }
 }
-
 export function mapAbilityDetail(ability: PokeApiAbilityResponse): AbilityDetail {
   const effectEntry = findLocalizedEntry(ability.effect_entries)
   const flavorEntry = findLocalizedEntry(ability.flavor_text_entries)
@@ -213,7 +214,10 @@ export function mapAbilityDetail(ability: PokeApiAbilityResponse): AbilityDetail
   }
 }
 
-export function mapMoveDetail(move: PokeApiMoveResponse): PokemonMove {
+export function mapMoveDetail(
+  move: PokeApiMoveResponse,
+  learnedMove?: PokemonMove,
+): MoveDetail {
   const effectEntry = findLocalizedEntry(move.effect_entries)
   const shortEffect = cleanEffectText(
     effectEntry?.short_effect ?? 'Descricao nao informada',
@@ -223,13 +227,13 @@ export function mapMoveDetail(move: PokeApiMoveResponse): PokemonMove {
     effectEntry?.effect ?? effectEntry?.short_effect ?? 'Descricao nao informada',
     move.effect_chance,
   )
-  const category = move.damage_class.name as PokemonMove['category']
+  const category = mapMoveCategory(move.damage_class.name)
 
   return {
     name: move.name,
     displayName: formatPokemonName(move.name),
-    learnedAtLevel: null,
-    learnMethod: 'level-up',
+    learnedAtLevel: learnedMove?.learnedAtLevel ?? null,
+    learnMethod: learnedMove?.learnMethod ?? 'unknown',
     type: move.type.name as PokemonTypeName,
     category,
     categoryLabel: formatPokemonName(move.damage_class.name),
@@ -239,6 +243,14 @@ export function mapMoveDetail(move: PokeApiMoveResponse): PokemonMove {
     shortEffect,
     effect,
   }
+}
+
+function mapMoveCategory(value: string): PokemonMoveCategory {
+  if (value === 'physical' || value === 'special' || value === 'status') {
+    return value
+  }
+
+  return 'status'
 }
 
 export function mapPokemonSpecies(species: PokeApiPokemonSpeciesResponse): PokemonSpecies {
