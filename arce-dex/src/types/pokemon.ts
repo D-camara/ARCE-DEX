@@ -71,6 +71,25 @@ export type PokemonMove = {
   effect?: string
 }
 
+export type PokemonMoveCategory = 'physical' | 'special' | 'status'
+
+export type MoveDetail = PokemonMove & {
+  type: PokemonTypeName
+  category: PokemonMoveCategory
+  power: number | null
+  accuracy: number | null
+  pp: number | null
+  shortEffect?: string
+}
+
+export type HeldItemOption = {
+  id: string
+  name: string
+  displayName: string
+  shortEffect?: string
+  category?: string
+}
+
 export type Pokemon = PokemonSummary & {
   height: number
   weight: number

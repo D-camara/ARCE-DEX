@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from 'lucide-react'
+import { Package, Pencil, Trash2 } from 'lucide-react'
 import type { TeamSlot } from '../../types/team'
 import { TypeBadges } from '../pokemon/TypeBadges'
 
@@ -46,7 +46,10 @@ export function TeamSlotCard({
           </div>
           <div>
             <dt>Item</dt>
-            <dd>{slot.pokemon.item || 'Sem item'}</dd>
+            <dd className="slot-item-value">
+              <Package size={13} />
+              {slot.pokemon.item || 'Sem item'}
+            </dd>
           </div>
         </dl>
         <p className="slot-build-copy">
