@@ -11,6 +11,10 @@ import type {
 export type PokemonTabData = {
   currentPokemonName: string
   evolutionChain: EvolutionChain | undefined
+  infoItems: Array<{
+    label: string
+    value: string
+  }>
   moves: PokemonMove[]
   weaknesses: PokemonTypeName[]
   resistances: PokemonTypeName[]
@@ -56,11 +60,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
       </div>
       <div className="tab-panel">
         {selectedTab === 'Info' && (
-          <StateBlock
-            label="success"
-            title="Resumo individual"
-            text="Tipos, habilidades, status e dados defensivos deste Pokemon."
-          />
+          <InfoPanel items={data.infoItems} />
         )}
         {selectedTab === 'Evolucao' && (
           <EvolutionTree
@@ -135,6 +135,23 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
         )}
       </div>
     </section>
+  )
+}
+
+function InfoPanel({ items }: { items: PokemonTabData['infoItems'] }) {
+  if (items.length === 0) {
+    return <p className="empty-copy">Dados extras nao carregados.</p>
+  }
+
+  return (
+    <dl className="info-grid">
+      {items.map((item) => (
+        <div key={item.label}>
+          <dt>{item.label}</dt>
+          <dd>{item.value || 'Nao informado'}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }
 
@@ -214,23 +231,6 @@ function EvolutionBranch({
           ))}
         </div>
       )}
-    </div>
-  )
-}
-
-function StateBlock({
-  label,
-  title,
-  text,
-}: {
-  label: 'loading' | 'empty' | 'error' | 'success'
-  title: string
-  text: string
-}) {
-  return (
-    <div className={`state-block state-block--${label}`}>
-      <strong>{title}</strong>
-      <p>{text}</p>
     </div>
   )
 }
