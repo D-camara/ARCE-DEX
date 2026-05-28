@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Heart, Plus, ShieldCheck, Sparkles } from 'lucide-react'
+import { Heart, Info, Plus, ShieldCheck, Sparkles, Volume2 } from 'lucide-react'
 import type { Pokemon, PokemonStatName } from '../../types/pokemon'
 import { TypeBadges } from './TypeBadges'
 
@@ -7,6 +7,8 @@ type PokemonCardProps = {
   pokemon: Pokemon
   isFavorite: boolean
   onAddToTeam: () => void
+  onPlayCry: () => void
+  onSelectAbility: (abilityName: string) => void
   onToggleFavorite: () => void
 }
 
@@ -23,6 +25,8 @@ export function PokemonCard({
   pokemon,
   isFavorite,
   onAddToTeam,
+  onPlayCry,
+  onSelectAbility,
   onToggleFavorite,
 }: PokemonCardProps) {
   const [isShiny, setIsShiny] = useState(false)
@@ -54,6 +58,12 @@ export function PokemonCard({
               {isShiny ? 'Mostrar normal' : 'Mostrar shiny'}
             </button>
           )}
+          {pokemon.cryUrl && (
+            <button className="cry-button" onClick={onPlayCry} type="button">
+              <Volume2 size={15} />
+              Ouvir cry
+            </button>
+          )}
         </div>
       </div>
 
@@ -70,7 +80,7 @@ export function PokemonCard({
         </div>
       </dl>
 
-      <AbilityList abilities={pokemon.abilities} />
+      <AbilityList abilities={pokemon.abilities} onSelectAbility={onSelectAbility} />
 
       <div className="stat-list">
         {Object.entries(pokemon.stats).map(([name, value]) => (
@@ -100,11 +110,20 @@ export function PokemonCard({
   )
 }
 
-function AbilityList({ abilities }: { abilities: Pokemon['abilities'] }) {
+function AbilityList({
+  abilities,
+  onSelectAbility,
+}: {
+  abilities: Pokemon['abilities']
+  onSelectAbility: (abilityName: string) => void
+}) {
   return (
     <section className="ability-list" aria-label="Habilidades">
       {abilities.map((ability) => (
-        <span key={ability.name}>{ability.displayName}</span>
+        <button key={ability.name} onClick={() => onSelectAbility(ability.name)} type="button">
+          {ability.displayName}
+          <Info size={13} />
+        </button>
       ))}
     </section>
   )

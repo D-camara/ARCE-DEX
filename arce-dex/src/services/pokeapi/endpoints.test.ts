@@ -96,5 +96,9 @@ function createPokemonResponse(name: string): PokeApiPokemonResponse {
     stats: [],
     moves: [],
     forms: [],
+    cries: {
+      latest: null,
+      legacy: null,
+    },
   }
 }
