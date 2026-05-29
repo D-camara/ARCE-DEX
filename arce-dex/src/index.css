@@ -1,28 +1,73 @@
 :root {
-  --bg: #090d14;
-  --surface: #111827;
-  --surface-2: #172033;
-  --surface-3: #1f2937;
-  --line: rgba(148, 163, 184, 0.2);
-  --text: #e5e7eb;
-  --muted: #94a3b8;
-  --soft: #cbd5e1;
-  --accent: #38bdf8;
-  --accent-2: #f97316;
-  --danger: #fb7185;
-  --ok: #34d399;
-  --radius-card: 16px;
-  --radius-control: 12px;
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
+  /* ==========================================================================
+     ARCHIVUM ARCEUS - DESIGN TOKENS
+     ========================================================================== */
+
+  /* Cores Principais - Cosmic & Ivory */
+  --bg: #090B10; /* Preto profundo cósmico */
+  --surface: #121620;
+  --surface-2: #1A202C;
+  --surface-3: #232A3B;
+  
+  /* Textos */
+  --text: #F8F9FA; /* Branco luminoso */
+  --muted: #94A3B8; /* Cinza cósmico */
+  --soft: #CBD5E1;
+  
+  /* Bordas */
+  --line: rgba(246, 237, 211, 0.1);
+  --border: rgba(246, 237, 211, 0.15);
+  
+  /* Accents - Inspirado em Arceus */
+  --accent-ivory: #F6EDD3; /* Marfim */
+  --accent-gold: #D4AF37; /* Dourado */
+  --accent-cosmic-blue: #38BDF8; /* Azul etéreo */
+  --accent-astral-purple: #8B5CF6; /* Roxo espacial */
+  --accent: var(--accent-gold);
+  --accent-2: var(--accent-cosmic-blue);
+
+  /* Status */
+  --danger: #FB7185;
+  --ok: #34D399;
+
+  /* Typografhy */
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Structural Scales */
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  --glow-gold: 0 0 20px rgba(212, 175, 55, 0.3);
+  --glow-blue: 0 0 20px rgba(56, 189, 248, 0.3);
+  --glow-purple: 0 0 20px rgba(139, 92, 246, 0.3);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.15s ease-out;
+
+  /* Pokémon Type Colors */
+  --type-normal: #A8A77A;
+  --type-fire: #EE8130;
+  --type-water: #6390F0;
+  --type-electric: #F7D02C;
+  --type-grass: #7AC74C;
+  --type-ice: #96D9D6;
+  --type-fighting: #C22E28;
+  --type-poison: #A33EA1;
+  --type-ground: #E2BF65;
+  --type-flying: #A98FF3;
+  --type-psychic: #F95587;
+  --type-bug: #A6B91A;
+  --type-rock: #B6A136;
+  --type-ghost: #735797;
+  --type-dragon: #6F35FC;
+  --type-dark: #705746;
+  --type-steel: #B7B7CE;
+  --type-fairy: #D685AD;
 }
 
 * {
@@ -35,8 +80,8 @@ body {
   margin: 0;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 32rem),
-    linear-gradient(180deg, #0d1320 0%, #070a10 100%);
+    radial-gradient(circle at top center, rgba(212, 175, 55, 0.1), transparent 40rem),
+    linear-gradient(180deg, #090B10 0%, #05060A 100%);
 }
 
 button,
