@@ -220,18 +220,13 @@ function App() {
             <small>Pokemon battle helper</small>
           </span>
         </div>
-        <div className="topbar__search">
-          <SearchExperience
-            isAutocompleteOpen={isAutocompleteOpen}
-            isError={pokemonListQuery.isError}
-            isLoading={pokemonListQuery.isLoading}
-            onChange={handleSearchChange}
-            onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
-            onSearch={handleSearch}
-            onSelect={handleSelectPokemon}
-            suggestions={summaryCache}
-            value={query}
-          />
+        <div className="topbar__actions">
+          <button type="button" onClick={() => setActiveView('team-lab')} className="topbar-btn">
+            Meu Time
+          </button>
+          <button type="button" onClick={() => setIsFavoritesOpen(true)} className="topbar-btn">
+            Favoritos
+          </button>
         </div>
       </header>
 
@@ -247,7 +242,36 @@ function App() {
           teams={teams}
         />
       ) : (
-        <main>
+        <main className="home-layout">
+          <section className="cosmic-hero">
+            <div className="cosmic-hero__bg">
+              <div className="arcane-ring ring-outer"></div>
+              <div className="arcane-ring ring-inner"></div>
+              <div className="arcane-stars"></div>
+              <div className="arcane-core-glow"></div>
+            </div>
+            
+            <div className="cosmic-hero__content">
+              <h1 className="cosmic-title">Archivum Arceus</h1>
+              <p className="cosmic-subtitle">O Catálogo Divino de Espécies</p>
+              <p className="cosmic-description">Consulte os registros ancestrais e desvende os mistérios de cada criatura do universo Pokémon através do arquivo primordial.</p>
+              
+              <div className="cosmic-search-wrapper">
+                <SearchExperience
+                  isAutocompleteOpen={isAutocompleteOpen}
+                  isError={pokemonListQuery.isError}
+                  isLoading={pokemonListQuery.isLoading}
+                  onChange={handleSearchChange}
+                  onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
+                  onSearch={handleSearch}
+                  onSelect={handleSelectPokemon}
+                  suggestions={summaryCache}
+                  value={query}
+                />
+              </div>
+            </div>
+          </section>
+
           <section className="mobile-action-strip">
             <button type="button" onClick={() => setActiveView('team-lab')}>
               <Menu size={18} />
@@ -259,7 +283,7 @@ function App() {
             </button>
           </section>
 
-          <section className="content-grid">
+          <section className="content-grid bento-grid">
             <div className="primary-column">
               {selectedPokemonQuery.isLoading && <LoadingState />}
               {selectedPokemonQuery.isError && <ErrorState />}

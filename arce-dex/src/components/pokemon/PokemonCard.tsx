@@ -33,78 +33,83 @@ export function PokemonCard({
   const displayedSprite = isShiny && pokemon.shinySprite ? pokemon.shinySprite : pokemon.imageUrl
 
   return (
-    <article className="pokemon-card">
-      <div className="pokemon-card__media">
-        <div>
-          <p className="eyebrow">#{String(pokemon.id).padStart(4, '0')}</p>
-          <h2>{pokemon.displayName}</h2>
-          <p>{pokemon.types.join(' / ')}</p>
-        </div>
-        <div className="pokemon-card__sprite">
+    <article className="legendary-artifact">
+      <div className="legendary-artifact__visual">
+        <div className="artifact-aura"></div>
+        <div className="artifact-sprite-wrapper">
           {displayedSprite ? (
-            <img src={displayedSprite} alt={pokemon.displayName} />
+            <img src={displayedSprite} alt={pokemon.displayName} className="artifact-sprite" />
           ) : (
-            <span className="pokemon-card__sprite-placeholder" aria-hidden>
+            <span className="artifact-sprite-placeholder" aria-hidden>
               ?
             </span>
           )}
-          {pokemon.shinySprite && (
-            <button
-              className={isShiny ? 'shiny-toggle is-active' : 'shiny-toggle'}
-              onClick={() => setIsShiny((value) => !value)}
-              type="button"
-            >
-              <Sparkles size={15} />
-              {isShiny ? 'Mostrar normal' : 'Mostrar shiny'}
-            </button>
-          )}
-          {pokemon.cryUrl && (
-            <button className="cry-button" onClick={onPlayCry} type="button">
-              <Volume2 size={15} />
-              Ouvir cry
-            </button>
-          )}
+          <div className="artifact-actions-visual">
+            {pokemon.shinySprite && (
+              <button
+                className={isShiny ? 'artifact-btn shiny is-active' : 'artifact-btn shiny'}
+                onClick={() => setIsShiny((value) => !value)}
+                type="button"
+                title={isShiny ? 'Mostrar normal' : 'Mostrar shiny'}
+              >
+                <Sparkles size={18} />
+              </button>
+            )}
+            {pokemon.cryUrl && (
+              <button className="artifact-btn cry" onClick={onPlayCry} type="button" title="Ouvir cry">
+                <Volume2 size={18} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <TypeBadges types={pokemon.types} />
+      <div className="legendary-artifact__data">
+        <header className="artifact-header">
+          <p className="artifact-id">Nº {String(pokemon.id).padStart(4, '0')}</p>
+          <h2 className="artifact-name">{pokemon.displayName}</h2>
+          <TypeBadges types={pokemon.types} />
+        </header>
 
-      <dl className="pokemon-facts pokemon-facts--compact">
-        <div>
-          <dt>Altura</dt>
-          <dd>{(pokemon.height / 10).toFixed(1)} m</dd>
+        <div className="artifact-metrics">
+          <dl className="metrics-grid">
+            <div>
+              <dt>Altura</dt>
+              <dd>{(pokemon.height / 10).toFixed(1)} m</dd>
+            </div>
+            <div>
+              <dt>Peso</dt>
+              <dd>{(pokemon.weight / 10).toFixed(1)} kg</dd>
+            </div>
+          </dl>
+
+          <AbilityList abilities={pokemon.abilities} onSelectAbility={onSelectAbility} />
         </div>
-        <div>
-          <dt>Peso</dt>
-          <dd>{(pokemon.weight / 10).toFixed(1)} kg</dd>
+
+        <div className="artifact-stats">
+          {Object.entries(pokemon.stats).map(([name, value]) => (
+            <StatBar key={name} label={statLabels[name as PokemonStatName]} value={value} />
+          ))}
         </div>
-      </dl>
 
-      <AbilityList abilities={pokemon.abilities} onSelectAbility={onSelectAbility} />
-
-      <div className="stat-list">
-        {Object.entries(pokemon.stats).map(([name, value]) => (
-          <StatBar key={name} label={statLabels[name as PokemonStatName]} value={value} />
-        ))}
-      </div>
-
-      <div className="card-actions">
-        <button className="primary-action" type="button" onClick={onAddToTeam}>
-          <Plus size={18} />
-          Adicionar
-        </button>
-        <button
-          className={isFavorite ? 'icon-action is-favorite' : 'icon-action'}
-          type="button"
-          onClick={onToggleFavorite}
-        >
-          <Heart fill={isFavorite ? 'currentColor' : 'none'} size={18} />
-          <span className="sr-only">Favoritar</span>
-        </button>
-        <button className="icon-action" type="button">
-          <ShieldCheck size={18} />
-          <span className="sr-only">Analisar tipos</span>
-        </button>
+        <div className="artifact-controls">
+          <button className="primary-action-celestial" type="button" onClick={onAddToTeam}>
+            <Plus size={20} />
+            Adicionar à Equipe
+          </button>
+          <button
+            className={isFavorite ? 'icon-action-celestial is-favorite' : 'icon-action-celestial'}
+            type="button"
+            onClick={onToggleFavorite}
+          >
+            <Heart fill={isFavorite ? 'currentColor' : 'none'} size={20} />
+            <span className="sr-only">Favoritar</span>
+          </button>
+          <button className="icon-action-celestial" type="button">
+            <ShieldCheck size={20} />
+            <span className="sr-only">Analisar</span>
+          </button>
+        </div>
       </div>
     </article>
   )
