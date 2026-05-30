@@ -215,17 +215,44 @@ function App() {
       <header className="topbar">
         <div className="topbar__brand">
           <span className="brand-mark">A</span>
-          <span>
+          <span className="brand-text">
             <strong>Archivum Arceus</strong>
             <small>Pokemon battle helper</small>
           </span>
         </div>
+        
+        <div className="topbar__search">
+          <SearchExperience
+            isAutocompleteOpen={isAutocompleteOpen}
+            isError={pokemonListQuery.isError}
+            isLoading={pokemonListQuery.isLoading}
+            onChange={handleSearchChange}
+            onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
+            onSearch={handleSearch}
+            onSelect={handleSelectPokemon}
+            suggestions={summaryCache}
+            value={query}
+          />
+        </div>
+
         <div className="topbar__actions">
-          <button type="button" onClick={() => setActiveView('team-lab')} className="topbar-btn">
-            Meu Time
+          <button
+            type="button"
+            onClick={() => setActiveView('team-lab')}
+            className="topbar-btn"
+            title="Meu Time"
+          >
+            <Menu size={16} />
+            <span className="btn-text">Meu Time</span>
           </button>
-          <button type="button" onClick={() => setIsFavoritesOpen(true)} className="topbar-btn">
-            Favoritos
+          <button
+            type="button"
+            onClick={() => setIsFavoritesOpen(true)}
+            className="topbar-btn"
+            title="Favoritos"
+          >
+            <Heart size={16} />
+            <span className="btn-text">Favoritos</span>
           </button>
         </div>
       </header>
@@ -243,45 +270,6 @@ function App() {
         />
       ) : (
         <main className="home-layout">
-          <section className="cosmic-hero">
-            <div className="cosmic-hero__bg">
-              <div className="arcane-ring ring-outer"></div>
-              <div className="arcane-ring ring-inner"></div>
-              <div className="arcane-stars"></div>
-              <div className="arcane-core-glow"></div>
-            </div>
-            
-            <div className="cosmic-hero__content">
-              <h1 className="cosmic-title">Archivum Arceus</h1>
-              <p className="cosmic-subtitle">O Catálogo Divino de Espécies</p>
-              <p className="cosmic-description">Consulte os registros ancestrais e desvende os mistérios de cada criatura do universo Pokémon através do arquivo primordial.</p>
-              
-              <div className="cosmic-search-wrapper">
-                <SearchExperience
-                  isAutocompleteOpen={isAutocompleteOpen}
-                  isError={pokemonListQuery.isError}
-                  isLoading={pokemonListQuery.isLoading}
-                  onChange={handleSearchChange}
-                  onFocus={() => setIsAutocompleteOpen(query.trim().length >= 2)}
-                  onSearch={handleSearch}
-                  onSelect={handleSelectPokemon}
-                  suggestions={summaryCache}
-                  value={query}
-                />
-              </div>
-            </div>
-          </section>
-
-          <section className="mobile-action-strip">
-            <button type="button" onClick={() => setActiveView('team-lab')}>
-              <Menu size={18} />
-              Meu Time
-            </button>
-            <button type="button" onClick={() => setIsFavoritesOpen(true)}>
-              <Heart size={18} />
-              Favoritos
-            </button>
-          </section>
 
           <section className="content-grid">
             <div className="primary-column">

@@ -154,20 +154,20 @@ h3 {
 
 .topbar {
   position: fixed;
-  z-index: 20;
+  z-index: 1002;
   top: 0;
   left: 0;
   right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   width: min(1180px, 100%);
   min-height: 56px;
   margin: 0 auto;
-  padding: 10px 14px;
+  padding: 8px 16px;
   border-bottom: 1px solid var(--line);
-  background: rgba(9, 13, 20, 0.92);
+  background: rgba(13, 13, 16, 0.92) !important;
   backdrop-filter: blur(18px);
 }
 
@@ -224,6 +224,8 @@ h3 {
 .topbar__search {
   position: relative;
   min-width: 0;
+  flex: 1;
+  max-width: 380px;
 }
 
 .brand-mark {
@@ -346,8 +348,35 @@ main {
 }
 
 .topbar .search-box {
-  min-height: 44px;
+  min-height: 38px;
   padding: 0 12px;
+  gap: 8px;
+  border-radius: 10px !important;
+  border: 1px solid rgba(201, 166, 70, 0.22) !important;
+  background: rgba(9, 11, 16, 0.85) !important;
+}
+
+.topbar .search-box:focus-within {
+  border-color: var(--accent-gold) !important;
+  background: #0d0d10 !important;
+  box-shadow: var(--glow-gold) !important;
+}
+
+.topbar .search-box input {
+  font-size: 0.88rem !important;
+  height: 100% !important;
+  min-height: 36px !important;
+  color: var(--text) !important;
+}
+
+.topbar .search-box svg {
+  color: var(--muted);
+  width: 16px;
+  height: 16px;
+}
+
+.topbar .search-box:focus-within svg {
+  color: var(--accent-gold);
 }
 
 .topbar .shortcut-grid {
@@ -392,13 +421,13 @@ main {
 .search-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-height: 58px;
   padding: 0 16px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  border: 1px solid rgba(201, 166, 70, 0.28);
   border-radius: 14px;
-  color: #e0f2fe;
-  background: rgba(2, 6, 23, 0.92);
+  color: var(--text-soft);
+  background: rgba(9, 11, 16, 0.85);
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease,
@@ -406,9 +435,9 @@ main {
 }
 
 .search-box:focus-within {
-  border-color: rgba(56, 189, 248, 0.75);
-  background: rgba(8, 13, 24, 0.98);
-  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.14);
+  border-color: var(--accent-gold);
+  background: #0d0d10;
+  box-shadow: var(--glow-gold);
 }
 
 .search-box input {
@@ -416,8 +445,36 @@ main {
   min-height: 44px;
   border: 0;
   outline: 0;
-  color: #f8fafc;
+  color: var(--text);
   background: transparent;
+}
+
+/* Custom Webkit search clear button */
+.search-box input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a79f90' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  margin-left: 8px;
+  opacity: 0.6;
+  transition: opacity var(--transition-normal);
+}
+
+.search-box input::-webkit-search-cancel-button:hover {
+  opacity: 1;
+}
+
+.search-box svg {
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: color var(--transition-normal);
+}
+
+.search-box:focus-within svg {
+  color: var(--accent-gold);
 }
 
 .search-box input::placeholder {
@@ -1985,10 +2042,45 @@ main {
 .team-lab-view {
   display: grid;
   gap: 12px;
+  margin-top: 16px;
 }
 
-.team-lab-hero,
-.team-lab-toolbar,
+@media (min-width: 760px) {
+  .team-lab-view {
+    gap: 14px;
+    margin-top: 24px;
+  }
+}
+
+.team-lab-hero {
+  border: 1px solid rgba(246, 237, 211, 0.12) !important;
+  border-radius: 24px 24px 0 0 !important;
+  border-bottom: none !important;
+  background: rgba(9, 11, 16, 0.7) !important;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(246, 237, 211, 0.03) !important;
+  padding: 24px 24px 16px !important;
+  display: grid;
+  gap: 12px;
+}
+
+.team-lab-toolbar {
+  margin-top: -12px !important;
+  border: 1px solid rgba(246, 237, 211, 0.12) !important;
+  border-top: 1px solid rgba(246, 237, 211, 0.08) !important;
+  border-radius: 0 0 24px 24px !important;
+  background: rgba(9, 11, 16, 0.7) !important;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(246, 237, 211, 0.02) !important;
+  padding: 16px 24px 24px !important;
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 760px) {
+  .team-lab-toolbar {
+    margin-top: -14px !important;
+  }
+}
+
 .team-editor-panel {
   display: grid;
   gap: 12px;
@@ -1998,7 +2090,14 @@ main {
 .team-lab-hero h1 {
   max-width: none;
   overflow-wrap: anywhere;
-  font-size: clamp(1.9rem, 10vw, 4rem);
+  font-size: clamp(1.8rem, 4vw, 2.6rem) !important;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to right, #FFFFFF, var(--accent-ivory));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+  margin: 4px 0 8px;
 }
 
 .team-lab-hero p:last-child,
@@ -2041,17 +2140,23 @@ main {
 }
 
 .lab-tab-list button.is-active {
-  border-color: rgba(56, 189, 248, 0.55);
-  background: rgba(56, 189, 248, 0.16);
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: var(--accent-gold) !important;
+  box-shadow: var(--glow-gold) !important;
 }
 
 .team-lab-grid,
-.team-lab-analysis,
 .editor-grid,
 .move-editor-grid,
 .stat-editor-grid {
   display: grid;
   gap: 10px;
+}
+
+.team-lab-analysis {
+  display: grid;
+  gap: 16px;
 }
 
 .team-lab-slot {
@@ -2500,14 +2605,240 @@ main {
 }
 
 .team-lab-analysis article {
+  border: 1px solid rgba(246, 237, 211, 0.12) !important;
+  border-radius: 20px !important;
+  background: rgba(9, 11, 16, 0.7) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(246, 237, 211, 0.02) !important;
+  padding: 20px !important;
   display: grid;
-  gap: 10px;
-  padding: 14px;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 12px;
 }
 
-.speed-rank {
-  display: grid;
+.team-lab-analysis article > svg:first-of-type {
+  color: var(--accent-gold);
+  margin-bottom: -32px;
+  z-index: 2;
+}
+
+.team-lab-analysis article h3 {
+  padding-left: 28px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--accent-gold-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(246, 237, 211, 0.1);
+  padding-bottom: 10px;
+}
+
+/* Strategic priority for Alerts card (Resumo Estratégico no topo) */
+.team-lab-analysis article:last-child {
+  order: -1; /* At the top on both mobile and desktop! */
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.06), rgba(201, 166, 70, 0.04)), rgba(9, 11, 16, 0.85) !important;
+  border: 1px solid rgba(201, 166, 70, 0.25) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(239, 68, 68, 0.03) !important;
+}
+
+@media (min-width: 760px) {
+  .team-lab-analysis article:last-child {
+    grid-column: 1 / span 2;
+  }
+}
+
+.team-lab-analysis article:last-child p:not(.empty-copy) {
+  display: flex;
+  align-items: center;
   gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.03) !important;
+  border: 1px solid rgba(239, 68, 68, 0.15) !important;
+  border-left: 4px solid #ef4444 !important;
+  margin-bottom: 8px;
+  color: var(--accent-ivory) !important;
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.team-lab-analysis article:last-child p.empty-copy {
+  background: rgba(52, 211, 153, 0.03) !important;
+  border: 1px solid rgba(52, 211, 153, 0.15) !important;
+  border-left: 4px solid #34d399 !important;
+  color: #34d399 !important;
+  justify-content: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 14px !important;
+  border-radius: 8px;
+}
+
+/* Card 1 (Defesa) Paragraph Labels Styling */
+.team-lab-analysis article:nth-of-type(1) p:not(.empty-copy) {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--accent-gold-soft);
+  margin-top: 12px;
+  margin-bottom: 4px;
+  border-left: 2px solid var(--accent-gold);
+  padding-left: 8px;
+}
+
+.team-lab-analysis article:nth-of-type(1) p.empty-copy {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+  color: var(--accent-silver);
+  background: rgba(255, 255, 255, 0.02) !important;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+/* Card 2 (Ofensiva) Paragraph Labels & Stats Styling */
+.team-lab-analysis article:nth-of-type(2) p:nth-of-type(1) {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-ivory);
+  margin-bottom: 2px;
+}
+
+.team-lab-analysis article:nth-of-type(2) p:nth-of-type(2) {
+  font-size: 0.8rem;
+  color: var(--accent-silver);
+  opacity: 0.9;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  background: rgba(134, 216, 247, 0.04);
+  border-left: 2px solid var(--accent-cosmic-blue);
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+}
+
+.team-lab-analysis article:nth-of-type(2) p:nth-of-type(n+3):not(.empty-copy) {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--accent-gold-soft);
+  margin-top: 12px;
+  margin-bottom: 4px;
+  border-left: 2px solid var(--accent-gold);
+  padding-left: 8px;
+}
+
+.team-lab-analysis article:nth-of-type(2) p.empty-copy {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+  color: var(--accent-silver);
+  background: rgba(255, 255, 255, 0.02) !important;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+/* Card 3 (Velocidade) KPI Styling */
+.team-lab-analysis article:nth-of-type(3) p:not(.empty-copy) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(246, 237, 211, 0.02) !important;
+  border: 1px solid rgba(246, 237, 211, 0.06) !important;
+  border-radius: 10px;
+  color: var(--accent-silver);
+  font-size: 0.84rem;
+  margin: 4px 0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.team-lab-analysis article:nth-of-type(3) p.empty-copy {
+  display: block;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02) !important;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  color: var(--accent-silver);
+}
+
+.team-lab-analysis .speed-rank {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.team-lab-analysis .speed-rank span {
+  border: 1px solid rgba(246, 237, 211, 0.08);
+  background: rgba(246, 237, 211, 0.02) !important;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  color: var(--accent-silver);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.team-lab-analysis .speed-rank span strong {
+  color: var(--accent-gold);
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+/* Card 4 (Estrutura) Styling */
+.team-lab-analysis article:nth-of-type(4) p:nth-of-type(-n+3) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(246, 237, 211, 0.02) !important;
+  border: 1px solid rgba(246, 237, 211, 0.06) !important;
+  border-radius: 10px;
+  color: var(--accent-silver);
+  font-size: 0.84rem;
+  margin: 4px 0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.team-lab-analysis article:nth-of-type(4) p:nth-of-type(4) {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--accent-gold-soft);
+  margin-top: 12px;
+  margin-bottom: 4px;
+  border-left: 2px solid var(--accent-gold);
+  padding-left: 8px;
+  background: none !important;
+  border-top: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  box-shadow: none;
+  border-radius: 0;
+  display: block;
+}
+
+.team-lab-analysis .risk-row {
+  border: 1px solid rgba(246, 237, 211, 0.08);
+  background: rgba(246, 237, 211, 0.02) !important;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .speed-rank span {
@@ -2700,7 +3031,7 @@ main {
   }
 
   .team-lab-analysis {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -2910,6 +3241,78 @@ main {
   color: var(--text);
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(246, 237, 211, 0.25);
+}
+
+.topbar .premium-search-action {
+  font-size: 0 !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+}
+
+.topbar .premium-search-action svg {
+  margin-right: 0;
+}
+
+.topbar .premium-search-action::after {
+  content: "Buscar";
+  font-size: 0.82rem;
+  margin-left: 4px;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    gap: 12px 16px !important;
+    padding: 12px 16px !important;
+    min-height: auto !important;
+  }
+  
+  .topbar__brand {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+  }
+  
+  .topbar__brand .brand-text {
+    display: grid !important;
+  }
+  
+  .topbar__actions {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    align-self: center !important;
+  }
+  
+  .topbar__search {
+    grid-column: 1 / span 2 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .topbar-btn {
+    padding: 6px 12px !important;
+    border-radius: 999px !important;
+    min-height: 34px !important;
+    min-width: auto !important;
+  }
+  
+  .topbar-btn .btn-text {
+    display: inline !important;
+    font-size: 0.8rem;
+  }
+  
+  .app-shell {
+    padding-top: 124px !important;
+  }
+
+  .topbar .premium-search-action::after {
+    display: inline !important;
+    content: "Buscar" !important;
+  }
 }
 
 
@@ -3220,4 +3623,244 @@ main {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(212, 175, 55, 0.2), var(--glow-gold);
   color: #FFFFFF;
 }
+
+/* Premium Pokemon Build Editor Header Styles */
+.team-editor-panel > header {
+  display: none !important;
+}
+
+.team-editor-view-wrapper {
+  border: 1px solid rgba(246, 237, 211, 0.12) !important;
+  border-radius: 20px !important;
+  background: rgba(9, 11, 16, 0.7) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(246, 237, 211, 0.02) !important;
+  overflow: hidden;
+}
+
+.team-editor-view-wrapper .team-editor-panel {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding-top: 0 !important;
+}
+
+.custom-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  background: linear-gradient(to bottom, rgba(246, 237, 211, 0.03), transparent);
+  border-bottom: 1px solid rgba(246, 237, 211, 0.08);
+}
+
+.custom-editor-header__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.custom-editor-header__brand .eyebrow {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-gold);
+  margin: 0;
+}
+
+.custom-editor-header__main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.custom-editor-header__main h1 {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--accent-ivory);
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.custom-editor-header__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: var(--accent-gold-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.custom-editor-header__role {
+  font-size: 0.8rem;
+  color: var(--accent-silver);
+  margin: 4px 0 0 0;
+}
+
+.custom-editor-header__role span {
+  color: var(--accent-cosmic-blue);
+  font-weight: 600;
+  background: rgba(134, 216, 247, 0.08);
+  border: 1px solid rgba(134, 216, 247, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 4px;
+  display: inline-block;
+}
+
+.custom-editor-header__sprite-wrapper {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+  border: 1px dashed rgba(246, 237, 211, 0.25);
+  padding: 8px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+}
+
+.custom-editor-header__sprite-wrapper img {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px rgba(212, 175, 55, 0.35));
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.custom-editor-header:hover .custom-editor-header__sprite-wrapper img {
+  transform: scale(1.15) rotate(3deg);
+}
+
+/* High Density & Compact Styling for Pokemon Editor Básico and Item & Ability */
+
+/* General Card Spacing and Header */
+.team-editor-panel > .editor-card {
+  padding: 12px 14px !important;
+  background: rgba(9, 11, 16, 0.4) !important;
+  border: 1px solid rgba(246, 237, 211, 0.08) !important;
+  gap: 8px !important;
+}
+
+.team-editor-panel > .editor-card h3,
+.team-editor-panel > .editor-card .editor-section-header h3 {
+  font-size: 0.82rem !important;
+  font-weight: 800 !important;
+  color: var(--accent-gold) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  margin-bottom: 2px !important;
+}
+
+/* 1. Básico Section Layout */
+.team-editor-panel > section:nth-of-type(1) .editor-grid {
+  grid-template-columns: 100px 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 759px) {
+  .team-editor-panel > section:nth-of-type(1) .editor-grid {
+    grid-template-columns: 80px 1fr;
+    gap: 10px;
+  }
+  .team-editor-panel > section:nth-of-type(1) .editor-grid label:nth-of-type(3) {
+    grid-column: span 2;
+  }
+}
+
+/* 2. Item & Ability Section Layout */
+.team-editor-panel > section:nth-of-type(2) .editor-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .team-editor-panel > section:nth-of-type(2) .editor-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* High density inputs and selects inside editor-grid */
+.editor-grid label {
+  gap: 4px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  color: var(--accent-gold-soft) !important;
+}
+
+.editor-grid input,
+.editor-grid select {
+  min-height: 36px !important;
+  padding: 0 10px !important;
+  font-size: 0.82rem !important;
+  border-radius: 8px !important;
+  background: rgba(9, 11, 16, 0.6) !important;
+  border: 1px solid rgba(246, 237, 211, 0.1) !important;
+  color: var(--accent-ivory) !important;
+}
+
+.editor-grid input:focus,
+.editor-grid select:focus {
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  background: rgba(9, 11, 16, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1) !important;
+}
+
+/* Compact Held Item Description & Strip */
+.team-editor-panel .editor-help {
+  font-size: 0.78rem !important;
+  color: var(--accent-silver) !important;
+  opacity: 0.95 !important;
+  background: rgba(246, 237, 211, 0.02) !important;
+  border: 1px dashed rgba(246, 237, 211, 0.15) !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  margin: 2px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+}
+
+.team-editor-panel .editor-help strong {
+  color: var(--accent-gold-soft) !important;
+}
+
+.team-editor-panel .item-option-strip {
+  gap: 6px !important;
+  margin-top: 2px !important;
+}
+
+.team-editor-panel .item-option-strip button {
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  font-size: 0.72rem !important;
+  border-radius: 6px !important;
+  background: rgba(246, 237, 211, 0.02) !important;
+  border: 1px solid rgba(246, 237, 211, 0.08) !important;
+  color: var(--accent-silver) !important;
+  gap: 4px !important;
+}
+
+.team-editor-panel .item-option-strip button:hover {
+  background: rgba(212, 175, 55, 0.1) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  color: var(--accent-ivory) !important;
+}
+
+
 
