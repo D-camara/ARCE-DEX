@@ -24,8 +24,10 @@ export function FavoritesDrawer({
   }
 
   return (
-    <aside className={isOpen ? 'favorites-drawer is-open' : 'favorites-drawer'} aria-hidden={!isOpen}>
-      <header>
+    <>
+      {isOpen && <div className="drawer-backdrop" onClick={onClose} />}
+      <aside className={isOpen ? 'favorites-drawer is-open' : 'favorites-drawer'} aria-hidden={!isOpen}>
+        <header>
         <div>
           <p className="eyebrow">Favoritos</p>
           <h2>Pokemon salvos</h2>
@@ -66,5 +68,6 @@ export function FavoritesDrawer({
         {favorites.length === 0 && <p className="empty-copy">Nenhum Pokemon favoritado.</p>}
       </div>
     </aside>
+    </>
   )
 }
