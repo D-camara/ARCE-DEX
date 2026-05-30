@@ -33,6 +33,14 @@ type PokemonTabsProps = {
 const tabs = ['Info', 'Evolucao', 'Golpes', 'Fraquezas', 'Formas'] as const
 export type PokemonTabName = (typeof tabs)[number]
 
+const tabLabels: Record<PokemonTabName, string> = {
+  Info: 'Info',
+  Evolucao: 'Evolução',
+  Golpes: 'Golpes',
+  Fraquezas: 'Fraquezas',
+  Formas: 'Formas',
+}
+
 export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: PokemonTabsProps) {
   const [internalActiveTab, setInternalActiveTab] = useState<PokemonTabName>('Info')
   const selectedTab = activeTab ?? internalActiveTab
@@ -54,7 +62,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
             role="tab"
             type="button"
           >
-            {tab}
+            {tabLabels[tab]}
           </button>
         ))}
       </div>

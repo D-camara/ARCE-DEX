@@ -283,7 +283,7 @@ function App() {
             </button>
           </section>
 
-          <section className="content-grid bento-grid">
+          <section className="content-grid">
             <div className="primary-column">
               {selectedPokemonQuery.isLoading && <LoadingState />}
               {selectedPokemonQuery.isError && <ErrorState />}
