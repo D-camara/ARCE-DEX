@@ -97,8 +97,9 @@ export function SearchExperience({
           </div>
         </form>
         <div className="shortcut-grid">
-          <button type="button" onClick={() => onSearch(value)}>
-            Buscar Pokemon
+          <button type="button" onClick={() => onSearch(value)} className="premium-search-action">
+            <Search size={16} />
+            Acessar Registros do Archivum
           </button>
         </div>
       </div>

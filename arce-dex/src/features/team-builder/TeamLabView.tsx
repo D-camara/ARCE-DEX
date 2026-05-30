@@ -22,6 +22,20 @@ type TeamLabViewProps = {
   ) => void
 }
 
+const roleLabels: Record<string, string> = {
+  '': 'Sem função',
+  'physical-sweeper': 'Sweeper Físico',
+  'special-sweeper': 'Sweeper Especial',
+  'physical-tank': 'Tank Físico',
+  'special-tank': 'Tank Especial',
+  'support': 'Suporte',
+  'lead': 'Lead',
+  'pivot': 'Pivot',
+  'wallbreaker': 'Wallbreaker',
+  'hazard-setter': 'Hazard Setter',
+  'hazard-remover': 'Hazard Remover',
+}
+
 const labTabs = ['Time', 'Editor', 'Analise'] as const
 type LabTab = (typeof labTabs)[number]
 
@@ -66,14 +80,33 @@ export function TeamLabView({
   const renderedPanel = useMemo(() => {
     if (activeTab === 'Editor') {
       return (
-        <TeamPokemonEditor
-          abilityOptions={selectedAbilityOptions}
-          fetchedBaseStats={selectedBaseStats}
-          moveDetails={selectedMoveDetailsQuery.data}
-          moveOptions={selectedMoveOptions}
-          pokemon={selectedPokemon}
-          onChange={(updates) => onUpdatePokemon(activeTeam.id, selectedSlotIndex, updates)}
-        />
+        <div className="team-editor-view-wrapper">
+          {selectedPokemon && (
+            <header className="custom-editor-header">
+              <div className="custom-editor-header__brand">
+                <p className="eyebrow">Registro de Build</p>
+                <div className="custom-editor-header__main">
+                  <h1>{selectedPokemon.displayName}</h1>
+                  <span className="custom-editor-header__badge">Lv. {selectedPokemon.level ?? 100}</span>
+                </div>
+                <p className="custom-editor-header__role">
+                  Função: <span>{roleLabels[selectedPokemon.role ?? ''] || 'Sem função'}</span>
+                </p>
+              </div>
+              <div className="custom-editor-header__sprite-wrapper">
+                <img src={selectedPokemon.sprite} alt={selectedPokemon.displayName} />
+              </div>
+            </header>
+          )}
+          <TeamPokemonEditor
+            abilityOptions={selectedAbilityOptions}
+            fetchedBaseStats={selectedBaseStats}
+            moveDetails={selectedMoveDetailsQuery.data}
+            moveOptions={selectedMoveOptions}
+            pokemon={selectedPokemon}
+            onChange={(updates) => onUpdatePokemon(activeTeam.id, selectedSlotIndex, updates)}
+          />
+        </div>
       )
     }
 
@@ -164,16 +197,18 @@ export function TeamLabView({
       </section>
 
       <nav className="lab-tab-list" aria-label="Secoes do laboratorio">
-        {labTabs.map((tab) => (
-          <button
-            className={tab === activeTab ? 'is-active' : ''}
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            type="button"
-          >
-            {tab}
-          </button>
-        ))}
+        {labTabs
+          .filter((tab) => tab !== 'Editor')
+          .map((tab) => (
+            <button
+              className={tab === activeTab ? 'is-active' : ''}
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              type="button"
+            >
+              {tab === 'Analise' ? 'Análise' : tab}
+            </button>
+          ))}
       </nav>
 
       {renderedPanel}

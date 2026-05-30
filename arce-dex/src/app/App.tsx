@@ -215,11 +215,12 @@ function App() {
       <header className="topbar">
         <div className="topbar__brand">
           <span className="brand-mark">A</span>
-          <span>
+          <span className="brand-text">
             <strong>Archivum Arceus</strong>
             <small>Pokemon battle helper</small>
           </span>
         </div>
+        
         <div className="topbar__search">
           <SearchExperience
             isAutocompleteOpen={isAutocompleteOpen}
@@ -232,6 +233,27 @@ function App() {
             suggestions={summaryCache}
             value={query}
           />
+        </div>
+
+        <div className="topbar__actions">
+          <button
+            type="button"
+            onClick={() => setActiveView('team-lab')}
+            className="topbar-btn"
+            title="Meu Time"
+          >
+            <Menu size={16} />
+            <span className="btn-text">Meu Time</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsFavoritesOpen(true)}
+            className="topbar-btn"
+            title="Favoritos"
+          >
+            <Heart size={16} />
+            <span className="btn-text">Favoritos</span>
+          </button>
         </div>
       </header>
 
@@ -247,17 +269,7 @@ function App() {
           teams={teams}
         />
       ) : (
-        <main>
-          <section className="mobile-action-strip">
-            <button type="button" onClick={() => setActiveView('team-lab')}>
-              <Menu size={18} />
-              Meu Time
-            </button>
-            <button type="button" onClick={() => setIsFavoritesOpen(true)}>
-              <Heart size={18} />
-              Favoritos
-            </button>
-          </section>
+        <main className="home-layout">
 
           <section className="content-grid">
             <div className="primary-column">
