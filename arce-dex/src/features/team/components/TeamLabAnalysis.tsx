@@ -4,9 +4,9 @@ import {
   calculateTeamOffensiveProfile,
   calculateTeamDefensiveAnalysis,
 } from '@/features/type-analysis/lib/type-chart'
-import { calculateFinalStats } from '@/lib/stats'
-import type { MoveDetail } from '@/types/pokemon'
-import type { Team, TeamPokemon } from '@/types/team'
+import { calculateFinalStats } from '@/shared/lib/stats'
+import type { MoveDetail } from '@/shared/types/pokemon'
+import type { Team, TeamPokemon } from '@/shared/types/team'
 import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
 
 type TeamLabAnalysisProps = {

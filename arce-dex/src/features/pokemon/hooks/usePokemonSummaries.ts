@@ -1,7 +1,7 @@
 import { useQueries } from '@tanstack/react-query'
-import { getPokemon } from '@/services/pokeapi/endpoints'
-import { mapPokemonSummary } from '@/services/pokeapi/mappers'
-import { normalizePokemonSearch } from '@/lib/utils'
+import { getPokemon } from '@/shared/services/pokeapi/endpoints'
+import { mapPokemonSummary } from '@/shared/services/pokeapi/mappers'
+import { normalizePokemonSearch } from '@/shared/lib/utils'
 
 export function usePokemonSummaries(identifiers: Array<string | number>) {
   const normalizedIdentifiers = [...new Set(

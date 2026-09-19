@@ -4,7 +4,7 @@ import type {
   PokeApiMoveResponse,
   PokeApiPokemonResponse,
   PokeApiPokemonSpeciesResponse,
-} from '@/types/pokeapi'
+} from '@/shared/types/pokeapi'
 import {
   getPokemonSprite,
   mapAbilityDetail,

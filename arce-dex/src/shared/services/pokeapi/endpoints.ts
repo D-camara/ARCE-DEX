@@ -8,7 +8,7 @@ import type {
   PokeApiResolvedPokemonResponse,
   PokeApiPokemonSpeciesResponse,
   PokeApiTypeResponse,
-} from '@/types/pokeapi'
+} from '@/shared/types/pokeapi'
 import { getPokemonSearchCandidates } from '@/features/search/lib/search'
 import { pokeApiGet } from './client'
 

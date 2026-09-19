@@ -4,7 +4,7 @@ import {
   findHeldItemOption,
   getCuratedHeldItems,
   searchHeldItemOptions,
-} from '.'
+} from './items'
 
 const requiredItems = [
   'leftovers',

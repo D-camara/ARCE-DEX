@@ -1,4 +1,4 @@
-import type { PokemonTypeName } from '@/types/pokemon'
+import type { PokemonTypeName } from '@/shared/types/pokemon'
 
 type TypeBadgesProps = {
   types: PokemonTypeName[]

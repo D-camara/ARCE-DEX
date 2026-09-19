@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calculateHiddenPowerType, normalizeHiddenPowerIvs } from '.'
+import { calculateHiddenPowerType, normalizeHiddenPowerIvs } from './hidden-power'
 
 describe('hidden power calculator', () => {
   it('calculates Dark for perfect IVs', () => {

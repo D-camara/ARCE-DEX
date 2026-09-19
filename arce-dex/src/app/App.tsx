@@ -4,12 +4,12 @@ import { AbilityDetailsDialog } from '@/features/pokemon/components/AbilityDetai
 import { PokemonCard } from '@/features/pokemon/components/PokemonCard'
 import { PokemonTabs, type PokemonTabName } from '@/features/pokemon/components/PokemonTabs'
 import { AddToTeamDialog } from '@/features/team/components/AddToTeamDialog'
-import { ErrorState, LoadingState, Toast } from '@/components/ui/StatusStates'
+import { ErrorState, LoadingState, Toast } from '@/shared/ui/StatusStates'
 import { FavoritesDrawer } from '@/features/favorites/components/FavoritesDrawer'
 import { RecentPokemonPanel } from '@/features/favorites/components/RecentPokemonPanel'
 import { SearchExperience } from '@/features/search/components/SearchExperience'
 import { TeamLabView } from '@/features/team/components/TeamLabView'
-import { normalizePokemonSearch } from '@/lib/utils'
+import { normalizePokemonSearch } from '@/shared/lib/utils'
 import { getPokemonAutocompleteSuggestions } from '@/features/search/lib/search'
 import { usePokemon } from '@/features/pokemon/hooks/usePokemon'
 import { useAbility } from '@/features/pokemon/hooks/useAbility'
@@ -21,7 +21,7 @@ import { usePokemonSummaries } from '@/features/pokemon/hooks/usePokemonSummarie
 import { useFavoritesStore } from '@/features/favorites/store/favoritesStore'
 import { useSearchHistoryStore } from '@/features/search/store/searchHistoryStore'
 import { useTeamStore } from '@/features/team/store/teamStore'
-import type { PokemonSummary } from '@/types/pokemon'
+import type { PokemonSummary } from '@/shared/types/pokemon'
 import {
   flattenEvolutionNodes,
   getFavoritePokemon,

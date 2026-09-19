@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react'
-import type { PokemonSummary } from '@/types/pokemon'
+import type { PokemonSummary } from '@/shared/types/pokemon'
 import {
   getPokemonAutocompleteSuggestions,
   normalizePokemonSearchText,

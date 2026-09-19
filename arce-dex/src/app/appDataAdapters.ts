@@ -11,10 +11,10 @@ import type {
   PokemonMove,
   PokemonSpecies,
   PokemonSummary,
-} from '@/types/pokemon'
-import type { Team, TeamPokemon } from '@/types/team'
+} from '@/shared/types/pokemon'
+import type { Team, TeamPokemon } from '@/shared/types/team'
 import type { PokemonTabData } from '@/features/pokemon/components/PokemonTabs'
-import { normalizeCompetitivePokemon } from '@/lib/stats'
+import { normalizeCompetitivePokemon } from '@/shared/lib/stats'
 
 export function toTeamPokemon(pokemon: Pokemon): TeamPokemon {
   return normalizeCompetitivePokemon({

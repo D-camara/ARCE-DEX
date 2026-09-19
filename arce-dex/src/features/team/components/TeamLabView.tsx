@@ -5,7 +5,7 @@ import { TeamPokemonEditor } from '@/features/team/components/TeamPokemonEditor'
 import { TeamSlotCard } from '@/features/team/components/TeamSlotCard'
 import { usePokemon } from '@/features/pokemon/hooks/usePokemon'
 import { useMoveDetails } from '@/features/pokemon/hooks/usePokemonMoves'
-import type { Team, TeamPokemon } from '@/types/team'
+import type { Team, TeamPokemon } from '@/shared/types/team'
 
 type TeamLabViewProps = {
   activeTeamId: string

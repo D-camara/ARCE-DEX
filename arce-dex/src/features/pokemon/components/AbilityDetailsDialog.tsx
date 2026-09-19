@@ -1,5 +1,5 @@
 import { X } from 'lucide-react'
-import type { AbilityDetail } from '@/types/pokemon'
+import type { AbilityDetail } from '@/shared/types/pokemon'
 
 type AbilityDetailsDialogProps = {
   ability: AbilityDetail | undefined

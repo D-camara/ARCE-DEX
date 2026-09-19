@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { findPokemonSpecies } from '@/services/pokeapi/endpoints'
-import { mapPokemonSpecies } from '@/services/pokeapi/mappers'
-import { normalizePokemonSearch } from '@/lib/utils'
+import { findPokemonSpecies } from '@/shared/services/pokeapi/endpoints'
+import { mapPokemonSpecies } from '@/shared/services/pokeapi/mappers'
+import { normalizePokemonSearch } from '@/shared/lib/utils'
 
 export function usePokemonSpecies(identifier: string | number | null) {
   const normalizedIdentifier =

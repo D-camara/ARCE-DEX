@@ -6,8 +6,8 @@ import {
   calculateTypeAnalysis,
   getTypeEffectiveness,
 } from './type-chart'
-import type { MoveDetail } from '@/types/pokemon'
-import type { TeamPokemon } from '@/types/team'
+import type { MoveDetail } from '@/shared/types/pokemon'
+import type { TeamPokemon } from '@/shared/types/team'
 
 describe('type-chart', () => {
   it('calculates water/ground defensive profile', () => {

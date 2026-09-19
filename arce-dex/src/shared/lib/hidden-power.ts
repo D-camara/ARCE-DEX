@@ -1,6 +1,6 @@
-import type { PokemonStatName, PokemonTypeName } from '@/types/pokemon'
-import type { CompetitiveStatTable } from '@/types/team'
-import { getDefaultIvs } from '../stats'
+import type { PokemonStatName, PokemonTypeName } from '@/shared/types/pokemon'
+import type { CompetitiveStatTable } from '@/shared/types/team'
+import { getDefaultIvs } from './stats'
 
 export const HIDDEN_POWER_TYPES: PokemonTypeName[] = [
   'fighting',

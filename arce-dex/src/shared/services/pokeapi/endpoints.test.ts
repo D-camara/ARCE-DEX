@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { PokeApiPokemonFormResponse, PokeApiPokemonResponse } from '@/types/pokeapi'
+import type { PokeApiPokemonFormResponse, PokeApiPokemonResponse } from '@/shared/types/pokeapi'
 import { findPokemon } from './endpoints'
 
 describe('pokeapi endpoints', () => {

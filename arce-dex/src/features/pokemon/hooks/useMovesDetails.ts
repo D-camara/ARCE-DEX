@@ -1,7 +1,7 @@
 import { useQueries } from '@tanstack/react-query'
-import { getMove } from '@/services/pokeapi/endpoints'
-import { mapMoveDetail } from '@/services/pokeapi/mappers'
-import type { PokemonMove } from '@/types/pokemon'
+import { getMove } from '@/shared/services/pokeapi/endpoints'
+import { mapMoveDetail } from '@/shared/services/pokeapi/mappers'
+import type { PokemonMove } from '@/shared/types/pokemon'
 
 export function useMovesDetails(moves: PokemonMove[]) {
   const names = [...new Set(moves.map((move) => move.name))].slice(0, 32)

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { createLocalForageStateStorage } from '@/lib/storage'
+import { createLocalForageStateStorage } from '@/shared/lib/storage'
 
 type ThemeMode = 'light' | 'dark' | 'system'
 

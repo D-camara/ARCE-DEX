@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalizePokemonSearch } from '.'
+import { normalizePokemonSearch } from './utils'
 
 describe('normalizePokemonSearch', () => {
   it('normalizes Pokemon names', () => {

@@ -1,5 +1,5 @@
-import type { HeldItemOption } from '@/types/pokemon'
-import { formatPokemonName } from '../utils'
+import type { HeldItemOption } from '@/shared/types/pokemon'
+import { formatPokemonName } from './utils'
 
 const curatedHeldItems: Array<Omit<HeldItemOption, 'displayName'>> = [
   {

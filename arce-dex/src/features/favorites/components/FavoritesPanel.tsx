@@ -1,5 +1,5 @@
 import { Clock, Star } from 'lucide-react'
-import type { PokemonSummary } from '@/types/pokemon'
+import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
 
 type FavoritesPanelProps = {

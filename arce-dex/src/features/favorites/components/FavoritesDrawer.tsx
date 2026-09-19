@@ -1,6 +1,6 @@
 import { HeartOff, X } from 'lucide-react'
 import type { MouseEvent } from 'react'
-import type { PokemonSummary } from '@/types/pokemon'
+import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
 
 type FavoritesDrawerProps = {

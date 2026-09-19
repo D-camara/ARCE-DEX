@@ -4,7 +4,7 @@ import {
   getPokemonSearchCandidates,
   resolvePokemonSearchInput,
 } from './search'
-import type { PokemonSummary } from '@/types/pokemon'
+import type { PokemonSummary } from '@/shared/types/pokemon'
 
 function expectFirstCandidate(input: string, expected: string | number) {
   expect(resolvePokemonSearchInput(input)).toBe(expected)

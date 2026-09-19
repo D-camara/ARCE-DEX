@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { getEvolutionChain, getEvolutionChainByUrl } from '@/services/pokeapi/endpoints'
-import { mapEvolutionChain } from '@/services/pokeapi/mappers'
+import { getEvolutionChain, getEvolutionChainByUrl } from '@/shared/services/pokeapi/endpoints'
+import { mapEvolutionChain } from '@/shared/services/pokeapi/mappers'
 
 export function useEvolutionChain(id: string | number | null) {
   return useQuery({
