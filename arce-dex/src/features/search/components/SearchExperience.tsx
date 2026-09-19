@@ -3,7 +3,7 @@ import type { PokemonSummary } from '@/types/pokemon'
 import {
   getPokemonAutocompleteSuggestions,
   normalizePokemonSearchText,
-} from '@/lib/search'
+} from '@/features/search/lib/search'
 
 type SearchExperienceProps = {
   suggestions: PokemonSummary[]

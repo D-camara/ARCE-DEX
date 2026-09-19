@@ -1,4 +1,4 @@
-export { resolvePokemonSearchInput as normalizePokemonSearch } from '../search'
+export { resolvePokemonSearchInput as normalizePokemonSearch } from '@/features/search/lib/search'
 
 export function formatPokemonName(name: string) {
   return name
