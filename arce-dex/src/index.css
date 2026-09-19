@@ -223,7 +223,6 @@ main {
 }
 
 .pokemon-card,
-.analysis-panel,
 .team-lab-hero,
 .team-lab-toolbar,
 .team-lab-slot,
@@ -237,14 +236,12 @@ main {
 }
 
 .pokemon-card,
-.analysis-panel,
 .team-lab-hero,
 .team-lab-toolbar,
 .team-lab-slot,
 .team-editor-panel,
 .team-lab-analysis article,
-.editor-card,
-.add-team-dialog {
+.editor-card {
   min-width: 0;
 }
 
@@ -255,8 +252,7 @@ main {
   font-weight: 800;
 }
 
-.team-slots,
-.analysis-grid {
+.team-slots {
   display: grid;
   gap: 10px;
 }
@@ -264,7 +260,6 @@ main {
 .suggestion-item,
 .team-slot,
 .favorite-item button:first-child,
-.add-team-target,
 .risk-row {
   display: flex;
   align-items: center;
@@ -298,7 +293,6 @@ main {
 
 .suggestion-item img,
 .favorite-item img,
-.add-team-target img,
 .team-slot img {
   width: 44px;
   height: 44px;
@@ -307,7 +301,6 @@ main {
 
 .suggestion-item > span,
 .favorite-item span,
-.add-team-target div,
 .team-slot div {
   flex: 1;
   min-width: 0;
@@ -333,7 +326,6 @@ main {
 }
 
 .mobile-action-strip button,
-.primary-action,
 .drawer-actions button {
   display: inline-flex;
   align-items: center;
@@ -351,164 +343,6 @@ main {
   min-width: 0;
 }
 
-.pokemon-card {
-  display: grid;
-  gap: 24px;
-  padding: 24px;
-}
-
-.pokemon-card__media {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  gap: 20px;
-  padding: 32px 24px;
-  border-radius: var(--radius-card);
-  background: 
-    radial-gradient(circle at center, rgba(212, 175, 55, 0.12), transparent 65%),
-    radial-gradient(circle at top, rgba(139, 92, 246, 0.08), transparent 60%),
-    rgba(18, 22, 32, 0.4);
-  border: 1px solid rgba(246, 237, 211, 0.12);
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.6), var(--glow-gold);
-}
-
-.pokemon-card__media .eyebrow {
-  color: var(--accent-gold);
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  opacity: 0.9;
-}
-
-.pokemon-card__media h2 {
-  font-size: clamp(2rem, 6vw, 3.2rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
-  margin: 4px 0 8px;
-}
-
-.pokemon-card__media img {
-  width: min(200px, 58vw);
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 35px rgba(212, 175, 55, 0.35));
-  transition: filter var(--transition-normal), transform var(--transition-normal);
-}
-.pokemon-card__media img:hover {
-  filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 45px rgba(212, 175, 55, 0.5));
-  transform: translateY(-4px);
-}
-
-.pokemon-card__sprite {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  position: relative;
-  z-index: 2;
-}
-
-.pokemon-card__sprite-placeholder {
-  display: grid;
-  width: min(180px, 42vw);
-  aspect-ratio: 1;
-  place-items: center;
-  border: 1px dashed rgba(148, 163, 184, 0.32);
-  border-radius: 50%;
-  color: var(--muted);
-  font-size: 3rem;
-  font-weight: 800;
-}
-
-.shiny-toggle,
-.cry-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 10px;
-  border: 1px solid rgba(245, 208, 108, 0.34);
-  border-radius: 999px;
-  color: #fde68a;
-  background: rgba(245, 208, 108, 0.08);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.shiny-toggle.is-active {
-  color: #111827;
-  background: linear-gradient(135deg, #fde68a, #67e8f9);
-}
-
-.cry-button {
-  border-color: rgba(56, 189, 248, 0.34);
-  color: #bae6fd;
-  background: rgba(56, 189, 248, 0.08);
-}
-
-.pokemon-card__media p:last-child {
-  margin-top: 8px;
-  color: var(--muted);
-}
-
-.effectiveness-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.pokemon-facts {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin: 0;
-}
-
-.pokemon-facts--compact {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.pokemon-facts div {
-  padding: 14px;
-  border-radius: 14px;
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.pokemon-facts div::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(to right, transparent, var(--accent-gold), transparent);
-  opacity: 0.5;
-}
-
-.pokemon-facts dt {
-  color: var(--accent-ivory) !important;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.8;
-}
-
-.pokemon-facts dd {
-  margin: 4px 0 0;
-  font-weight: 800;
-  font-size: 1.1rem;
-  color: var(--text);
-}
-
-.ability-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.form-list span,
 .evolution-line span {
   min-height: 44px;
   padding: 8px 14px;
@@ -518,24 +352,6 @@ main {
   color: var(--accent-ivory);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all var(--transition-normal);
-}
-
-.stat-list {
-  display: grid;
-  gap: 8px;
-}
-
-.card-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 46px 46px;
-  gap: 8px;
-}
-
-.primary-action {
-  flex: 1;
-  border-color: rgba(56, 189, 248, 0.42);
-  background: rgba(56, 189, 248, 0.16);
-  font-weight: 800;
 }
 
 .team-tabs button.is-active {
@@ -565,30 +381,6 @@ main {
   gap: 10px;
 }
 
-
-.analysis-panel {
-  padding: 14px;
-}
-
-.analysis-grid article {
-  display: grid;
-  gap: 10px;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: rgba(18, 22, 32, 0.5);
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.analysis-grid article::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(to right, transparent, var(--accent-cosmic-blue), transparent);
-  opacity: 0.3;
-}
 
 .risk-row {
   justify-content: space-between;
@@ -643,14 +435,7 @@ main {
   background: rgba(52, 211, 153, 0.08);
 }
 
-.team-choice-list {
-  display: grid;
-  gap: 10px;
-}
-
-.favorite-item,
-.team-choice,
-.add-team-target {
+.favorite-item {
   width: 100%;
   min-height: 58px;
   padding: 10px;
@@ -692,25 +477,9 @@ main {
   background: transparent;
 }
 
-.success-copy {
-  color: var(--ok);
-}
-
 @keyframes fade-in-backdrop {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-.add-team-dialog header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.favorite-list {
-  min-height: 0;
-  overflow-y: auto;
 }
 
 .favorite-item button:first-child {
@@ -727,95 +496,6 @@ main {
   height: 38px;
   color: #fca5a5;
   border-radius: 14px;
-}
-
-.modal-backdrop {
-  position: fixed;
-  z-index: 34;
-  inset: 0;
-  display: grid;
-  align-items: end;
-  padding: 10px;
-  background: rgba(2, 6, 23, 0.64);
-}
-
-.add-team-dialog {
-  display: grid;
-  gap: 14px;
-  width: min(520px, 100%);
-  max-height: min(760px, 92svh);
-  margin: 0 auto;
-  padding: 16px;
-  overflow-y: auto;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(9, 13, 20, 0.98);
-  box-shadow: var(--shadow);
-}
-
-.team-choice {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  color: var(--text);
-}
-
-.team-choice strong {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.team-choice.is-active {
-  border-color: rgba(56, 189, 248, 0.62);
-  background: rgba(56, 189, 248, 0.14);
-}
-
-.team-choice span,
-.team-slot-preview span {
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.team-choice span {
-  width: 34px;
-  height: 34px;
-}
-
-.team-choice small,
-.team-choice em {
-  color: var(--muted);
-  font-size: 0.72rem;
-}
-
-.team-choice em {
-  grid-column: 2 / -1;
-  color: #fecdd3;
-  font-style: normal;
-}
-
-.team-slot-preview {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: clamp(4px, 1.8vw, 8px);
-}
-
-.team-slot-preview span {
-  aspect-ratio: 1;
-  color: var(--muted);
-  border: 1px dashed var(--line);
-}
-
-.team-slot-preview span.is-filled {
-  border-style: solid;
-}
-
-.team-slot-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 
 .drawer-header {
@@ -1760,10 +1440,6 @@ main {
 
   .team-lab-analysis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .modal-backdrop {
-    align-items: center;
   }
 }
 
