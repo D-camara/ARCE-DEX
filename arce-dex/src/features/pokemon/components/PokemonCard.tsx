@@ -33,21 +33,32 @@ export function PokemonCard({
   const displayedSprite = isShiny && pokemon.shinySprite ? pokemon.shinySprite : pokemon.imageUrl
 
   return (
-    <article className="legendary-artifact">
-      <div className="legendary-artifact__visual">
-        <div className="artifact-aura"></div>
-        <div className="artifact-sprite-wrapper">
+    <article className="grid overflow-hidden rounded-t-3xl border border-[rgba(246,237,211,0.12)] bg-[rgba(9,11,16,0.7)] shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.03)] min-[1024px]:grid-cols-[minmax(280px,40%)_1fr]">
+      <div className="relative grid place-items-center border-b border-[rgba(246,237,211,0.05)] bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.12),transparent_70%),rgba(5,7,12,0.5)] p-6 px-4 min-[1024px]:border-b-0 min-[1024px]:border-r min-[1024px]:p-8">
+        <div className="absolute left-1/2 top-1/2 z-0 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 animate-[pulse-aura_6s_ease-in-out_infinite_alternate] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.1)_0%,transparent_60%)] shadow-[0_0_60px_rgba(212,175,55,0.12)] min-[1024px]:h-[270px] min-[1024px]:w-[270px]" />
+        <div className="relative z-10 flex flex-col items-center gap-3">
           {displayedSprite ? (
-            <img src={displayedSprite} alt={pokemon.displayName} className="artifact-sprite" />
+            <img
+              src={displayedSprite}
+              alt={pokemon.displayName}
+              className="h-[130px] w-auto object-contain [filter:drop-shadow(0_20px_30px_rgba(0,0,0,0.9))_drop-shadow(0_0_40px_rgba(212,175,55,0.4))] transition-transform duration-500 hover:-translate-y-1.5 hover:scale-105 min-[1024px]:h-[240px]"
+            />
           ) : (
-            <span className="artifact-sprite-placeholder" aria-hidden>
+            <span
+              className="grid aspect-square w-[130px] place-items-center rounded-full border border-dashed border-[rgba(212,175,55,0.3)] text-5xl font-extrabold text-[rgba(212,175,55,0.6)]"
+              aria-hidden
+            >
               ?
             </span>
           )}
-          <div className="artifact-actions-visual">
+          <div className="flex gap-3">
             {pokemon.shinySprite && (
               <button
-                className={isShiny ? 'artifact-btn shiny is-active' : 'artifact-btn shiny'}
+                className={
+                  isShiny
+                    ? 'inline-flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-[#F6EDD3] bg-[linear-gradient(135deg,#D4AF37,#F6EDD3)] text-[#070707] backdrop-blur-md transition-all hover:-translate-y-0.5'
+                    : 'inline-flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-[rgba(246,237,211,0.2)] bg-white/5 text-ivory backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-[rgba(212,175,55,0.5)] hover:bg-white/10 hover:shadow-glow-gold'
+                }
                 onClick={() => setIsShiny((value) => !value)}
                 type="button"
                 title={isShiny ? 'Mostrar normal' : 'Mostrar shiny'}
@@ -56,7 +67,12 @@ export function PokemonCard({
               </button>
             )}
             {pokemon.cryUrl && (
-              <button className="artifact-btn cry" onClick={onPlayCry} type="button" title="Ouvir cry">
+              <button
+                className="inline-flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-[rgba(246,237,211,0.2)] bg-white/5 text-ivory backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-[rgba(212,175,55,0.5)] hover:bg-white/10 hover:shadow-glow-gold"
+                onClick={onPlayCry}
+                type="button"
+                title="Ouvir cry"
+              >
                 <Volume2 size={18} />
               </button>
             )}
@@ -64,48 +80,63 @@ export function PokemonCard({
         </div>
       </div>
 
-      <div className="legendary-artifact__data">
-        <header className="artifact-header">
-          <p className="artifact-id">Nº {String(pokemon.id).padStart(4, '0')}</p>
-          <h2 className="artifact-name">{pokemon.displayName}</h2>
+      <div className="grid content-start gap-4 p-5 min-[1024px]:p-6">
+        <header className="flex flex-col gap-1.5">
+          <p className="text-[0.9rem] font-bold uppercase tracking-[0.2em] text-gold">
+            Nº {String(pokemon.id).padStart(4, '0')}
+          </p>
+          <h2 className="m-0 bg-[linear-gradient(to_right,#FFFFFF,var(--color-ivory))] bg-clip-text text-[clamp(1.6rem,4vw,2.4rem)] font-black leading-tight tracking-tight text-transparent [text-shadow:0_4px_15px_rgba(255,255,255,0.1)]">
+            {pokemon.displayName}
+          </h2>
           <TypeBadges types={pokemon.types} />
         </header>
 
-        <div className="artifact-metrics">
-          <dl className="metrics-grid">
-            <div>
-              <dt>Altura</dt>
-              <dd>{(pokemon.height / 10).toFixed(1)} m</dd>
+        <div className="grid gap-4">
+          <dl className="m-0 grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-0.5 rounded-xl border border-[rgba(246,237,211,0.1)] bg-[rgba(18,22,32,0.5)] p-2.5 px-3 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
+              <dt className="text-[0.7rem] font-bold uppercase tracking-[0.15em] text-gold">Altura</dt>
+              <dd className="m-0 text-[1.1rem] font-extrabold text-ivory">{(pokemon.height / 10).toFixed(1)} m</dd>
             </div>
-            <div>
-              <dt>Peso</dt>
-              <dd>{(pokemon.weight / 10).toFixed(1)} kg</dd>
+            <div className="flex flex-col gap-0.5 rounded-xl border border-[rgba(246,237,211,0.1)] bg-[rgba(18,22,32,0.5)] p-2.5 px-3 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
+              <dt className="text-[0.7rem] font-bold uppercase tracking-[0.15em] text-gold">Peso</dt>
+              <dd className="m-0 text-[1.1rem] font-extrabold text-ivory">{(pokemon.weight / 10).toFixed(1)} kg</dd>
             </div>
           </dl>
 
           <AbilityList abilities={pokemon.abilities} onSelectAbility={onSelectAbility} />
         </div>
 
-        <div className="artifact-stats">
+        <div className="grid gap-2 rounded-2xl border border-[rgba(246,237,211,0.1)] bg-[rgba(18,22,32,0.5)] p-3 px-4 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
           {Object.entries(pokemon.stats).map(([name, value]) => (
             <StatBar key={name} label={statLabels[name as PokemonStatName]} value={value} />
           ))}
         </div>
 
-        <div className="artifact-controls">
-          <button className="primary-action-celestial" type="button" onClick={onAddToTeam}>
+        <div className="mt-2 flex gap-3">
+          <button
+            className="inline-flex min-h-[44px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[rgba(212,175,55,0.4)] bg-[linear-gradient(135deg,rgba(212,175,55,0.2),rgba(246,237,211,0.05))] text-[0.9rem] font-extrabold uppercase tracking-wide text-ivory shadow-[0_6px_15px_rgba(0,0,0,0.4),inset_0_0_10px_rgba(212,175,55,0.1)] transition-all hover:-translate-y-0.5 hover:border-[rgba(212,175,55,0.7)] hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.3),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
+            type="button"
+            onClick={onAddToTeam}
+          >
             <Plus size={20} />
             Adicionar à Equipe
           </button>
           <button
-            className={isFavorite ? 'icon-action-celestial is-favorite' : 'icon-action-celestial'}
+            className={
+              isFavorite
+                ? 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-[rgba(212,175,55,0.5)] bg-[rgba(212,175,55,0.15)] text-[#D4AF37] shadow-glow-gold transition-all hover:-translate-y-0.5'
+                : 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-[rgba(246,237,211,0.15)] bg-white/5 text-ivory-soft transition-all hover:-translate-y-0.5 hover:border-[rgba(246,237,211,0.3)] hover:bg-white/10 hover:text-ivory'
+            }
             type="button"
             onClick={onToggleFavorite}
           >
             <Heart fill={isFavorite ? 'currentColor' : 'none'} size={20} />
             <span className="sr-only">Favoritar</span>
           </button>
-          <button className="icon-action-celestial" type="button">
+          <button
+            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-[rgba(246,237,211,0.15)] bg-white/5 text-ivory-soft transition-all hover:-translate-y-0.5 hover:border-[rgba(246,237,211,0.3)] hover:bg-white/10 hover:text-ivory"
+            type="button"
+          >
             <ShieldCheck size={20} />
             <span className="sr-only">Analisar</span>
           </button>
@@ -123,9 +154,14 @@ function AbilityList({
   onSelectAbility: (abilityName: string) => void
 }) {
   return (
-    <section className="ability-list" aria-label="Habilidades">
+    <section className="flex flex-wrap gap-2" aria-label="Habilidades">
       {abilities.map((ability) => (
-        <button key={ability.name} onClick={() => onSelectAbility(ability.name)} type="button">
+        <button
+          key={ability.name}
+          onClick={() => onSelectAbility(ability.name)}
+          type="button"
+          className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border border-line bg-surface-2 px-3.5 py-2 text-ivory shadow-[0_2px_8px_rgba(0,0,0,0.2)] transition-all hover:border-gold hover:bg-[rgba(212,175,55,0.1)] hover:text-gold hover:shadow-glow-gold"
+        >
           {ability.displayName}
           <Info size={13} />
         </button>
@@ -136,10 +172,13 @@ function AbilityList({
 
 function StatBar({ label, value }: { label: string; value: number }) {
   return (
-    <div className="stat-bar">
+    <div className="grid grid-cols-[34px_1fr_34px] items-center gap-2 text-[0.82rem] text-ivory-soft">
       <span>{label}</span>
-      <div className="stat-track">
-        <i style={{ width: `${Math.min(value, 150) / 1.5}%` }} />
+      <div className="h-[9px] overflow-hidden rounded-full bg-white/[0.08]">
+        <i
+          className="block h-full rounded-[inherit] bg-[linear-gradient(90deg,var(--color-gold),var(--color-cosmic-blue))]"
+          style={{ width: `${Math.min(value, 150) / 1.5}%` }}
+        />
       </div>
       <strong>{value}</strong>
     </div>
