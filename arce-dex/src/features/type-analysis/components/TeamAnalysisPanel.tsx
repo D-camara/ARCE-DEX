@@ -1,7 +1,7 @@
 import { AlertTriangle, Shield, Swords } from 'lucide-react'
-import type { OffensiveCoverage, TeamDefensiveTypeSummary } from '@/lib/type-chart'
+import type { OffensiveCoverage, TeamDefensiveTypeSummary } from '@/features/type-analysis/lib/type-chart'
 import type { PokemonTypeName } from '@/types/pokemon'
-import { TypeBadges } from '../pokemon/TypeBadges'
+import { TypeBadges } from '@/components/pokemon/TypeBadges'
 
 export type TeamAnalysisPanelProps = {
   analysis: {

@@ -2,7 +2,7 @@ import {
   calculateOffensiveCoverage,
   calculateTeamDefensiveAnalysis,
   calculateTypeAnalysis,
-} from '@/lib/type-chart'
+} from '@/features/type-analysis/lib/type-chart'
 import type {
   EvolutionChain,
   EvolutionNode,

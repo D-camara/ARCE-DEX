@@ -5,7 +5,7 @@ import {
   calculateTeamDefensiveAnalysis,
   calculateTypeAnalysis,
   getTypeEffectiveness,
-} from '.'
+} from './type-chart'
 import type { MoveDetail } from '@/types/pokemon'
 import type { TeamPokemon } from '@/types/team'
 
