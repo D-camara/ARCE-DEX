@@ -12,15 +12,22 @@ com spec própria.
 
 1. TypeScript strict mode
 2. PWA de verdade (vite-plugin-pwa configurado)
-3. Quebrar `App.tsx` (god component, 340 linhas)
-4. Testes de stores/hooks (gap hoje: só libs puras têm `.test.ts`)
-5. Docker (build de produção)
-6. CI (GitHub Actions: lint + test + build)
-7. Pequenas libs de resiliência/DX: `react-error-boundary`,
+3. Migração completa para Tailwind CSS
+4. Quebrar `App.tsx` (god component, 340 linhas)
+5. Testes de stores/hooks (gap hoje: só libs puras têm `.test.ts`)
+6. Docker (build de produção)
+7. CI (GitHub Actions: lint + test + build)
+8. Pequenas libs de resiliência/DX: `react-error-boundary`,
    `@tanstack/react-query-devtools` (dev-only)
 
-Fora de escopo: Tailwind/CSS-in-JS (proibido), troca de Zustand/TanStack
-Query, roteador (2 views não justificam), Supabase (fase 2).
+Fora de escopo: CSS-in-JS, troca de Zustand/TanStack Query, roteador
+(2 views não justificam), Supabase (fase 2).
+
+**Mudança de regra do projeto:** `GEMINI.md` proíbe Tailwind hoje
+("não substitua o CSS puro por Tailwind"). O usuário autorizou
+explicitamente essa troca — `GEMINI.md` será atualizado junto com a
+implementação para refletir a nova regra (Tailwind é a estilização
+oficial a partir desta fase).
 
 ## 1. TypeScript strict mode
 
@@ -39,7 +46,25 @@ Query, roteador (2 views não justificam), Supabase (fase 2).
   - Shell da app: precache padrão do plugin.
 - Sem mudança de UI.
 
-## 3. Quebrar App.tsx
+## 3. Migração para Tailwind CSS
+
+- Instalar `tailwindcss` + plugin do Vite (`@tailwindcss/vite`), remover
+  `src/App.css` e o conteúdo custom de `src/index.css` (mantendo só
+  `@import "tailwindcss"` e resets mínimos indispensáveis).
+- Mapear os design tokens do `DESIGN.md` (cores cósmicas, glows, radius
+  de card/control, espaçamento 4/8px) para `theme` do Tailwind
+  (`tailwind.config.ts`: `colors`, `boxShadow`, `borderRadius`).
+- Reescrever classes de todos os componentes em `src/components/`,
+  `src/features/`, `src/app/App.tsx` trocando CSS custom por classes
+  utilitárias Tailwind, preservando visualmente o design system atual
+  (glassmorphism, glows, badges de tipo) — sem redesenhar, só re-implementar
+  com Tailwind.
+- Atualizar `DESIGN.md` e `GEMINI.md`: trocar a regra "não usar Tailwind"
+  pela nova stack de estilização oficial.
+- Fazer por partes (regra de alterações pequenas): shell/layout primeiro,
+  depois cards/badges, depois dialogs/tabs, validando build a cada etapa.
+
+## 4. Quebrar App.tsx
 
 - Extrair estado de diálogos/tabs para hooks dedicados
   (`useAppDialogs`, `useAppView`) em `src/app/`.
@@ -51,7 +76,7 @@ Query, roteador (2 views não justificam), Supabase (fase 2).
   ainda estiver inchado, considerar separar seletores/ações auxiliares
   do arquivo principal da store. Não normalizar/reescrever a store agora.
 
-## 4. Testes
+## 5. Testes
 
 - Adicionar `@testing-library/react` + `@testing-library/jest-dom` +
   `jsdom` (dev deps), configurar `vitest.config` (environment: jsdom).
@@ -59,19 +84,19 @@ Query, roteador (2 views não justificam), Supabase (fase 2).
 - Não perseguir 100% de cobertura; alvo é cobrir lógica de estado que
   hoje não tem nenhum teste.
 
-## 5. Docker
+## 6. Docker
 
 - `Dockerfile` multi-stage: stage `build` (node, `npm ci && npm run build`),
   stage `runtime` (nginx alpine servindo `/dist`, config simples de SPA
   fallback pra `index.html`).
 - Sem docker-compose nesta fase (só build de produção, não dev container).
 
-## 6. CI
+## 7. CI
 
 - `.github/workflows/ci.yml`: on push/PR para `dev`/`main`, roda
   `npm ci`, `npm run lint`, `npm run test`, `npm run build`.
 
-## 7. Libs de resiliência/DX
+## 8. Libs de resiliência/DX
 
 - `react-error-boundary`: envolver a árvore principal (`App` dentro de
   `Providers`) pra evitar tela branca em erro de render; fallback simples
