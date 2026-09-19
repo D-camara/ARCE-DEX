@@ -1050,3 +1050,11 @@ git commit -m "feat: add error boundary and dev-only React Query devtools"
 ## Execution ruling log
 
 Ruling (Task 3, Step 4): the plan as written replaced all of `index.css` with just the Tailwind import + theme, which would delete every hand-written rule before any component (Tasks 4-7) had been migrated to Tailwind utilities — breaking the entire visual layout for several commits. Corrected at execution time: `@import "tailwindcss";` and the `@theme` block are prepended to the top of `index.css`, and every existing hand-written rule is kept in place below them. Each subsequent migration task (4-7) deletes only the rules it just replaced, as already specified in those tasks' "delete the now-dead CSS" steps. Cost if wrong: none — Task 7's Step 3 already verifies `index.css` ends up with zero hand-written selectors, so the end state is identical either way; this only fixes the intermediate broken-visual-state risk.
+
+## Session pause (2026-09-19)
+
+Progress so far: Task 1 (TS strict) done, Task 2 (App.tsx hooks split) done, Task 3 (Tailwind install) done, Task 4 (shell + shared/ui migration) done, Task 5 in progress — TypeBadges migrated and committed; PokemonCard.tsx, PokemonTabs.tsx, AbilityDetailsDialog.tsx still pending (CSS classes read but not yet converted).
+
+User paused the session before deciding pixel-perfect vs. fast-approximate pace for the remaining Tailwind migration (Tasks 5-7 cover ~14 more components, several large — TeamPokemonEditor.tsx and TeamLabAnalysis.tsx are the biggest). Resume by asking the user which pace they want before continuing Task 5.
+
+No browser tool was available this session (extension not connected) — all verification was build/lint/test only, no visual screenshot confirmation. Flag this to the user when resuming.
