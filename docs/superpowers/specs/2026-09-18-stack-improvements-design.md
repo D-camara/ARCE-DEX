@@ -1,19 +1,72 @@
-# Archivum Arceus — Stack Improvements (Fase 1, pré-Supabase)
+# Archivum Arceus — Refactor Profissional (pré-Supabase)
 
 ## Contexto
 
-Revisão da stack atual (React 19 + Vite + TS + Zustand + TanStack Query +
-localForage/idb-keyval, CSS puro, sem Tailwind). Stack em si está correta
-para o produto; os problemas são de configuração e organização, não de
-escolha de tecnologia. Supabase (auth + sync) fica para uma fase seguinte,
-com spec própria.
+Refactor grande: reorganizar arquitetura de pastas pra padrão profissional
+feature-based e, em seguida, elevar a stack (React 19 + Vite + TS +
+Zustand + TanStack Query + localForage/idb-keyval). A escolha de
+tecnologia em si está correta pro produto — os problemas são de
+organização, configuração e estilização. Supabase (auth + sync) fica
+para uma fase seguinte, com spec própria.
 
-## Escopo desta fase
+Ordem de execução: **Fase 0 (reestruturação de pastas) primeiro,
+Fase 1 (melhorias de stack) depois**, decisão explícita do usuário —
+reorganizar o terreno antes de construir em cima.
+
+## Fase 0: Reestruturação de pastas (feature-based)
+
+Princípio: cada feature é dona de seus componentes/hooks/store; só o que
+é genuinamente cross-feature vai pra `shared/`.
+
+Estrutura hoje (camadas técnicas: `components/`, `features/`, `hooks/`,
+`stores/`, `lib/`, `services/` soltos na raiz de `src/`) migra para:
+
+```
+src/
+  app/                  # bootstrap: App.tsx (composição), providers.tsx, main.tsx
+  features/
+    pokemon/            # PokemonCard, PokemonTabs, TypeBadges, AbilityDetailsDialog
+      components/       # + hooks: usePokemon, usePokemonSpecies, usePokemonSummaries,
+      hooks/            #   usePokemonList, useEvolutionChain, useAbility,
+                         #   useMovesDetails, usePokemonForms
+    search/             # SearchExperience + searchHistoryStore + lib/search
+      components/
+      store/
+    team/               # TeamLabView, TeamLabAnalysis, TeamSlotCard,
+      components/       #   TeamPokemonEditor, AddToTeamDialog + teamStore
+      store/
+    favorites/          # FavoritesDrawer, FavoritesPanel, RecentPokemonPanel
+      components/       #   + favoritesStore
+      store/
+    type-analysis/      # TeamAnalysisPanel + lib/type-chart, useTypeAnalysis
+      components/       #   (consumido por pokemon e team)
+      hooks/
+  shared/
+    ui/                 # StatusStates, layout/ (componentes genéricos sem dono)
+    lib/                # utils, stats, items, hidden-power, storage (puros, sem feature dona)
+    services/pokeapi/   # client, endpoints, mappers (infra compartilhada)
+    stores/             # settingsStore (config global, não é de uma feature)
+    types/              # pokeapi.ts, pokemon.ts, team.ts (contratos compartilhados)
+```
+
+- Mover arquivo por arquivo, ajustando imports; sem reescrever lógica
+  nesta fase — é só mover/renomear, comportamento não muda.
+- Cada `feature/*` ganha um `index.ts` de barrel export (já existe esse
+  padrão em parte do código hoje).
+- Ordem sugerida de migração (menor risco primeiro): `favorites` →
+  `type-analysis` → `search` → `team` → `pokemon` → `shared`.
+- Validar com `npm run build` + `npm run test` a cada feature movida.
+- Mapeamento exato arquivo-a-arquivo fica pro plano de implementação
+  (writing-plans), não pra esta spec.
+
+## Fase 1: Melhorias de stack
 
 1. TypeScript strict mode
 2. PWA de verdade (vite-plugin-pwa configurado)
 3. Migração completa para Tailwind CSS
-4. Quebrar `App.tsx` (god component, 340 linhas)
+4. Quebrar `App.tsx` (god component, 340 linhas) — parte já resolvida
+   pela Fase 0 (componentes saem de dentro do arquivo); o que sobra é
+   extrair estado de diálogos/tabs pra hooks dedicados
 5. Testes de stores/hooks (gap hoje: só libs puras têm `.test.ts`)
 6. Docker (build de produção)
 7. CI (GitHub Actions: lint + test + build)
@@ -21,13 +74,11 @@ com spec própria.
    `@tanstack/react-query-devtools` (dev-only)
 
 Fora de escopo: CSS-in-JS, troca de Zustand/TanStack Query, roteador
-(2 views não justificam), Supabase (fase 2).
+(2 views não justificam), monorepo, backend próprio, Supabase (fase 2).
 
-**Mudança de regra do projeto:** `GEMINI.md` proíbe Tailwind hoje
-("não substitua o CSS puro por Tailwind"). O usuário autorizou
-explicitamente essa troca — `GEMINI.md` será atualizado junto com a
-implementação para refletir a nova regra (Tailwind é a estilização
-oficial a partir desta fase).
+**Nota:** `GEMINI.md` e `DESIGN.md` (que proibiam Tailwind e documentavam
+o design system antigo) foram removidos a pedido do usuário — docs
+desatualizados. Tailwind é a estilização oficial a partir desta fase.
 
 ## 1. TypeScript strict mode
 
@@ -54,27 +105,25 @@ oficial a partir desta fase).
 - Mapear os design tokens do `DESIGN.md` (cores cósmicas, glows, radius
   de card/control, espaçamento 4/8px) para `theme` do Tailwind
   (`tailwind.config.ts`: `colors`, `boxShadow`, `borderRadius`).
-- Reescrever classes de todos os componentes em `src/components/`,
-  `src/features/`, `src/app/App.tsx` trocando CSS custom por classes
-  utilitárias Tailwind, preservando visualmente o design system atual
+- Reescrever classes de todos os componentes em `src/features/*` e
+  `src/app/App.tsx` trocando CSS custom por classes utilitárias
+  Tailwind, preservando visualmente o design system atual
   (glassmorphism, glows, badges de tipo) — sem redesenhar, só re-implementar
   com Tailwind.
-- Atualizar `DESIGN.md` e `GEMINI.md`: trocar a regra "não usar Tailwind"
-  pela nova stack de estilização oficial.
 - Fazer por partes (regra de alterações pequenas): shell/layout primeiro,
   depois cards/badges, depois dialogs/tabs, validando build a cada etapa.
 
-## 4. Quebrar App.tsx
+## 4. Quebrar App.tsx (resto, pós Fase 0)
 
 - Extrair estado de diálogos/tabs para hooks dedicados
   (`useAppDialogs`, `useAppView`) em `src/app/`.
 - `App.tsx` fica só composição: monta hooks, passa props pros componentes
-  já existentes (`SearchExperience`, `TeamLabView`, dialogs). Sem mudar
+  das features (já vivendo em `features/*` após a Fase 0). Sem mudar
   nenhuma funcionalidade (busca, favoritos, team builder, histórico
-  continuam intactos, conforme regra do `GEMINI.md`).
-- `teamStore.ts` (353 linhas): revisar depois de separar `App.tsx`; se
-  ainda estiver inchado, considerar separar seletores/ações auxiliares
-  do arquivo principal da store. Não normalizar/reescrever a store agora.
+  continuam intactos).
+- `teamStore.ts` (353 linhas, agora em `features/team/store/`): se ainda
+  estiver inchado depois da Fase 0, considerar separar seletores/ações
+  auxiliares do arquivo principal. Não normalizar/reescrever a store agora.
 
 ## 5. Testes
 
@@ -106,10 +155,8 @@ oficial a partir desta fase).
 
 ## Testing/validação
 
-- Após cada item: `npm run build`, `npm run lint`, `npm run test` (regra
-  já existente no `GEMINI.md`).
-- Mudanças incrementais, um item por vez, conforme regra de "alterações
-  em etapas pequenas" do projeto.
+- Após cada item: `npm run build`, `npm run lint`, `npm run test`.
+- Mudanças incrementais, um item por vez.
 
 ## Fora de escopo (fase 2)
 
