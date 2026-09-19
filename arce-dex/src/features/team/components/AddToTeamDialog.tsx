@@ -43,7 +43,11 @@ export function AddToTeamDialog({
             <p className="text-gold">Adicionar ao time</p>
             <h2>{pokemon.displayName}</h2>
           </div>
-          <button className="icon-action" type="button" onClick={onClose}>
+          <button
+            className="inline-grid h-[42px] w-[42px] place-items-center rounded-control border border-line bg-white/[0.04]"
+            type="button"
+            onClick={onClose}
+          >
             <X size={18} />
             <span className="sr-only">Fechar seletor</span>
           </button>
