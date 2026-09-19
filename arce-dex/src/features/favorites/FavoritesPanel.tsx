@@ -1,6 +1,6 @@
 import { Clock, Star } from 'lucide-react'
-import type { PokemonSummary } from '../../types/pokemon'
-import { TypeBadges } from '../../components/pokemon/TypeBadges'
+import type { PokemonSummary } from '@/types/pokemon'
+import { TypeBadges } from '@/components/pokemon/TypeBadges'
 
 type FavoritesPanelProps = {
   favorites: PokemonSummary[]

@@ -3,8 +3,8 @@ import type {
   PokemonMoveCategory,
   PokemonTypeName,
   TypeEffectiveness,
-} from '../../types/pokemon'
-import type { Team, TeamPokemon } from '../../types/team'
+} from '@/types/pokemon'
+import type { Team, TeamPokemon } from '@/types/team'
 
 export type TypeAnalysis = {
   weaknesses: PokemonTypeName[]

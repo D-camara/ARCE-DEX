@@ -1,11 +1,11 @@
 import { ArrowLeft, Eraser, Pencil } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { TeamLabAnalysis } from '../../components/team/TeamLabAnalysis'
-import { TeamPokemonEditor } from '../../components/team/TeamPokemonEditor'
-import { TeamSlotCard } from '../../components/team/TeamSlotCard'
-import { usePokemon } from '../../hooks/usePokemon'
-import { useMoveDetails } from '../../hooks/usePokemonMoves'
-import type { Team, TeamPokemon } from '../../types/team'
+import { TeamLabAnalysis } from '@/components/team/TeamLabAnalysis'
+import { TeamPokemonEditor } from '@/components/team/TeamPokemonEditor'
+import { TeamSlotCard } from '@/components/team/TeamSlotCard'
+import { usePokemon } from '@/hooks/usePokemon'
+import { useMoveDetails } from '@/hooks/usePokemonMoves'
+import type { Team, TeamPokemon } from '@/types/team'
 
 type TeamLabViewProps = {
   activeTeamId: string

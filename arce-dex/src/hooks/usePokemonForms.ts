@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { findPokemon } from '../services/pokeapi/endpoints'
-import { mapPokemonDetail } from '../services/pokeapi/mappers'
-import { normalizePokemonSearch } from '../lib/utils'
+import { findPokemon } from '@/services/pokeapi/endpoints'
+import { mapPokemonDetail } from '@/services/pokeapi/mappers'
+import { normalizePokemonSearch } from '@/lib/utils'
 
 export function usePokemonForms(identifier: string | number | null) {
   const normalizedIdentifier =

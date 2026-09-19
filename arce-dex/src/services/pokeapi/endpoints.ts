@@ -8,8 +8,8 @@ import type {
   PokeApiResolvedPokemonResponse,
   PokeApiPokemonSpeciesResponse,
   PokeApiTypeResponse,
-} from '../../types/pokeapi'
-import { getPokemonSearchCandidates } from '../../lib/search'
+} from '@/types/pokeapi'
+import { getPokemonSearchCandidates } from '@/lib/search'
 import { pokeApiGet } from './client'
 
 export function getPokemonList(limit = 151, offset = 0) {

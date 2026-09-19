@@ -6,7 +6,7 @@ import type {
   PokemonMove,
   PokemonTypeName,
   TypeEffectiveness,
-} from '../../types/pokemon'
+} from '@/types/pokemon'
 
 export type PokemonTabData = {
   currentPokemonName: string

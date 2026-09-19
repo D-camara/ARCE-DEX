@@ -1,9 +1,9 @@
 import { Search } from 'lucide-react'
-import type { PokemonSummary } from '../../types/pokemon'
+import type { PokemonSummary } from '@/types/pokemon'
 import {
   getPokemonAutocompleteSuggestions,
   normalizePokemonSearchText,
-} from '../../lib/search'
+} from '@/lib/search'
 
 type SearchExperienceProps = {
   suggestions: PokemonSummary[]

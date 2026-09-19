@@ -7,8 +7,8 @@ import {
   getNatureModifier,
   normalizeCompetitivePokemon,
 } from '.'
-import type { PokemonStats } from '../../types/pokemon'
-import type { TeamPokemon } from '../../types/team'
+import type { PokemonStats } from '@/types/pokemon'
+import type { TeamPokemon } from '@/types/team'
 
 const charizardBaseStats: PokemonStats = {
   hp: 78,

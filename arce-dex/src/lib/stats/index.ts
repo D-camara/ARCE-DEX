@@ -1,10 +1,10 @@
-import type { PokemonStatName, PokemonStats } from '../../types/pokemon'
+import type { PokemonStatName, PokemonStats } from '@/types/pokemon'
 import type {
   CompetitiveStatTable,
   PokemonNature,
   TeamPokemon,
   TeamRole,
-} from '../../types/team'
+} from '@/types/team'
 
 export const COMPETITIVE_STAT_NAMES: PokemonStatName[] = [
   'hp',

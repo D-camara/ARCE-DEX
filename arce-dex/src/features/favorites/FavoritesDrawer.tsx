@@ -1,7 +1,7 @@
 import { HeartOff, X } from 'lucide-react'
 import type { MouseEvent } from 'react'
-import type { PokemonSummary } from '../../types/pokemon'
-import { TypeBadges } from '../../components/pokemon/TypeBadges'
+import type { PokemonSummary } from '@/types/pokemon'
+import { TypeBadges } from '@/components/pokemon/TypeBadges'
 
 type FavoritesDrawerProps = {
   isOpen: boolean

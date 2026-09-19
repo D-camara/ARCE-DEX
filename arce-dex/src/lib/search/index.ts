@@ -1,4 +1,4 @@
-import type { PokemonSummary } from '../../types/pokemon'
+import type { PokemonSummary } from '@/types/pokemon'
 
 export type PokemonSearchValue = string | number
 

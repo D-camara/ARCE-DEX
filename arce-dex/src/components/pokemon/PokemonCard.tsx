@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Heart, Info, Plus, ShieldCheck, Sparkles, Volume2 } from 'lucide-react'
-import type { Pokemon, PokemonStatName } from '../../types/pokemon'
+import type { Pokemon, PokemonStatName } from '@/types/pokemon'
 import { TypeBadges } from './TypeBadges'
 
 type PokemonCardProps = {

@@ -12,7 +12,7 @@ import type {
   PokemonStats,
   PokemonSummary,
   PokemonTypeName,
-} from '../../types/pokemon'
+} from '@/types/pokemon'
 import type {
   PokeApiEvolutionChainResponse,
   PokeApiAbilityResponse,
@@ -22,9 +22,9 @@ import type {
   PokeApiPokemonResponse,
   PokeApiResolvedPokemonResponse,
   PokeApiPokemonSpeciesResponse,
-} from '../../types/pokeapi'
-import type { TeamPokemon } from '../../types/team'
-import { formatGenerationName, formatPokemonName } from '../../lib/utils'
+} from '@/types/pokeapi'
+import type { TeamPokemon } from '@/types/team'
+import { formatGenerationName, formatPokemonName } from '@/lib/utils'
 
 const DEFAULT_STATS: PokemonStats = {
   hp: 0,

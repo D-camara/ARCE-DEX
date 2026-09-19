@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { createLocalForageStateStorage } from '../lib/storage'
+import { createLocalForageStateStorage } from '@/lib/storage'
 
 const MAX_HISTORY_ITEMS = 20
 

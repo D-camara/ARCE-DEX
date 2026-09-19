@@ -1,5 +1,5 @@
 import { Package, Pencil, Trash2 } from 'lucide-react'
-import type { TeamSlot } from '../../types/team'
+import type { TeamSlot } from '@/types/team'
 import { TypeBadges } from '../pokemon/TypeBadges'
 
 type TeamSlotCardProps = {

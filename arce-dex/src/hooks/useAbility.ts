@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAbility } from '../services/pokeapi/endpoints'
-import { mapAbilityDetail } from '../services/pokeapi/mappers'
+import { getAbility } from '@/services/pokeapi/endpoints'
+import { mapAbilityDetail } from '@/services/pokeapi/mappers'
 
 export function useAbility(name: string | null) {
   return useQuery({

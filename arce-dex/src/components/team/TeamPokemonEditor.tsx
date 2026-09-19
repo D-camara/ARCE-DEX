@@ -5,18 +5,18 @@ import type {
   PokemonMove,
   PokemonStatName,
   PokemonStats,
-} from '../../types/pokemon'
-import type { CompetitiveStatTable, PokemonNature, TeamPokemon, TeamRole } from '../../types/team'
+} from '@/types/pokemon'
+import type { CompetitiveStatTable, PokemonNature, TeamPokemon, TeamRole } from '@/types/team'
 import { TypeBadges } from '../pokemon/TypeBadges'
-import { calculateHiddenPowerType } from '../../lib/hidden-power'
-import { findHeldItemOption, getCuratedHeldItems, searchHeldItemOptions } from '../../lib/items'
+import { calculateHiddenPowerType } from '@/lib/hidden-power'
+import { findHeldItemOption, getCuratedHeldItems, searchHeldItemOptions } from '@/lib/items'
 import {
   COMPETITIVE_STAT_NAMES,
   calculateFinalStats,
   getDefaultEvs,
   getDefaultIvs,
   normalizeCompetitivePokemon,
-} from '../../lib/stats'
+} from '@/lib/stats'
 
 type TeamPokemonEditorProps = {
   abilityOptions?: PokemonAbility[]

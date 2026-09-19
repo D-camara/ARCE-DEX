@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { normalizeCompetitivePokemon } from '../lib/stats'
-import { createLocalForageStateStorage } from '../lib/storage'
-import type { Team, TeamPokemon, TeamSlot } from '../types/team'
+import { normalizeCompetitivePokemon } from '@/lib/stats'
+import { createLocalForageStateStorage } from '@/lib/storage'
+import type { Team, TeamPokemon, TeamSlot } from '@/types/team'
 
 export const MAX_TEAMS = 6
 export const TEAM_SIZE = 6

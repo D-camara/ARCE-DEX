@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { findPokemon, getMove } from '../services/pokeapi/endpoints'
-import { mapMoveDetail, mapPokemonDetail } from '../services/pokeapi/mappers'
-import { normalizePokemonSearch } from '../lib/utils'
-import type { MoveDetail, PokemonMove } from '../types/pokemon'
+import { findPokemon, getMove } from '@/services/pokeapi/endpoints'
+import { mapMoveDetail, mapPokemonDetail } from '@/services/pokeapi/mappers'
+import { normalizePokemonSearch } from '@/lib/utils'
+import type { MoveDetail, PokemonMove } from '@/types/pokemon'
 
 export function usePokemonMoves(identifier: string | number | null, search = '') {
   const normalizedIdentifier =

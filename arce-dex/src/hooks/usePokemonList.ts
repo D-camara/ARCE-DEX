@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { getPokemon, getPokemonList } from '../services/pokeapi/endpoints'
-import { mapPokemonListResource, mapPokemonSummary } from '../services/pokeapi/mappers'
+import { getPokemon, getPokemonList } from '@/services/pokeapi/endpoints'
+import { mapPokemonListResource, mapPokemonSummary } from '@/services/pokeapi/mappers'
 
 const DEFAULT_AUTOCOMPLETE_LIMIT = 1500
 
