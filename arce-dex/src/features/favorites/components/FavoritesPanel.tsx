@@ -9,7 +9,7 @@ type FavoritesPanelProps = {
 
 export function FavoritesPanel({ favorites, history }: FavoritesPanelProps) {
   return (
-    <section className="quick-panel">
+    <section className="grid grid-cols-1 gap-2.5 min-[760px]:grid-cols-2">
       <QuickList icon={<Star size={17} />} items={favorites} title="Favoritos" />
       <QuickList icon={<Clock size={17} />} items={history} title="Recentes" />
     </section>
@@ -26,22 +26,24 @@ function QuickList({
   title: string
 }) {
   return (
-    <article>
-      <h2>
+    <article className="grid gap-2.5 rounded-2xl border border-line bg-surface-2 p-3.5">
+      <h2 className="flex items-center gap-2">
         {icon}
         {title}
       </h2>
       {items.map((pokemon) => (
-        <div className="quick-pokemon" key={`${title}-${pokemon.id}`}>
-          <img src={pokemon.imageUrl} alt="" />
-          <div>
+        <div className="flex min-h-[58px] items-start gap-2.5" key={`${title}-${pokemon.id}`}>
+          <img src={pokemon.imageUrl} alt="" className="h-11 w-11 object-contain" />
+          <div className="grid min-w-0 flex-1 gap-1">
             <strong>{pokemon.displayName}</strong>
-            <small>#{String(pokemon.id).padStart(4, '0')}</small>
+            <small className="text-[0.72rem] text-muted">#{String(pokemon.id).padStart(4, '0')}</small>
             <TypeBadges compact types={pokemon.types} />
           </div>
         </div>
       ))}
-      {items.length === 0 && <p className="empty-copy">Nenhum Pokemon nesta lista.</p>}
+      {items.length === 0 && (
+        <p className="text-center italic tracking-wide text-muted opacity-80">Nenhum Pokemon nesta lista.</p>
+      )}
     </article>
   )
 }

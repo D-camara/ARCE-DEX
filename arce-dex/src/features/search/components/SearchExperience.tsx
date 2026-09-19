@@ -4,6 +4,7 @@ import {
   getPokemonAutocompleteSuggestions,
   normalizePokemonSearchText,
 } from '@/features/search/lib/search'
+import { TypeBadges } from '@/features/pokemon'
 
 type SearchExperienceProps = {
   suggestions: PokemonSummary[]
@@ -16,6 +17,8 @@ type SearchExperienceProps = {
   onSearch: (value: string) => void
   onSelect: (pokemon: PokemonSummary) => void
 }
+
+const emptyCopyClass = 'text-center italic tracking-wide text-muted opacity-80'
 
 export function SearchExperience({
   isAutocompleteOpen,
@@ -35,71 +38,74 @@ export function SearchExperience({
     : []
 
   return (
-    <section className="search-card">
-      <div className="search-card__inner">
+    <section className="relative mx-auto w-[min(680px,100%)]">
+      <div className="grid w-full grid-cols-1 gap-2">
         <form
           onSubmit={(event) => {
             event.preventDefault()
             onSearch(value)
           }}
         >
-          <div className="search-field-shell">
-            <label className="search-box">
-              <Search size={20} />
+          <div className="relative">
+            <label className="flex min-h-[38px] items-center gap-2 rounded-[10px] border border-[rgba(201,166,70,0.22)] bg-[rgba(9,11,16,0.85)] px-3 transition-colors focus-within:border-gold focus-within:bg-[#0d0d10] focus-within:shadow-glow-gold [&:focus-within_svg]:text-gold">
+              <Search size={16} className="shrink-0 text-muted transition-colors" />
               <input
                 onChange={(event) => onChange(event.target.value)}
                 onFocus={onFocus}
                 placeholder="Nome, numero ou #448"
                 type="search"
                 value={value}
+                className="min-h-[36px] w-full border-0 bg-transparent text-[0.88rem] text-ivory outline-none placeholder:text-[#94a3b8]"
               />
             </label>
             {shouldShowSuggestions && (
-              <div className="search-dropdown">
-                {isLoading && <p className="empty-copy">Carregando Pokemon...</p>}
-                {isError && <p className="empty-copy">Nao foi possivel carregar a PokeAPI.</p>}
-                {!isLoading && !isError && visibleSuggestions.length > 0 ? (
-                  visibleSuggestions.map((pokemon) => (
-                    <button
-                      className="search-result-item"
-                      key={pokemon.name}
-                      onClick={() => onSelect(pokemon)}
-                      type="button"
-                    >
-                      {pokemon.imageUrl ? (
-                        <img className="search-result-item__sprite" src={pokemon.imageUrl} alt="" />
-                      ) : (
-                        <span className="search-result-item__sprite" aria-hidden />
-                      )}
-                      <span className="search-result-item__content">
-                        <strong className="search-result-item__name">{pokemon.displayName}</strong>
-                        <small className="search-result-item__number">
-                          {pokemon.id > 0
-                            ? `#${String(pokemon.id).padStart(4, '0')}`
-                            : pokemon.name}
-                        </small>
-                        <span className="search-result-item__types">
-                          {pokemon.types.map((type) => (
-                            <span className={`type-badge type-${type}`} key={type}>
-                              {type}
-                            </span>
-                          ))}
+              <div className="absolute left-0 top-[calc(100%+0.5rem)] z-[70] flex max-h-[min(360px,calc(100svh-150px))] w-full flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-2xl border border-[rgba(56,189,248,0.28)] bg-[rgba(8,13,24,0.98)] p-1.5 shadow-[0_22px_55px_rgba(0,0,0,0.48)] backdrop-blur-xl">
+                {isLoading && <p className={emptyCopyClass}>Carregando Pokemon...</p>}
+                {isError && <p className={emptyCopyClass}>Nao foi possivel carregar a PokeAPI.</p>}
+                {!isLoading && !isError && visibleSuggestions.length > 0
+                  ? visibleSuggestions.map((pokemon) => (
+                      <button
+                        className="grid w-full min-h-[92px] grid-cols-[52px_minmax(0,1fr)] items-start gap-3 overflow-hidden rounded-2xl border border-line bg-surface p-3 text-left transition-all hover:-translate-y-0.5 hover:border-gold hover:bg-surface-2 hover:shadow-glow-gold"
+                        key={pokemon.name}
+                        onClick={() => onSelect(pokemon)}
+                        type="button"
+                      >
+                        {pokemon.imageUrl ? (
+                          <img className="block h-[52px] w-[52px] place-self-center object-contain" src={pokemon.imageUrl} alt="" />
+                        ) : (
+                          <span className="block h-[52px] w-[52px] place-self-center" aria-hidden />
+                        )}
+                        <span className="flex w-full min-w-0 flex-col gap-1.5 pt-0.5">
+                          <strong className="min-w-0 overflow-hidden truncate font-extrabold leading-tight">
+                            {pokemon.displayName}
+                          </strong>
+                          <small className="text-[0.78rem] font-bold text-muted">
+                            {pokemon.id > 0
+                              ? `#${String(pokemon.id).padStart(4, '0')}`
+                              : pokemon.name}
+                          </small>
+                          <span className="flex min-w-0 flex-wrap gap-1.5 pt-0.5">
+                            <TypeBadges compact types={pokemon.types} />
+                          </span>
                         </span>
-                      </span>
-                    </button>
-                  ))
-                ) : null}
+                      </button>
+                    ))
+                  : null}
                 {!isLoading && !isError && visibleSuggestions.length === 0 ? (
-                  <p className="empty-copy">Nenhum Pokemon encontrado para essa busca.</p>
+                  <p className={emptyCopyClass}>Nenhum Pokemon encontrado para essa busca.</p>
                 ) : null}
               </div>
             )}
           </div>
         </form>
-        <div className="shortcut-grid">
-          <button type="button" onClick={() => onSearch(value)} className="premium-search-action">
+        <div className="grid w-full gap-2">
+          <button
+            type="button"
+            onClick={() => onSearch(value)}
+            className="flex min-h-[38px] items-center justify-center gap-2 rounded-[10px] border border-[rgba(212,175,55,0.4)] bg-[linear-gradient(135deg,rgba(212,175,55,0.15),rgba(246,237,211,0.05))] px-3.5 text-[0.82rem] font-bold uppercase tracking-wide text-ivory shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_0_10px_rgba(212,175,55,0.1)] transition-all hover:border-[rgba(212,175,55,0.6)] hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.25),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
+          >
             <Search size={16} />
-            Acessar Registros do Archivum
+            Buscar
           </button>
         </div>
       </div>
