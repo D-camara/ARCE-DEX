@@ -2,7 +2,7 @@ import {
   calculateOffensiveCoverage,
   calculateTeamDefensiveAnalysis,
   calculateTypeAnalysis,
-} from '@/features/type-analysis/lib/type-chart'
+} from '@/features/type-analysis'
 import type {
   EvolutionChain,
   EvolutionNode,
@@ -13,7 +13,7 @@ import type {
   PokemonSummary,
 } from '@/shared/types/pokemon'
 import type { Team, TeamPokemon } from '@/shared/types/team'
-import type { PokemonTabData } from '@/features/pokemon/components/PokemonTabs'
+import type { PokemonTabData } from '@/features/pokemon'
 import { normalizeCompetitivePokemon } from '@/shared/lib/stats'
 
 export function toTeamPokemon(pokemon: Pokemon): TeamPokemon {

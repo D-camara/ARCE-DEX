@@ -3,7 +3,7 @@ import {
   ALL_POKEMON_TYPES,
   calculateTeamOffensiveProfile,
   calculateTeamDefensiveAnalysis,
-} from '@/features/type-analysis/lib/type-chart'
+} from '@/features/type-analysis'
 import { calculateFinalStats } from '@/shared/lib/stats'
 import type { MoveDetail } from '@/shared/types/pokemon'
 import type { Team, TeamPokemon } from '@/shared/types/team'
