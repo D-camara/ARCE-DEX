@@ -1046,3 +1046,7 @@ git commit -m "feat: add error boundary and dev-only React Query devtools"
 - [ ] Confirm `grep -c "^\." src/index.css` is `0` (Tailwind migration fully replaced hand-written CSS).
 - [ ] Confirm `docker build -t arce-dex:local arce-dex/` succeeds (if Docker was unavailable during Task 10, run it now).
 - [ ] Confirm `git log --oneline -13` shows all 12 task commits in order (13 including this plan's own doc commit, if any).
+
+## Execution ruling log
+
+Ruling (Task 3, Step 4): the plan as written replaced all of `index.css` with just the Tailwind import + theme, which would delete every hand-written rule before any component (Tasks 4-7) had been migrated to Tailwind utilities — breaking the entire visual layout for several commits. Corrected at execution time: `@import "tailwindcss";` and the `@theme` block are prepended to the top of `index.css`, and every existing hand-written rule is kept in place below them. Each subsequent migration task (4-7) deletes only the rules it just replaced, as already specified in those tasks' "delete the now-dead CSS" steps. Cost if wrong: none — Task 7's Step 3 already verifies `index.css` ends up with zero hand-written selectors, so the end state is identical either way; this only fixes the intermediate broken-visual-state risk.

@@ -1,3 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cosmic: #070707;
+  --color-cosmic-soft: #0d0d10;
+
+  --color-surface: rgba(18, 17, 15, 0.82);
+  --color-surface-2: rgba(27, 25, 22, 0.86);
+  --color-surface-3: rgba(38, 35, 30, 0.9);
+
+  --color-ivory: #fff6d8;
+  --color-ivory-soft: #d8cfb8;
+  --color-muted: #a79f90;
+
+  --color-line: rgba(255, 246, 216, 0.12);
+  --color-line-gold: rgba(201, 166, 70, 0.28);
+
+  --color-gold: #c9a646;
+  --color-gold-soft: #e6d28a;
+  --color-cosmic-blue: #86d8f7;
+  --color-astral-purple: #7d6ad8;
+
+  --radius-card: 16px;
+  --radius-control: 12px;
+
+  --shadow-glow-gold: 0 0 32px rgba(201, 166, 70, 0.22);
+  --shadow-glow-blue: 0 0 24px rgba(134, 216, 247, 0.12);
+  --shadow-glow-purple: 0 0 26px rgba(125, 106, 216, 0.1);
+}
+
 :root {
   /* ==========================================================================
      ARCHIVUM ARCEUS - DESIGN TOKENS
