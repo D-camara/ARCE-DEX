@@ -14,6 +14,18 @@ type TeamLabAnalysisProps = {
   moveDetails?: Record<string, MoveDetail>
 }
 
+const articleClass =
+  'grid content-start gap-3 rounded-[20px] border border-[rgba(246,237,211,0.12)] bg-[rgba(9,11,16,0.7)] p-5 shadow-[0_20px_40px_rgba(0,0,0,0.7),inset_0_0_20px_rgba(246,237,211,0.02)]'
+const headingClass =
+  'mb-3.5 flex min-h-[24px] items-center border-b border-[rgba(246,237,211,0.1)] pb-2.5 pl-7 text-[1.05rem] font-extrabold uppercase tracking-wide text-[color:var(--color-gold-soft)]'
+const iconClass = 'text-gold -mb-8 z-[2]'
+const labelClass =
+  'mt-3 mb-1 border-l-2 border-gold pl-2 text-[0.76rem] font-bold uppercase tracking-wide text-[color:var(--color-gold-soft)]'
+const emptyClass =
+  'mt-1 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2 text-[color:var(--color-silver,#c9c7bd)]'
+const kpiRowClass =
+  'my-1 flex items-center justify-between rounded-xl border border-[rgba(246,237,211,0.06)] bg-[rgba(246,237,211,0.02)] px-3 py-2 text-[0.84rem] text-[color:var(--color-silver,#c9c7bd)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]'
+
 export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps) {
   const pokemons = team.slots.flatMap((slot) => (slot.pokemon ? [slot.pokemon] : []))
   const defensiveSummary = calculateTeamDefensiveAnalysis(team)
@@ -44,107 +56,135 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
   const alerts = getTeamAlerts(pokemons, commonWeaknesses)
 
   return (
-    <section className="team-lab-analysis">
-      <article>
-        <Shield size={18} />
-        <h3>Defesa</h3>
-        <p>Fraquezas comuns</p>
+    <section className="grid gap-4 min-[760px]:grid-cols-2">
+      <article className={articleClass}>
+        <Shield size={18} className={iconClass} />
+        <h3 className={headingClass}>Defesa</h3>
+        <p className={labelClass}>Fraquezas comuns</p>
         {commonWeaknesses.length > 0 ? (
           commonWeaknesses.map((summary) => (
-            <div className="risk-row" key={summary.type}>
+            <div
+              className="mb-1 flex items-center justify-between gap-2.5 rounded-xl border border-[rgba(246,237,211,0.08)] bg-[rgba(246,237,211,0.02)] px-2.5 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
+              key={summary.type}
+            >
               <TypeBadges compact types={[summary.type]} />
               <span>{summary.weakTo} fracos</span>
             </div>
           ))
         ) : (
-          <p className="empty-copy">Sem fraqueza compartilhada relevante.</p>
+          <p className={emptyClass}>Sem fraqueza compartilhada relevante.</p>
         )}
-        <p>Resistencias</p>
+        <p className={labelClass}>Resistencias</p>
         <TypeBadges compact types={resistances} />
-        <p>Imunidades</p>
+        <p className={labelClass}>Imunidades</p>
         <TypeBadges compact types={immunities} />
       </article>
 
-      <article>
-        <Swords size={18} />
-        <h3>Ofensiva</h3>
-        <p>{uniqueMoves.length}/24 golpes cadastrados.</p>
-        <p>
+      <article className={articleClass}>
+        <Swords size={18} className={iconClass} />
+        <h3 className={headingClass}>Ofensiva</h3>
+        <p className="mb-0.5 text-[0.95rem] font-semibold text-ivory">
+          {uniqueMoves.length}/24 golpes cadastrados.
+        </p>
+        <p className="mb-3 rounded-r-md border-l-2 border-cosmic-blue bg-[rgba(134,216,247,0.04)] px-2.5 py-1.5 text-[0.8rem] leading-snug text-[color:var(--color-silver,#c9c7bd)] opacity-90">
           {offensiveProfile.usedFallbackTypes
             ? 'Cobertura estimada pelos tipos dos Pokemon.'
             : 'Cobertura calculada pelos tipos dos golpes escolhidos.'}
         </p>
-        <p>Tipos ofensivos</p>
+        <p className={labelClass}>Tipos ofensivos</p>
         <TypeBadges compact types={offensiveProfile.attackingTypes} />
-        <p>Divisao dos golpes</p>
-        <div className="move-category-grid">
-          <span>Physical <strong>{offensiveProfile.categoryCounts.physical}</strong></span>
-          <span>Special <strong>{offensiveProfile.categoryCounts.special}</strong></span>
-          <span>Status <strong>{offensiveProfile.categoryCounts.status}</strong></span>
-          <span>Desconhecido <strong>{unknownMoveCount}</strong></span>
+        <p className={labelClass}>Divisao dos golpes</p>
+        <div className="grid grid-cols-2 gap-2">
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+            Physical <strong className="text-ivory">{offensiveProfile.categoryCounts.physical}</strong>
+          </span>
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+            Special <strong className="text-ivory">{offensiveProfile.categoryCounts.special}</strong>
+          </span>
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+            Status <strong className="text-ivory">{offensiveProfile.categoryCounts.status}</strong>
+          </span>
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+            Desconhecido <strong className="text-ivory">{unknownMoveCount}</strong>
+          </span>
         </div>
-        <div className="coverage-grid">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(108px,1fr))] gap-2">
           {coverage.superEffectiveAgainst.map((type) => (
-            <span className="is-covered" key={type}>
+            <span
+              key={type}
+              className="rounded-xl border border-[rgba(52,211,153,0.3)] bg-[rgba(52,211,153,0.08)] p-2 text-[#bbf7d0] shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
+            >
               {type}
             </span>
           ))}
         </div>
-        <p>Pouco cobertos</p>
+        <p className={labelClass}>Pouco cobertos</p>
         <TypeBadges compact types={uncoveredTypes} />
         {offensiveProfile.pokemonWithoutMoves > 0 ? (
-          <p className="empty-copy">
-            {offensiveProfile.pokemonWithoutMoves} Pokemon sem golpes cadastrados.
-          </p>
+          <p className={emptyClass}>{offensiveProfile.pokemonWithoutMoves} Pokemon sem golpes cadastrados.</p>
         ) : null}
       </article>
 
-      <article>
-        <Gauge size={18} />
-        <h3>Velocidade</h3>
+      <article className={articleClass}>
+        <Gauge size={18} className={iconClass} />
+        <h3 className={headingClass}>Velocidade</h3>
         {speedRows.length > 0 ? (
           <>
-            <p>Media: {Math.round(average(speedRows.map((row) => row.speed)))}</p>
-            <p>
+            <p className={kpiRowClass}>Media: {Math.round(average(speedRows.map((row) => row.speed)))}</p>
+            <p className={kpiRowClass}>
               Mais rapido: {speedRows[0].name} ({speedRows[0].speed})
             </p>
-            <p>
+            <p className={kpiRowClass}>
               Mais lento: {speedRows.at(-1)?.name} ({speedRows.at(-1)?.speed})
             </p>
-            <div className="speed-rank">
+            <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(115px,1fr))] gap-2">
               {speedRows.map((row) => (
-                <span key={row.name}>
-                  {row.name} <strong>{row.speed}</strong>
+                <span
+                  key={row.name}
+                  className="flex items-center justify-between rounded-xl border border-[rgba(246,237,211,0.08)] bg-[rgba(246,237,211,0.02)] px-3 py-2 text-[0.82rem] text-[color:var(--color-silver,#c9c7bd)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
+                >
+                  {row.name} <strong className="font-mono text-[0.9rem] text-gold">{row.speed}</strong>
                 </span>
               ))}
             </div>
           </>
         ) : (
-          <p className="empty-copy">Base stats ainda nao carregados.</p>
+          <p className={emptyClass}>Base stats ainda nao carregados.</p>
         )}
       </article>
 
-      <article>
-        <Users size={18} />
-        <h3>Estrutura</h3>
-        <p>Fisicos: {roles.physical}</p>
-        <p>Especiais: {roles.special}</p>
-        <p>Tanks/Suportes: {roles.utility}</p>
+      <article className={articleClass}>
+        <Users size={18} className={iconClass} />
+        <h3 className={headingClass}>Estrutura</h3>
+        <p className={kpiRowClass}>Fisicos: {roles.physical}</p>
+        <p className={kpiRowClass}>Especiais: {roles.special}</p>
+        <p className={kpiRowClass}>Tanks/Suportes: {roles.utility}</p>
         {redundantTypes.length > 0 ? (
           <>
-            <p>Tipos repetidos</p>
+            <p className={labelClass}>Tipos repetidos</p>
             <TypeBadges compact types={redundantTypes} />
           </>
         ) : null}
       </article>
 
-      <article>
-        <AlertTriangle size={18} />
-        <h3>Alertas</h3>
+      <article
+        className={`order-first min-[760px]:col-span-2 ${articleClass} !border-[rgba(201,166,70,0.25)] !bg-[linear-gradient(135deg,rgba(239,68,68,0.06),rgba(201,166,70,0.04)),rgba(9,11,16,0.85)] !shadow-[0_20px_40px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(239,68,68,0.03)]`}
+      >
+        <AlertTriangle size={18} className={iconClass} />
+        <h3 className={headingClass}>Alertas</h3>
         {alerts.length > 0 ? (
-          alerts.map((alert) => <p key={alert}>{alert}</p>)
+          alerts.map((alert) => (
+            <p
+              key={alert}
+              className="mb-2 flex items-center gap-2 rounded-lg border border-[rgba(239,68,68,0.15)] border-l-4 border-l-[#ef4444] bg-[rgba(239,68,68,0.03)] px-3.5 py-2.5 text-[0.88rem] font-medium text-ivory shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            >
+              {alert}
+            </p>
+          ))
         ) : (
-          <p className="empty-copy">Nenhum alerta critico.</p>
+          <p className="justify-center rounded-lg border border-[rgba(52,211,153,0.15)] border-l-4 border-l-[#34d399] bg-[rgba(52,211,153,0.03)] px-3.5 py-2.5 text-center text-[0.88rem] font-semibold text-[#34d399]">
+            Nenhum alerta critico.
+          </p>
         )}
       </article>
     </section>
