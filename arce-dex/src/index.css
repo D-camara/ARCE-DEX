@@ -177,7 +177,6 @@ h3 {
 }
 
 .card-actions,
-.drawer-actions,
 .mobile-action-strip {
   display: flex;
   align-items: center;
@@ -221,22 +220,6 @@ main {
   gap: 16px;
 }
 
-.pokemon-card,
-.team-lab-hero,
-.team-lab-toolbar {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: rgba(18, 22, 32, 0.7);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.pokemon-card,
-.team-lab-hero,
-.team-lab-toolbar {
-  min-width: 0;
-}
-
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -244,13 +227,7 @@ main {
   font-weight: 800;
 }
 
-.team-slots {
-  display: grid;
-  gap: 10px;
-}
-
 .suggestion-item,
-.team-slot,
 .favorite-item button:first-child {
   display: flex;
   align-items: center;
@@ -283,16 +260,14 @@ main {
 }
 
 .suggestion-item img,
-.favorite-item img,
-.team-slot img {
+.favorite-item img {
   width: 44px;
   height: 44px;
   object-fit: contain;
 }
 
 .suggestion-item > span,
-.favorite-item span,
-.team-slot div {
+.favorite-item span {
   flex: 1;
   min-width: 0;
 }
@@ -343,14 +318,6 @@ main {
   color: var(--accent-ivory);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all var(--transition-normal);
-}
-
-.team-tabs button.is-active {
-  border-color: rgba(212, 175, 55, 0.3) !important;
-  background: rgba(212, 175, 55, 0.1) !important;
-  box-shadow: var(--glow-gold) !important;
-  color: var(--accent-gold) !important;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
 .state-block {
@@ -436,168 +403,6 @@ main {
   border-radius: 14px;
 }
 
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.team-tabs {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: clamp(4px, 1.8vw, 8px);
-}
-
-.team-tabs button {
-  min-height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.team-slots {
-  overflow-y: auto;
-}
-
-.team-slot {
-  min-height: 66px;
-  padding: 10px;
-  border: 1px dashed var(--line);
-  border-radius: 14px;
-  color: var(--muted);
-  background: var(--surface-2);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
-}
-
-.team-slot.is-filled {
-  border-style: solid;
-  color: var(--text);
-  background: rgba(18, 22, 32, 0.5);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border-color: rgba(246, 237, 211, 0.15);
-}
-
-.team-slot > span {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 12px;
-  background: rgba(246, 237, 211, 0.05);
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
-}
-
-.drawer-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.drawer-actions button {
-  width: 100%;
-}
-
-.team-lab-view {
-  display: grid;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-@media (min-width: 760px) {
-  .team-lab-view {
-    gap: 14px;
-    margin-top: 24px;
-  }
-}
-
-.team-lab-hero {
-  border: 1px solid rgba(246, 237, 211, 0.12) !important;
-  border-radius: 24px 24px 0 0 !important;
-  border-bottom: none !important;
-  background: rgba(9, 11, 16, 0.7) !important;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(246, 237, 211, 0.03) !important;
-  padding: 24px 24px 16px !important;
-  display: grid;
-  gap: 12px;
-}
-
-.team-lab-toolbar {
-  margin-top: -12px !important;
-  border: 1px solid rgba(246, 237, 211, 0.12) !important;
-  border-top: 1px solid rgba(246, 237, 211, 0.08) !important;
-  border-radius: 0 0 24px 24px !important;
-  background: rgba(9, 11, 16, 0.7) !important;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(246, 237, 211, 0.02) !important;
-  padding: 16px 24px 24px !important;
-  display: grid;
-  gap: 12px;
-}
-
-@media (min-width: 760px) {
-  .team-lab-toolbar {
-    margin-top: -14px !important;
-  }
-}
-
-.team-lab-hero h1 {
-  max-width: none;
-  overflow-wrap: anywhere;
-  font-size: clamp(1.8rem, 4vw, 2.6rem) !important;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  background: linear-gradient(to right, #FFFFFF, var(--accent-ivory));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1.1;
-  margin: 4px 0 8px;
-}
-
-.team-lab-hero p:last-child {
-  color: var(--muted);
-}
-
-.team-lab-back {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: fit-content;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-control);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.lab-tab-list {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scrollbar-width: thin;
-}
-
-.lab-tab-list button {
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  white-space: nowrap;
-}
-
-.lab-tab-list button.is-active {
-  border-color: rgba(212, 175, 55, 0.3) !important;
-  background: rgba(212, 175, 55, 0.1) !important;
-  color: var(--accent-gold) !important;
-  box-shadow: var(--glow-gold) !important;
-}
-
-.team-lab-grid {
-  display: grid;
-  gap: 10px;
-}
-
 @keyframes cosmic-pulse {
   0% { background-position: 200% 0; box-shadow: 0 0 0 rgba(56, 189, 248, 0); }
   50% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.08); }
@@ -615,59 +420,9 @@ main {
   }
 }
 
-@media (min-width: 430px) {
-  .pokemon-card__media {
-    grid-template-columns: 1fr minmax(132px, 38%);
-    gap: 12px;
-  }
-
-  .pokemon-card__media img {
-    width: auto;
-  }
-
-  .team-lab-view {
-    gap: 14px;
-  }
-
-  .team-lab-hero,
-  .team-lab-toolbar {
-    gap: 14px;
-    padding: 16px;
-  }
-}
-
-@media (min-width: 760px) {
-  .quick-panel {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .team-lab-toolbar {
-    grid-template-columns: minmax(240px, 0.7fr) 1fr;
-    align-items: start;
-  }
-
-  .team-lab-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .team-lab-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 399px) {
   .search-card {
     padding: 16px 12px;
-  }
-  .pokemon-card {
-    padding: 16px;
-  }
-  .team-lab-view,
-  .team-lab-hero,
-  .team-lab-toolbar {
-    padding: 10px;
   }
 }
 
@@ -812,127 +567,6 @@ main {
   100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
 }
 
-/* Premium Pokemon Build Editor Header Styles */
-.team-editor-panel > header {
-  display: none !important;
-}
-
-.team-editor-view-wrapper {
-  border: 1px solid rgba(246, 237, 211, 0.12) !important;
-  border-radius: 20px !important;
-  background: rgba(9, 11, 16, 0.7) !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(246, 237, 211, 0.02) !important;
-  overflow: hidden;
-}
-
-.team-editor-view-wrapper .team-editor-panel {
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  padding-top: 0 !important;
-}
-
-.custom-editor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 24px;
-  background: linear-gradient(to bottom, rgba(246, 237, 211, 0.03), transparent);
-  border-bottom: 1px solid rgba(246, 237, 211, 0.08);
-}
-
-.custom-editor-header__brand {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.custom-editor-header__brand .eyebrow {
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-gold);
-  margin: 0;
-}
-
-.custom-editor-header__main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 2px;
-}
-
-.custom-editor-header__main h1 {
-  font-size: 1.7rem;
-  font-weight: 900;
-  color: var(--accent-ivory);
-  margin: 0;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-}
-
-.custom-editor-header__badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  color: var(--accent-gold-soft);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-
-.custom-editor-header__role {
-  font-size: 0.8rem;
-  color: var(--accent-silver);
-  margin: 4px 0 0 0;
-}
-
-.custom-editor-header__role span {
-  color: var(--accent-cosmic-blue);
-  font-weight: 600;
-  background: rgba(134, 216, 247, 0.08);
-  border: 1px solid rgba(134, 216, 247, 0.15);
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-left: 4px;
-  display: inline-block;
-}
-
-.custom-editor-header__sprite-wrapper {
-  position: relative;
-  width: 74px;
-  height: 74px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-  border: 1px dashed rgba(246, 237, 211, 0.25);
-  padding: 8px;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
-  flex-shrink: 0;
-}
-
-.custom-editor-header__sprite-wrapper img {
-  width: 62px;
-  height: 62px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px rgba(212, 175, 55, 0.35));
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.custom-editor-header:hover .custom-editor-header__sprite-wrapper img {
-  transform: scale(1.15) rotate(3deg);
-}
-
 /* ==========================================================================
    RESPONSIVENESS AND SMALL SCREEN SAFEGUARDS
    ========================================================================== */
@@ -955,46 +589,10 @@ main {
     min-height: 36px !important;
   }
 
-  /* Team Laboratory Hero compact padding */
-  .team-lab-hero {
-    padding: 16px 14px 12px !important;
-  }
-  .team-lab-toolbar {
-    padding: 12px 14px 16px !important;
-  }
-
-  /* Pokémon Editor compacting below 375px */
-  .team-editor-panel {
-    padding: 8px !important;
-    gap: 10px !important;
-  }
-
-  .custom-editor-header {
-    padding: 14px 12px !important;
-    gap: 12px !important;
-  }
-
-  .custom-editor-header__main h1 {
-    font-size: 1.4rem !important;
-  }
-
-  .custom-editor-header__sprite-wrapper {
-    width: 60px !important;
-    height: 60px !important;
-  }
-  .custom-editor-header__sprite-wrapper img {
-    width: 50px !important;
-    height: 50px !important;
-  }
-
 }
 
 /* Extra safety for 280px width (iPhone SE 1st Gen or similar) */
 @media (max-width: 280px) {
-  .team-tabs button {
-    min-height: 36px !important;
-    border-radius: 8px !important;
-  }
   .pokemon-tabs button {
     font-size: 0.62rem !important;
     padding: 0 4px !important;
