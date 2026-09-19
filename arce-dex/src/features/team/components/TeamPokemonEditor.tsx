@@ -7,7 +7,7 @@ import type {
   PokemonStats,
 } from '@/types/pokemon'
 import type { CompetitiveStatTable, PokemonNature, TeamPokemon, TeamRole } from '@/types/team'
-import { TypeBadges } from '@/components/pokemon/TypeBadges'
+import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
 import { calculateHiddenPowerType } from '@/lib/hidden-power'
 import { findHeldItemOption, getCuratedHeldItems, searchHeldItemOptions } from '@/lib/items'
 import {

@@ -13,7 +13,7 @@ import type {
   PokemonSummary,
 } from '@/types/pokemon'
 import type { Team, TeamPokemon } from '@/types/team'
-import type { PokemonTabData } from '@/components/pokemon/PokemonTabs'
+import type { PokemonTabData } from '@/features/pokemon/components/PokemonTabs'
 import { normalizeCompetitivePokemon } from '@/lib/stats'
 
 export function toTeamPokemon(pokemon: Pokemon): TeamPokemon {

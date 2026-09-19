@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { TeamLabAnalysis } from '@/features/team/components/TeamLabAnalysis'
 import { TeamPokemonEditor } from '@/features/team/components/TeamPokemonEditor'
 import { TeamSlotCard } from '@/features/team/components/TeamSlotCard'
-import { usePokemon } from '@/hooks/usePokemon'
-import { useMoveDetails } from '@/hooks/usePokemonMoves'
+import { usePokemon } from '@/features/pokemon/hooks/usePokemon'
+import { useMoveDetails } from '@/features/pokemon/hooks/usePokemonMoves'
 import type { Team, TeamPokemon } from '@/types/team'
 
 type TeamLabViewProps = {
