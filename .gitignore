@@ -1,0 +1,7 @@
+# Claude Code local-only (not portable across machines)
+.claude/settings.local.json
+.claude/skills/
+
+# Symlink shims created by `npx skills add` — regenerate with:
+# npx skills add supabase/agent-skills
+/skills/
