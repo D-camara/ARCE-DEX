@@ -4,7 +4,7 @@ Contexto pra quem (humano ou agente de IA — Codex, Claude Code, Cursor, etc.) 
 
 ## O que é
 
-**Archivum Arceus**: PWA mobile-first pra consultar Pokémon, analisar tipos/efetividade e montar times competitivos. Dados vêm da [PokeAPI](https://pokeapi.co).
+**Archivum Arceus**: app web mobile-first pra consultar Pokémon, analisar tipos/efetividade e montar times competitivos. Dados vêm da [PokeAPI](https://pokeapi.co). Também dá pra instalar como PWA (ícone, uso offline) — isso é uma opção pro usuário, não o foco do produto, que é web.
 
 ## Onde fica o quê
 
@@ -51,7 +51,7 @@ Cada ferramenta de IA espera suas configs num lugar fixo, então não dá pra co
 | Estilo | Tailwind CSS v4 | **CSS puro foi removido do projeto inteiro** — não escreve mais `.css` com regras, só utilitário Tailwind (ver `src/index.css`, só tem `@theme` + reset) |
 | Estado | Zustand + `persist` (localForage) | estado de UI simples, persistência offline sem backend |
 | Fetch/cache | TanStack Query | cache de chamadas à PokeAPI |
-| PWA | vite-plugin-pwa | instalável, cache offline de dados/sprites da PokeAPI |
+| PWA (opcional) | vite-plugin-pwa | deixa o app instalável e com cache offline — feature extra, não o foco (o produto é web) |
 | Testes | Vitest | testes de store ficam junto do arquivo (`fooStore.test.ts` ao lado de `fooStore.ts`) |
 | Container | Docker (dev + prod) | não precisa Node instalado na máquina pra rodar |
 | Deploy | Vercel | builda direto do repo — **Root Directory no dashboard da Vercel precisa ser `arce-dex`**, senão o build quebra |
