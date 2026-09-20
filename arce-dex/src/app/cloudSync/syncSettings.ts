@@ -18,8 +18,14 @@ export async function startSettingsSync(userId: string): Promise<() => void> {
 
   let isApplyingRemote = false
 
+  const topic = `settings-${userId}`
+  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  if (existingChannel) {
+    await supabase.removeChannel(existingChannel)
+  }
+
   const channel = supabase
-    .channel(`settings-${userId}`)
+    .channel(topic)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'settings', filter: `user_id=eq.${userId}` },
@@ -43,6 +49,7 @@ export async function startSettingsSync(userId: string): Promise<() => void> {
     void supabase
       .from('settings')
       .upsert({ user_id: userId, theme: state.theme, updated_at: new Date().toISOString() })
+      .then()
   })
 
   return () => {

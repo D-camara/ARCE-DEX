@@ -84,8 +84,14 @@ export async function startTeamsSync(userId: string): Promise<() => void> {
     isApplyingRemote = false
   }
 
+  const topic = `teams-${userId}`
+  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  if (existingChannel) {
+    await supabase.removeChannel(existingChannel)
+  }
+
   const channel = supabase
-    .channel(`teams-${userId}`)
+    .channel(topic)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'teams', filter: `user_id=eq.${userId}` },

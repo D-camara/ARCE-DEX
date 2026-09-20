@@ -17,12 +17,20 @@ export function useCloudSync() {
     let cleanups: Array<() => void> = []
     let cancelled = false
 
-    void Promise.all([
+    void Promise.allSettled([
       startFavoritesSync(userId),
       startSearchHistorySync(userId),
       startTeamsSync(userId),
       startSettingsSync(userId),
-    ]).then((unsubscribers) => {
+    ]).then((results) => {
+      const unsubscribers = results.flatMap((result) => {
+        if (result.status === 'rejected') {
+          console.error('[useCloudSync] failed to start sync', result.reason)
+          return []
+        }
+        return [result.value]
+      })
+
       if (cancelled) {
         unsubscribers.forEach((unsubscribe) => unsubscribe())
         return

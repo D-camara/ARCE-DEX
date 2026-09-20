@@ -24,8 +24,14 @@ export async function startFavoritesSync(userId: string): Promise<() => void> {
 
   let isApplyingRemote = false
 
+  const topic = `favorites-${userId}`
+  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  if (existingChannel) {
+    await supabase.removeChannel(existingChannel)
+  }
+
   const channel = supabase
-    .channel(`favorites-${userId}`)
+    .channel(topic)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'favorites', filter: `user_id=eq.${userId}` },
@@ -51,10 +57,10 @@ export async function startFavoritesSync(userId: string): Promise<() => void> {
     previousIds = state.favoritePokemonIds
 
     added.forEach((pokemonId) => {
-      void supabase.from('favorites').insert({ user_id: userId, pokemon_id: pokemonId })
+      void supabase.from('favorites').insert({ user_id: userId, pokemon_id: pokemonId }).then()
     })
     removed.forEach((pokemonId) => {
-      void supabase.from('favorites').delete().eq('user_id', userId).eq('pokemon_id', pokemonId)
+      void supabase.from('favorites').delete().eq('user_id', userId).eq('pokemon_id', pokemonId).then()
     })
   })
 

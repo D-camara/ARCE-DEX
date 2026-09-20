@@ -24,8 +24,14 @@ export async function startSearchHistorySync(userId: string): Promise<() => void
 
   let isApplyingRemote = false
 
+  const topic = `search-history-${userId}`
+  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  if (existingChannel) {
+    await supabase.removeChannel(existingChannel)
+  }
+
   const channel = supabase
-    .channel(`search-history-${userId}`)
+    .channel(topic)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'search_history', filter: `user_id=eq.${userId}` },
@@ -54,7 +60,10 @@ export async function startSearchHistorySync(userId: string): Promise<() => void
     previousTerms = state.history
 
     addedTerms.forEach((term) => {
-      void supabase.from('search_history').upsert({ user_id: userId, term, searched_at: new Date().toISOString() })
+      void supabase
+        .from('search_history')
+        .upsert({ user_id: userId, term, searched_at: new Date().toISOString() })
+        .then()
     })
   })
 
