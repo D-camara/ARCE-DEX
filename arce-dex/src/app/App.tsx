@@ -35,6 +35,7 @@ import {
 } from './appDataAdapters'
 import { useAppView } from './useAppView'
 import { useAppDialogs } from './useAppDialogs'
+import { useCloudSync } from './useCloudSync'
 
 function App() {
   const view = useAppView()
@@ -42,6 +43,7 @@ function App() {
   const authStatus = useAuthStore((state) => state.status)
   const authUser = useAuthStore((state) => state.user)
   const [isAuthOpen, setIsAuthOpen] = useState(false)
+  useCloudSync()
 
   const pokemonListQuery = usePokemonAutocompleteList()
   const selectedPokemonQuery = usePokemon(view.selectedIdentifier)
