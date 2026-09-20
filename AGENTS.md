@@ -24,10 +24,23 @@ ARCE-DEX/                  ← raiz do repo, sem código próprio
 │   ├── docker-compose.yml   serviços `dev` (hot-reload) e `web` (prod)
 │   └── package.json
 ├── .github/workflows/ci.yml lint + test + build em todo push/PR
+├── .mcp.json               MCP servers do projeto (hoje só o Supabase) — versionado, sem segredo
+├── .agents/skills/          skills reais (Supabase, etc.), instaladas via `npx skills add`
+├── skills-lock.json         lockfile de quais skills estão instaladas e de onde vieram
+├── .serena/                 config do Serena (MCP de navegação/edição de código via LSP)
 └── docs/superpowers/         specs e planos das reestruturações já feitas (histórico, ver abaixo)
 ```
 
 Dentro de cada `features/<nome>/`, o padrão é: `components/`, `hooks/`, `store/` (quando tem), `lib/` (quando tem), e um `index.ts` que reexporta a API pública da feature. Código de fora da feature importa **só** pelo barrel (`@/features/pokemon`), nunca por caminho interno (`@/features/pokemon/components/...`) — exceto dentro da própria feature.
+
+### Sobre as pastas de agente de IA (`.agents`, `.claude`, `.serena`, `skills/`)
+
+Cada ferramenta de IA espera suas configs num lugar fixo, então não dá pra consolidar isso numa pasta só:
+
+- **`.agents/skills/`** — onde as skills instaladas (`npx skills add <fonte>`) realmente moram. É o que fica versionado.
+- **`.claude/skills/`** e **`skills/`** (raiz) — atalhos (symlink) pra `.agents/skills/`, exigidos por Claude Code e por outras ferramentas que só olham nesses caminhos. **Não são versionados** (git nessa máquina não lida bem com symlink pra caminho absoluto) — se sumirem depois de um `git clone`, roda `npx skills add supabase/agent-skills` de novo que ele recria.
+- **`.claude/settings.local.json`** — preferências locais do Claude Code (ex: MCP aprovado/rejeitado nesta máquina). Não versionado, cada um tem o seu.
+- **`.serena/`** — config do Serena (navegação de código via LSP); `project.yml` é versionado, o resto (`cache/`, `memories/`) é próprio de cada máquina.
 
 ## Stack e por quê
 
