@@ -66,12 +66,13 @@ Antes de qualquer commit: `npm run build && npm run lint && npm run test` (dos t
 
 ## O que já foi feito (histórico)
 
-Duas fases de refatoração de stack já concluídas — specs e planos completos em `docs/superpowers/`:
+Três fases de refatoração/evolução já concluídas — specs e planos completos em `docs/superpowers/`:
 
 - **Fase 0** — reestruturação de `src/` pra feature-based (era tudo solto por tipo técnico antes).
 - **Fase 1** — TypeScript strict, migração 100% pra Tailwind, PWA de verdade, testes de store, Docker, CI, error boundary.
+- **Fase 2** — Supabase: auth (email/senha, confirmação de email obrigatória) + sync em tempo real de favoritos, times, histórico de busca e configurações entre dispositivos. `features/auth` cuida da sessão; `app/useCloudSync.ts` + `app/cloudSync/` fazem o pull/push/Realtime por tabela. localForage continua sendo a persistência local — funciona 100% offline/deslogado, sync é camada opcional por cima.
 
 ## O que falta
 
-- **Fase 2 (não iniciada): Supabase** — auth (email/senha) + sync de favoritos/times entre dispositivos, com localForage virando cache offline em vez de única fonte de verdade. Sem spec escrita ainda.
 - Validar o Dockerfile de produção com carga real (só foi smoke-testado).
+- Reset de senha e OAuth ficaram fora do escopo da Fase 2 (ver `docs/superpowers/specs/2026-09-20-supabase-sync-design.md`).
