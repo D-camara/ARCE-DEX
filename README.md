@@ -1,6 +1,6 @@
 # Archivum Arceus
 
-PWA mobile-first para consulta, análise e montagem de times Pokémon, usando dados da PokeAPI.
+PWA mobile-first para consulta, análise e montagem de times Pokémon, usando dados da PokeAPI. Login é opcional — o app funciona 100% offline sem conta; quem cria conta ganha sincronização entre dispositivos.
 
 O app fica em [`arce-dex/`](./arce-dex). A raiz do repositório existe só pra abrigar isso, CI e docs — não tem código próprio nem `package.json`.
 
@@ -9,7 +9,8 @@ O app fica em [`arce-dex/`](./arce-dex). A raiz do repositório existe só pra a
 - React 19 + TypeScript + Vite
 - Tailwind CSS v4
 - Zustand (estado) + TanStack Query (fetch/cache)
-- localForage / idb-keyval (persistência local)
+- localForage / idb-keyval (persistência local, funciona offline/deslogado)
+- Supabase (auth por email/senha + Postgres + Realtime para sync entre dispositivos, opcional)
 - vite-plugin-pwa (offline + instalável)
 - Vitest (testes)
 - Docker (dev com hot-reload + build de produção)

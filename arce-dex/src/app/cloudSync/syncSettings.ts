@@ -3,12 +3,18 @@ import { useSettingsStore } from '@/shared/stores/settingsStore'
 import { decideSyncStrategy } from './decideSyncStrategy'
 
 export async function startSettingsSync(userId: string): Promise<() => void> {
-  const { data: remoteRows } = await supabase.from('settings').select('theme').eq('user_id', userId)
+  if (!supabase) {
+    return () => {}
+  }
+
+  const client = supabase
+
+  const { data: remoteRows } = await client.from('settings').select('theme').eq('user_id', userId)
   const strategy = decideSyncStrategy(remoteRows ?? [])
 
   if (strategy === 'push') {
     const theme = useSettingsStore.getState().theme
-    await supabase.from('settings').insert({ user_id: userId, theme })
+    await client.from('settings').insert({ user_id: userId, theme })
   } else {
     const theme = (remoteRows ?? [])[0]?.theme as string | undefined
     if (theme === 'light' || theme === 'dark' || theme === 'system') {
@@ -19,19 +25,19 @@ export async function startSettingsSync(userId: string): Promise<() => void> {
   let isApplyingRemote = false
 
   const topic = `settings-${userId}`
-  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
   if (existingChannel) {
-    await supabase.removeChannel(existingChannel)
+    await client.removeChannel(existingChannel)
   }
 
-  const channel = supabase
+  const channel = client
     .channel(topic)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'settings', filter: `user_id=eq.${userId}` },
       async () => {
         isApplyingRemote = true
-        const { data } = await supabase.from('settings').select('theme').eq('user_id', userId).maybeSingle()
+        const { data } = await client.from('settings').select('theme').eq('user_id', userId).maybeSingle()
         const theme = data?.theme as string | undefined
         if (theme === 'light' || theme === 'dark' || theme === 'system') {
           useSettingsStore.setState({ theme })
@@ -46,7 +52,7 @@ export async function startSettingsSync(userId: string): Promise<() => void> {
       return
     }
 
-    void supabase
+    void client
       .from('settings')
       .upsert({ user_id: userId, theme: state.theme, updated_at: new Date().toISOString() })
       .then()
@@ -54,6 +60,6 @@ export async function startSettingsSync(userId: string): Promise<() => void> {
 
   return () => {
     unsubscribeStore()
-    void supabase.removeChannel(channel)
+    void client.removeChannel(channel)
   }
 }

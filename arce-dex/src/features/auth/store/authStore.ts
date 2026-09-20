@@ -11,12 +11,12 @@ type AuthStore = {
 }
 
 export const useAuthStore = create<AuthStore>(() => ({
-  status: 'loading',
+  status: supabase ? 'loading' : 'anonymous',
   session: null,
   user: null,
 }))
 
-supabase.auth.onAuthStateChange((_event, session) => {
+supabase?.auth.onAuthStateChange((_event, session) => {
   useAuthStore.setState({
     status: session ? 'authenticated' : 'anonymous',
     session,

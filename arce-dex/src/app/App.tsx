@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Heart, LogIn, LogOut, Menu } from 'lucide-react'
 import { AuthForm, useAuthStore } from '@/features/auth'
-import { supabase } from '@/shared/services/supabase/client'
+import { isSupabaseConfigured, supabase } from '@/shared/services/supabase/client'
 import {
   AbilityDetailsDialog,
   PokemonCard,
@@ -247,26 +247,27 @@ function App() {
             <Heart size={16} />
             <span className="max-[375px]:hidden">Favoritos</span>
           </button>
-          {authStatus === 'authenticated' ? (
-            <button
-              type="button"
-              onClick={() => supabase.auth.signOut()}
-              className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[rgba(246,237,211,0.12)] bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-[rgba(246,237,211,0.25)] hover:bg-white/[0.08] hover:text-ivory max-[760px]:min-h-[34px] max-[375px]:h-9 max-[375px]:w-9 max-[375px]:min-h-[36px] max-[375px]:min-w-[36px] max-[375px]:rounded-full max-[375px]:p-0"
-              title={authUser?.email ?? 'Sair'}
-            >
-              <LogOut size={16} />
-              <span className="max-[375px]:hidden">Sair</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setIsAuthOpen(true)}
-              className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[rgba(246,237,211,0.12)] bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-[rgba(246,237,211,0.25)] hover:bg-white/[0.08] hover:text-ivory max-[760px]:min-h-[34px] max-[375px]:h-9 max-[375px]:w-9 max-[375px]:min-h-[36px] max-[375px]:min-w-[36px] max-[375px]:rounded-full max-[375px]:p-0"
-            >
-              <LogIn size={16} />
-              <span className="max-[375px]:hidden">Entrar</span>
-            </button>
-          )}
+          {isSupabaseConfigured &&
+            (authStatus === 'authenticated' ? (
+              <button
+                type="button"
+                onClick={() => supabase?.auth.signOut()}
+                className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[rgba(246,237,211,0.12)] bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-[rgba(246,237,211,0.25)] hover:bg-white/[0.08] hover:text-ivory max-[760px]:min-h-[34px] max-[375px]:h-9 max-[375px]:w-9 max-[375px]:min-h-[36px] max-[375px]:min-w-[36px] max-[375px]:rounded-full max-[375px]:p-0"
+                title={authUser?.email ?? 'Sair'}
+              >
+                <LogOut size={16} />
+                <span className="max-[375px]:hidden">Sair</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAuthOpen(true)}
+                className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[rgba(246,237,211,0.12)] bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-[rgba(246,237,211,0.25)] hover:bg-white/[0.08] hover:text-ivory max-[760px]:min-h-[34px] max-[375px]:h-9 max-[375px]:w-9 max-[375px]:min-h-[36px] max-[375px]:min-w-[36px] max-[375px]:rounded-full max-[375px]:p-0"
+              >
+                <LogIn size={16} />
+                <span className="max-[375px]:hidden">Entrar</span>
+              </button>
+            ))}
         </div>
       </header>
 

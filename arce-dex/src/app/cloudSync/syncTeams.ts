@@ -7,6 +7,10 @@ type RemoteTeamRow = { id: string; client_team_id: string; name: string }
 type RemoteSlotRow = { team_id: string; slot_index: number; pokemon: TeamPokemon | null }
 
 async function fetchRemoteTeams(userId: string) {
+  if (!supabase) {
+    return []
+  }
+
   const { data: teamRows } = await supabase
     .from('teams')
     .select('id, client_team_id, name')
@@ -34,6 +38,10 @@ function buildTeam(teamRow: RemoteTeamRow, slotRows: RemoteSlotRow[]): Team {
 }
 
 async function pushTeam(userId: string, team: Team) {
+  if (!supabase) {
+    return
+  }
+
   const { data: upserted } = await supabase
     .from('teams')
     .upsert(
@@ -58,7 +66,13 @@ async function pushTeam(userId: string, team: Team) {
 }
 
 export async function startTeamsSync(userId: string): Promise<() => void> {
-  const { data: remoteTeamRows } = await supabase.from('teams').select('id').eq('user_id', userId)
+  if (!supabase) {
+    return () => {}
+  }
+
+  const client = supabase
+
+  const { data: remoteTeamRows } = await client.from('teams').select('id').eq('user_id', userId)
   const strategy = decideSyncStrategy(remoteTeamRows ?? [])
 
   if (strategy === 'push') {
@@ -85,12 +99,12 @@ export async function startTeamsSync(userId: string): Promise<() => void> {
   }
 
   const topic = `teams-${userId}`
-  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
   if (existingChannel) {
-    await supabase.removeChannel(existingChannel)
+    await client.removeChannel(existingChannel)
   }
 
-  const channel = supabase
+  const channel = client
     .channel(topic)
     .on(
       'postgres_changes',
@@ -117,6 +131,6 @@ export async function startTeamsSync(userId: string): Promise<() => void> {
   return () => {
     clearTimeout(pushTimer)
     unsubscribeStore()
-    void supabase.removeChannel(channel)
+    void client.removeChannel(channel)
   }
 }

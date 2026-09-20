@@ -15,6 +15,9 @@ export function AuthForm({ onClose }: AuthFormProps) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
+    if (!supabase) {
+      return
+    }
     setError(null)
     setIsSubmitting(true)
 

@@ -3,7 +3,13 @@ import { useFavoritesStore } from '@/features/favorites'
 import { decideSyncStrategy } from './decideSyncStrategy'
 
 export async function startFavoritesSync(userId: string): Promise<() => void> {
-  const { data: remoteRows } = await supabase
+  if (!supabase) {
+    return () => {}
+  }
+
+  const client = supabase
+
+  const { data: remoteRows } = await client
     .from('favorites')
     .select('pokemon_id')
     .eq('user_id', userId)
@@ -13,7 +19,7 @@ export async function startFavoritesSync(userId: string): Promise<() => void> {
   if (strategy === 'push') {
     const localIds = useFavoritesStore.getState().favoritePokemonIds
     if (localIds.length > 0) {
-      await supabase
+      await client
         .from('favorites')
         .insert(localIds.map((pokemonId) => ({ user_id: userId, pokemon_id: pokemonId })))
     }
@@ -25,19 +31,19 @@ export async function startFavoritesSync(userId: string): Promise<() => void> {
   let isApplyingRemote = false
 
   const topic = `favorites-${userId}`
-  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
   if (existingChannel) {
-    await supabase.removeChannel(existingChannel)
+    await client.removeChannel(existingChannel)
   }
 
-  const channel = supabase
+  const channel = client
     .channel(topic)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'favorites', filter: `user_id=eq.${userId}` },
       async () => {
         isApplyingRemote = true
-        const { data } = await supabase.from('favorites').select('pokemon_id').eq('user_id', userId)
+        const { data } = await client.from('favorites').select('pokemon_id').eq('user_id', userId)
         useFavoritesStore.setState({ favoritePokemonIds: (data ?? []).map((row) => row.pokemon_id as number) })
         isApplyingRemote = false
       },
@@ -57,15 +63,15 @@ export async function startFavoritesSync(userId: string): Promise<() => void> {
     previousIds = state.favoritePokemonIds
 
     added.forEach((pokemonId) => {
-      void supabase.from('favorites').insert({ user_id: userId, pokemon_id: pokemonId }).then()
+      void client.from('favorites').insert({ user_id: userId, pokemon_id: pokemonId }).then()
     })
     removed.forEach((pokemonId) => {
-      void supabase.from('favorites').delete().eq('user_id', userId).eq('pokemon_id', pokemonId).then()
+      void client.from('favorites').delete().eq('user_id', userId).eq('pokemon_id', pokemonId).then()
     })
   })
 
   return () => {
     unsubscribeStore()
-    void supabase.removeChannel(channel)
+    void client.removeChannel(channel)
   }
 }

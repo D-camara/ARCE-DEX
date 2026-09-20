@@ -3,7 +3,13 @@ import { useSearchHistoryStore } from '@/features/search'
 import { decideSyncStrategy } from './decideSyncStrategy'
 
 export async function startSearchHistorySync(userId: string): Promise<() => void> {
-  const { data: remoteRows } = await supabase
+  if (!supabase) {
+    return () => {}
+  }
+
+  const client = supabase
+
+  const { data: remoteRows } = await client
     .from('search_history')
     .select('term, searched_at')
     .eq('user_id', userId)
@@ -14,7 +20,7 @@ export async function startSearchHistorySync(userId: string): Promise<() => void
   if (strategy === 'push') {
     const localTerms = useSearchHistoryStore.getState().history
     if (localTerms.length > 0) {
-      await supabase
+      await client
         .from('search_history')
         .insert(localTerms.map((term) => ({ user_id: userId, term })))
     }
@@ -25,19 +31,19 @@ export async function startSearchHistorySync(userId: string): Promise<() => void
   let isApplyingRemote = false
 
   const topic = `search-history-${userId}`
-  const existingChannel = supabase.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
+  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
   if (existingChannel) {
-    await supabase.removeChannel(existingChannel)
+    await client.removeChannel(existingChannel)
   }
 
-  const channel = supabase
+  const channel = client
     .channel(topic)
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'search_history', filter: `user_id=eq.${userId}` },
       async () => {
         isApplyingRemote = true
-        const { data } = await supabase
+        const { data } = await client
           .from('search_history')
           .select('term, searched_at')
           .eq('user_id', userId)
@@ -60,7 +66,7 @@ export async function startSearchHistorySync(userId: string): Promise<() => void
     previousTerms = state.history
 
     addedTerms.forEach((term) => {
-      void supabase
+      void client
         .from('search_history')
         .upsert({ user_id: userId, term, searched_at: new Date().toISOString() })
         .then()
@@ -69,6 +75,6 @@ export async function startSearchHistorySync(userId: string): Promise<() => void
 
   return () => {
     unsubscribeStore()
-    void supabase.removeChannel(channel)
+    void client.removeChannel(channel)
   }
 }
