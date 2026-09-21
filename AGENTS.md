@@ -31,7 +31,9 @@ ARCE-DEX/                  ← raiz do repo, sem código próprio
 └── docs/superpowers/         specs e planos das reestruturações já feitas (histórico, ver abaixo)
 ```
 
-Dentro de cada `features/<nome>/`, o padrão é: `components/`, `hooks/`, `store/` (quando tem), `lib/` (quando tem), e um `index.ts` que reexporta a API pública da feature. Código de fora da feature importa **só** pelo barrel (`@/features/pokemon`), nunca por caminho interno (`@/features/pokemon/components/...`) — exceto dentro da própria feature.
+Dentro de cada `features/<nome>/`, o padrão é: `components/`, `hooks/`, `store/` (quando tem), `lib/` (quando tem), e um `index.ts` que reexporta a API pública da feature. Código de fora da feature importa **só** pelo barrel (`@/features/pokemon`), nunca por caminho interno (`@/features/pokemon/components/...`) — exceto dentro da própria feature (aí usa import relativo, `./` ou `../`). Essa regra é **checada pelo ESLint** (`no-restricted-imports` em `eslint.config.js`), não só de boa-fé — `npm run lint` acusa se alguém violar.
+
+Código puro sem UI (ex: resolução/normalização de nome de Pokémon) mora em `shared/lib/`, mesmo que só uma feature use hoje — `shared/` nunca deve depender de `features/*`, é sempre o contrário.
 
 ### Sobre as pastas de agente de IA (`.agents`, `.claude`, `.serena`, `skills/`)
 
@@ -52,7 +54,7 @@ Cada ferramenta de IA espera suas configs num lugar fixo, então não dá pra co
 | Estado | Zustand + `persist` (localForage) | estado de UI simples, persistência offline sem backend |
 | Fetch/cache | TanStack Query | cache de chamadas à PokeAPI |
 | PWA (opcional) | vite-plugin-pwa | deixa o app instalável e com cache offline — feature extra, não o foco (o produto é web) |
-| Testes | Vitest | testes de store ficam junto do arquivo (`fooStore.test.ts` ao lado de `fooStore.ts`) |
+| Testes | Vitest + Testing Library | testes ficam junto do arquivo testado (`fooStore.test.ts` ao lado de `fooStore.ts`, `FooForm.test.tsx` ao lado de `FooForm.tsx`) |
 | Container | Docker (dev + prod) | não precisa Node instalado na máquina pra rodar |
 | Deploy | Vercel | builda direto do repo — **Root Directory no dashboard da Vercel precisa ser `arce-dex`**, senão o build quebra |
 
@@ -76,6 +78,7 @@ Antes de qualquer commit: `npm run build && npm run lint && npm run test` (dos t
 - **Zustand store = `create(persist(...))`** com storage em `@/shared/lib/storage` (localForage). Ver qualquer store existente como referência.
 - **Dado de tipo/efetividade de Pokémon** mora em `features/type-analysis` — não duplicar tabela de tipos em outro lugar.
 - **Nunca commitar sem rodar build+lint+test** (regra de verdade, não sugestão).
+- **Componente com lógica de interação (form, toggle, dialog) ganha teste com Testing Library**, não só teste de store. Ver `features/auth/components/AuthForm.test.tsx` como referência (render + `fireEvent`, sem mockar Supabase — só testa o que a UI faz).
 
 ## O que já foi feito (histórico)
 
