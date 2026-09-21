@@ -1,6 +1,6 @@
 import { Clock } from 'lucide-react'
 import type { PokemonSummary } from '@/shared/types/pokemon'
-import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
+import { TypeBadges } from '@/features/pokemon'
 
 type RecentPokemonPanelProps = {
   pokemon: PokemonSummary[]

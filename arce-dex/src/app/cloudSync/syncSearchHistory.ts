@@ -1,6 +1,7 @@
 import { supabase } from '@/shared/services/supabase/client'
 import { useSearchHistoryStore } from '@/features/search'
 import { decideSyncStrategy } from './decideSyncStrategy'
+import { subscribeToTableChanges } from './realtimeChannel'
 
 export async function startSearchHistorySync(userId: string): Promise<() => void> {
   if (!supabase) {
@@ -30,29 +31,22 @@ export async function startSearchHistorySync(userId: string): Promise<() => void
 
   let isApplyingRemote = false
 
-  const topic = `search-history-${userId}`
-  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
-  if (existingChannel) {
-    await client.removeChannel(existingChannel)
-  }
-
-  const channel = client
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'search_history', filter: `user_id=eq.${userId}` },
-      async () => {
-        isApplyingRemote = true
-        const { data } = await client
-          .from('search_history')
-          .select('term, searched_at')
-          .eq('user_id', userId)
-          .order('searched_at', { ascending: false })
-        useSearchHistoryStore.setState({ history: (data ?? []).map((row) => row.term as string) })
-        isApplyingRemote = false
-      },
-    )
-    .subscribe()
+  const channel = await subscribeToTableChanges(
+    client,
+    `search-history-${userId}`,
+    'search_history',
+    userId,
+    async () => {
+      isApplyingRemote = true
+      const { data } = await client
+        .from('search_history')
+        .select('term, searched_at')
+        .eq('user_id', userId)
+        .order('searched_at', { ascending: false })
+      useSearchHistoryStore.setState({ history: (data ?? []).map((row) => row.term as string) })
+      isApplyingRemote = false
+    },
+  )
 
   let previousTerms = useSearchHistoryStore.getState().history
 

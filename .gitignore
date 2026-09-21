@@ -5,3 +5,6 @@
 # Symlink shims created by `npx skills add` — regenerate with:
 # npx skills add supabase/agent-skills
 /skills/
+
+# Local Playwright MCP browser-testing artifacts (snapshots/console logs)
+.playwright-mcp/

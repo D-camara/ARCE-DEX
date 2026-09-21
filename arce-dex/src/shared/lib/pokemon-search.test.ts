@@ -3,7 +3,7 @@ import {
   getPokemonAutocompleteSuggestions,
   getPokemonSearchCandidates,
   resolvePokemonSearchInput,
-} from './search'
+} from './pokemon-search'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 
 function expectFirstCandidate(input: string, expected: string | number) {

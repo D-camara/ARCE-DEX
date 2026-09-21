@@ -7,7 +7,7 @@ import {
 import { calculateFinalStats } from '@/shared/lib/stats'
 import type { MoveDetail } from '@/shared/types/pokemon'
 import type { Team, TeamPokemon } from '@/shared/types/team'
-import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
+import { TypeBadges } from '@/features/pokemon'
 
 type TeamLabAnalysisProps = {
   team: Team

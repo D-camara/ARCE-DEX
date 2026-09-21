@@ -1,6 +1,7 @@
 import { supabase } from '@/shared/services/supabase/client'
 import { useSettingsStore } from '@/shared/stores/settingsStore'
 import { decideSyncStrategy } from './decideSyncStrategy'
+import { subscribeToTableChanges } from './realtimeChannel'
 
 export async function startSettingsSync(userId: string): Promise<() => void> {
   if (!supabase) {
@@ -24,28 +25,15 @@ export async function startSettingsSync(userId: string): Promise<() => void> {
 
   let isApplyingRemote = false
 
-  const topic = `settings-${userId}`
-  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
-  if (existingChannel) {
-    await client.removeChannel(existingChannel)
-  }
-
-  const channel = client
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'settings', filter: `user_id=eq.${userId}` },
-      async () => {
-        isApplyingRemote = true
-        const { data } = await client.from('settings').select('theme').eq('user_id', userId).maybeSingle()
-        const theme = data?.theme as string | undefined
-        if (theme === 'light' || theme === 'dark' || theme === 'system') {
-          useSettingsStore.setState({ theme })
-        }
-        isApplyingRemote = false
-      },
-    )
-    .subscribe()
+  const channel = await subscribeToTableChanges(client, `settings-${userId}`, 'settings', userId, async () => {
+    isApplyingRemote = true
+    const { data } = await client.from('settings').select('theme').eq('user_id', userId).maybeSingle()
+    const theme = data?.theme as string | undefined
+    if (theme === 'light' || theme === 'dark' || theme === 'system') {
+      useSettingsStore.setState({ theme })
+    }
+    isApplyingRemote = false
+  })
 
   const unsubscribeStore = useSettingsStore.subscribe((state) => {
     if (isApplyingRemote) {

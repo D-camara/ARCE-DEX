@@ -1,6 +1,7 @@
 import { supabase } from '@/shared/services/supabase/client'
 import { useTeamStore } from '@/features/team'
 import { decideSyncStrategy } from './decideSyncStrategy'
+import { subscribeToTableChanges } from './realtimeChannel'
 import type { Team, TeamPokemon } from '@/shared/types/team'
 
 type RemoteTeamRow = { id: string; client_team_id: string; name: string }
@@ -98,20 +99,7 @@ export async function startTeamsSync(userId: string): Promise<() => void> {
     isApplyingRemote = false
   }
 
-  const topic = `teams-${userId}`
-  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
-  if (existingChannel) {
-    await client.removeChannel(existingChannel)
-  }
-
-  const channel = client
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'teams', filter: `user_id=eq.${userId}` },
-      reloadFromRemote,
-    )
-    .subscribe()
+  const channel = await subscribeToTableChanges(client, `teams-${userId}`, 'teams', userId, reloadFromRemote)
 
   let pushTimer: ReturnType<typeof setTimeout> | undefined
 

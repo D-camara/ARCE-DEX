@@ -1,6 +1,7 @@
 import { supabase } from '@/shared/services/supabase/client'
 import { useFavoritesStore } from '@/features/favorites'
 import { decideSyncStrategy } from './decideSyncStrategy'
+import { subscribeToTableChanges } from './realtimeChannel'
 
 export async function startFavoritesSync(userId: string): Promise<() => void> {
   if (!supabase) {
@@ -30,25 +31,12 @@ export async function startFavoritesSync(userId: string): Promise<() => void> {
 
   let isApplyingRemote = false
 
-  const topic = `favorites-${userId}`
-  const existingChannel = client.getChannels().find((ch) => ch.topic === `realtime:${topic}`)
-  if (existingChannel) {
-    await client.removeChannel(existingChannel)
-  }
-
-  const channel = client
-    .channel(topic)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'favorites', filter: `user_id=eq.${userId}` },
-      async () => {
-        isApplyingRemote = true
-        const { data } = await client.from('favorites').select('pokemon_id').eq('user_id', userId)
-        useFavoritesStore.setState({ favoritePokemonIds: (data ?? []).map((row) => row.pokemon_id as number) })
-        isApplyingRemote = false
-      },
-    )
-    .subscribe()
+  const channel = await subscribeToTableChanges(client, `favorites-${userId}`, 'favorites', userId, async () => {
+    isApplyingRemote = true
+    const { data } = await client.from('favorites').select('pokemon_id').eq('user_id', userId)
+    useFavoritesStore.setState({ favoritePokemonIds: (data ?? []).map((row) => row.pokemon_id as number) })
+    isApplyingRemote = false
+  })
 
   let previousIds = useFavoritesStore.getState().favoritePokemonIds
 

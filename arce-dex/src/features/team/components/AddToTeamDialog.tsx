@@ -1,7 +1,7 @@
 import { X } from 'lucide-react'
 import type { Pokemon } from '@/shared/types/pokemon'
 import type { Team } from '@/shared/types/team'
-import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
+import { TypeBadges } from '@/features/pokemon'
 
 type AddToTeamDialogProps = {
   isOpen: boolean

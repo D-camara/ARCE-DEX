@@ -3,7 +3,7 @@ import type { PokemonSummary } from '@/shared/types/pokemon'
 import {
   getPokemonAutocompleteSuggestions,
   normalizePokemonSearchText,
-} from '@/features/search/lib/search'
+} from '@/shared/lib/pokemon-search'
 import { TypeBadges } from '@/features/pokemon'
 
 type SearchExperienceProps = {
