@@ -9,7 +9,7 @@ import type {
   PokeApiPokemonSpeciesResponse,
   PokeApiTypeResponse,
 } from '@/shared/types/pokeapi'
-import { getPokemonSearchCandidates } from '@/features/search/lib/search'
+import { getPokemonSearchCandidates } from '@/shared/lib/pokemon-search'
 import { pokeApiGet } from './client'
 
 export function getPokemonList(limit = 151, offset = 0) {

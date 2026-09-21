@@ -1,6 +1,6 @@
 import { Package, Pencil, Trash2 } from 'lucide-react'
 import type { TeamSlot } from '@/shared/types/team'
-import { TypeBadges } from '@/features/pokemon/components/TypeBadges'
+import { TypeBadges } from '@/features/pokemon'
 
 type TeamSlotCardProps = {
   isSelected: boolean
