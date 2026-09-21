@@ -1,41 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Heart, LogIn, LogOut, Menu } from 'lucide-react'
 import { AuthForm, useAuthStore } from '@/features/auth'
 import { isSupabaseConfigured, supabase } from '@/shared/services/supabase/client'
-import {
-  AbilityDetailsDialog,
-  PokemonCard,
-  PokemonTabs,
-  usePokemon,
-  useAbility,
-  useEvolutionChain,
-  usePokemonAutocompleteList,
-  useMovesDetails,
-  usePokemonSpecies,
-  usePokemonSummaries,
-} from '@/features/pokemon'
+import { AbilityDetailsDialog, PokemonCard, PokemonTabs } from '@/features/pokemon'
 import { AddToTeamDialog, TeamLabView, useTeamStore } from '@/features/team'
 import { ErrorState, LoadingState, Toast } from '@/shared/ui/StatusStates'
 import { FavoritesDrawer, RecentPokemonPanel, useFavoritesStore } from '@/features/favorites'
-import {
-  SearchExperience,
-  getPokemonAutocompleteSuggestions,
-  useSearchHistoryStore,
-} from '@/features/search'
-import { normalizePokemonSearch } from '@/shared/lib/utils'
-import type { PokemonSummary } from '@/shared/types/pokemon'
-import {
-  flattenEvolutionNodes,
-  getFavoritePokemon,
-  createPokemonTabData,
-  getRecentPokemon,
-  mergePokemonSummaries,
-  preparePokemonLevelUpMoves,
-  toTeamPokemon,
-} from './appDataAdapters'
+import { SearchExperience, useSearchHistoryStore } from '@/features/search'
 import { useAppView } from './useAppView'
 import { useAppDialogs } from './useAppDialogs'
 import { useCloudSync } from './useCloudSync'
+import { useDexPageData } from './useDexPageData'
+import { useDexActions } from './useDexActions'
 
 function App() {
   const view = useAppView()
@@ -45,25 +21,7 @@ function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false)
   useCloudSync()
 
-  const pokemonListQuery = usePokemonAutocompleteList()
-  const selectedPokemonQuery = usePokemon(view.selectedIdentifier)
-  const selectedPokemon = selectedPokemonQuery.data
-  const selectedAbilityQuery = useAbility(view.selectedAbilityName)
-  const selectedSpeciesQuery = usePokemonSpecies(view.selectedIdentifier)
-  const selectedSpecies = selectedSpeciesQuery.data
-  const evolutionChainQuery = useEvolutionChain(selectedSpecies?.evolutionChainUrl ?? null)
-  const baseMoves = useMemo(
-    () => preparePokemonLevelUpMoves(selectedPokemon?.moves ?? []).slice(0, 32),
-    [selectedPokemon],
-  )
-  const moveDetailQueries = useMovesDetails(baseMoves)
-  const moveDetails = useMemo(
-    () =>
-      moveDetailQueries
-        .map((query) => query.data)
-        .filter((move): move is NonNullable<typeof move> => Boolean(move)),
-    [moveDetailQueries],
-  )
+  const data = useDexPageData(view)
 
   const activeTeamId = useTeamStore((state) => state.activeTeamId)
   const teams = useTeamStore((state) => state.teams)
@@ -74,132 +32,21 @@ function App() {
   const clearTeam = useTeamStore((state) => state.clearTeam)
   const updatePokemonInTeam = useTeamStore((state) => state.updatePokemonInTeam)
 
-  const favoritePokemonIds = useFavoritesStore((state) => state.favoritePokemonIds)
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite)
   const isFavorite = useFavoritesStore((state) => state.isFavorite)
-  const searchHistory = useSearchHistoryStore((state) => state.history)
   const addSearch = useSearchHistoryStore((state) => state.addSearch)
-  const formIdentifiers = selectedSpecies?.varieties.map((form) => form.name) ?? []
-  const summaries = useMemo(() => pokemonListQuery.data?.results ?? [], [pokemonListQuery.data])
-  const visibleAutocompleteSuggestions = useMemo(
-    () => getPokemonAutocompleteSuggestions(view.query, summaries),
-    [view.query, summaries],
-  )
-  const autocompleteSummaryQuery = usePokemonSummaries(
-    visibleAutocompleteSuggestions.map((pokemon) => pokemon.name),
-  )
-  const relatedSummaryQuery = usePokemonSummaries([
-    ...searchHistory.slice(0, 8),
-    ...favoritePokemonIds,
-    ...formIdentifiers,
-  ])
 
-  const selectedSummary = selectedPokemon ? [selectedPokemon] : []
-  const evolutionSummaries = flattenEvolutionNodes(evolutionChainQuery.data?.root)
-  const summaryCache = mergePokemonSummaries(
-    summaries,
-    autocompleteSummaryQuery.data,
-    evolutionSummaries,
-    relatedSummaryQuery.data,
-    selectedSummary,
-  )
-
-  const pokemonTabData = useMemo(
-    () =>
-      createPokemonTabData(
-        selectedPokemon,
-        selectedSpecies,
-        evolutionChainQuery.data,
-        summaryCache,
-        moveDetails,
-      ),
-    [evolutionChainQuery.data, moveDetails, selectedPokemon, selectedSpecies, summaryCache],
-  )
-  const favoritePokemon = getFavoritePokemon(favoritePokemonIds, summaryCache)
-  const recentPokemon = getRecentPokemon(searchHistory, summaryCache)
-
-  function handleSearch(value: string) {
-    const normalizedSearch = normalizePokemonSearch(value)
-
-    if (normalizedSearch !== '') {
-      view.setSelectedIdentifier(normalizedSearch)
-      addSearch(String(normalizedSearch))
-      view.setActiveView('dex')
-      view.setIsAutocompleteOpen(false)
-    }
-  }
-
-  function handleSelectPokemon(pokemon: PokemonSummary) {
-    view.setSelectedIdentifier(pokemon.name)
-    view.setQuery(pokemon.displayName)
-    addSearch(pokemon.name)
-    view.setActiveView('dex')
-    view.setActivePokemonTab('Info')
-    view.setIsAutocompleteOpen(false)
-  }
-
-  function handleSearchChange(value: string) {
-    view.setQuery(value)
-    view.setIsAutocompleteOpen(value.trim().length >= 2)
-  }
-
-  function handleAddToTeam() {
-    if (!selectedPokemon) {
-      return
-    }
-
-    dialogs.setSelectedAddTeamId(activeTeamId)
-    dialogs.setIsAddToTeamOpen(true)
-  }
-
-  function handleSelectPokemonIdentifier(identifier: string | number) {
-    view.setSelectedIdentifier(identifier)
-    view.setQuery('')
-    addSearch(String(identifier))
-    view.setIsAutocompleteOpen(false)
-  }
-
-  function handleConfirmAddToTeam(teamId: string) {
-    if (!selectedPokemon) {
-      return
-    }
-
-    const team = teams.find((item) => item.id === teamId)
-    const wasAdded = addPokemonToTeam(teamId, toTeamPokemon(selectedPokemon))
-    dialogs.showToastMessage(
-      wasAdded
-        ? `${selectedPokemon.displayName} adicionado em ${team?.name ?? 'time'}.`
-        : `${team?.name ?? 'Time'} esta cheio.`,
-    )
-    dialogs.setIsAddToTeamOpen(!wasAdded)
-  }
-
-  function handleToggleFavorite() {
-    if (!selectedPokemon) {
-      return
-    }
-
-    const willFavorite = !isFavorite(selectedPokemon.id)
-    toggleFavorite(selectedPokemon.id)
-    dialogs.showToastMessage(willFavorite ? 'Pokemon favoritado.' : 'Pokemon removido dos favoritos.')
-  }
-
-  function handleRemoveFavorite(pokemonId: number) {
-    toggleFavorite(pokemonId)
-    dialogs.showToastMessage('Pokemon removido dos favoritos.')
-  }
-
-  function handlePlayCry() {
-    if (!selectedPokemon?.cryUrl) {
-      return
-    }
-
-    const audio = new Audio(selectedPokemon.cryUrl)
-
-    void audio.play().catch(() => {
-      dialogs.showToastMessage('Nao foi possivel tocar o cry agora.')
-    })
-  }
+  const actions = useDexActions({
+    view,
+    dialogs,
+    selectedPokemon: data.selectedPokemon,
+    teams,
+    activeTeamId,
+    addPokemonToTeam,
+    toggleFavorite,
+    isFavorite,
+    addSearch,
+  })
 
   return (
     <div className="mx-auto w-full max-w-[1180px] px-3.5 pt-[124px] pb-7 min-[760px]:px-6 min-[760px]:pt-20 max-[375px]:overflow-x-hidden max-[375px]:px-2 max-[280px]:pt-[110px] max-[280px]:px-1">
@@ -217,13 +64,13 @@ function App() {
         <div className="relative min-w-0 flex-1 max-w-[380px] max-[760px]:col-span-2 max-[760px]:row-start-2 max-[760px]:w-full max-[760px]:max-w-full">
           <SearchExperience
             isAutocompleteOpen={view.isAutocompleteOpen}
-            isError={pokemonListQuery.isError}
-            isLoading={pokemonListQuery.isLoading}
-            onChange={handleSearchChange}
+            isError={data.pokemonListQuery.isError}
+            isLoading={data.pokemonListQuery.isLoading}
+            onChange={actions.handleSearchChange}
             onFocus={() => view.setIsAutocompleteOpen(view.query.trim().length >= 2)}
-            onSearch={handleSearch}
-            onSelect={handleSelectPokemon}
-            suggestions={summaryCache}
+            onSearch={actions.handleSearch}
+            onSelect={actions.handleSelectPokemon}
+            suggestions={data.summaryCache}
             value={view.query}
           />
         </div>
@@ -286,31 +133,31 @@ function App() {
         <main className="flex w-full flex-col gap-8">
           <section className="grid gap-4 min-[760px]:grid-cols-[minmax(0,1fr)_360px] min-[760px]:items-start min-[1024px]:grid-cols-[minmax(0,1fr)_390px]">
             <div className="grid content-start gap-4">
-              {selectedPokemonQuery.isLoading && <LoadingState />}
-              {selectedPokemonQuery.isError && <ErrorState />}
-              {selectedPokemon && (
+              {data.selectedPokemonQuery.isLoading && <LoadingState />}
+              {data.selectedPokemonQuery.isError && <ErrorState />}
+              {data.selectedPokemon && (
                 <>
                   <PokemonCard
-                    isFavorite={isFavorite(selectedPokemon.id)}
-                    key={selectedPokemon.id}
-                    onAddToTeam={handleAddToTeam}
-                    onPlayCry={handlePlayCry}
+                    isFavorite={isFavorite(data.selectedPokemon.id)}
+                    key={data.selectedPokemon.id}
+                    onAddToTeam={actions.handleAddToTeam}
+                    onPlayCry={actions.handlePlayCry}
                     onSelectAbility={view.setSelectedAbilityName}
-                    onToggleFavorite={handleToggleFavorite}
-                    pokemon={selectedPokemon}
+                    onToggleFavorite={actions.handleToggleFavorite}
+                    pokemon={data.selectedPokemon}
                   />
                   <PokemonTabs
                     activeTab={view.activePokemonTab}
-                    data={pokemonTabData}
+                    data={data.pokemonTabData}
                     onTabChange={view.setActivePokemonTab}
-                    onSelectPokemon={handleSelectPokemonIdentifier}
+                    onSelectPokemon={actions.handleSelectPokemonIdentifier}
                   />
                 </>
               )}
             </div>
 
             <div className="grid content-start gap-4">
-              <RecentPokemonPanel onSelect={handleSelectPokemon} pokemon={recentPokemon} />
+              <RecentPokemonPanel onSelect={actions.handleSelectPokemon} pokemon={data.recentPokemon} />
             </div>
           </section>
         </main>
@@ -319,28 +166,28 @@ function App() {
       <AddToTeamDialog
         isOpen={dialogs.isAddToTeamOpen}
         onClose={() => dialogs.setIsAddToTeamOpen(false)}
-        onConfirm={handleConfirmAddToTeam}
+        onConfirm={actions.handleConfirmAddToTeam}
         onSelectTeam={dialogs.setSelectedAddTeamId}
-        pokemon={selectedPokemon}
+        pokemon={data.selectedPokemon}
         selectedTeamId={dialogs.selectedAddTeamId}
         teams={teams}
       />
 
       <FavoritesDrawer
-        favorites={favoritePokemon}
+        favorites={data.favoritePokemon}
         isOpen={dialogs.isFavoritesOpen}
         onClose={() => dialogs.setIsFavoritesOpen(false)}
-        onRemove={handleRemoveFavorite}
+        onRemove={actions.handleRemoveFavorite}
         onSelect={(pokemon) => {
-          handleSelectPokemon(pokemon)
+          actions.handleSelectPokemon(pokemon)
           dialogs.setIsFavoritesOpen(false)
         }}
       />
 
       <AbilityDetailsDialog
-        ability={selectedAbilityQuery.data}
-        isError={selectedAbilityQuery.isError}
-        isLoading={selectedAbilityQuery.isLoading}
+        ability={data.selectedAbilityQuery.data}
+        isError={data.selectedAbilityQuery.isError}
+        isLoading={data.selectedAbilityQuery.isLoading}
         isOpen={view.selectedAbilityName !== null}
         onClose={() => view.setSelectedAbilityName(null)}
       />
