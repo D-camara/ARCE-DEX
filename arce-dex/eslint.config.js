@@ -18,5 +18,24 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '@/features/*/components/*',
+                '@/features/*/hooks/*',
+                '@/features/*/store/*',
+                '@/features/*/lib/*',
+              ],
+              message:
+                'Import from the feature barrel (@/features/<name>) instead — never reach into another feature\'s internals. Same-feature code should use a relative import (./ or ../), not this alias form.',
+            },
+          ],
+        },
+      ],
+    },
   },
 ])
