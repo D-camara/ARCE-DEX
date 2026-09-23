@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
+import { Dialog } from '@/shared/ui'
 import { supabase } from '@/shared/services/supabase/client'
 
 type AuthFormProps = {
@@ -12,6 +13,7 @@ export function AuthForm({ onClose }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [confirmationSent, setConfirmationSent] = useState(false)
+  const titleId = useId()
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -43,78 +45,78 @@ export function AuthForm({ onClose }: AuthFormProps) {
 
   if (confirmationSent) {
     return (
-      <div
-        className="fixed inset-0 z-[34] grid items-end bg-abyss/64 p-2.5 md:items-center"
-        role="presentation"
+      <Dialog
+        isOpen
+        onClose={onClose}
+        labelledBy={titleId}
+        className="w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-ink-blue/98 p-5 text-ivory"
       >
-        <section className="mx-auto grid w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-ink-blue/98 p-5 text-ivory">
-          <h2>Confirme seu email</h2>
-          <p className="text-ivory-soft">
-            Enviamos um link de confirmação para {email}. Clique nele antes de entrar.
-          </p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-control border border-line-gold px-4 py-2 text-sm text-gold"
-          >
-            Fechar
-          </button>
-        </section>
-      </div>
+        <h2 id={titleId}>Confirme seu email</h2>
+        <p className="text-ivory-soft">
+          Enviamos um link de confirmação para {email}. Clique nele antes de entrar.
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-control border border-line-gold px-4 py-2 text-sm text-gold"
+        >
+          Fechar
+        </button>
+      </Dialog>
     )
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[34] grid items-end bg-abyss/64 p-2.5 md:items-center"
-      role="presentation"
+    <Dialog
+      isOpen
+      onClose={onClose}
+      labelledBy={titleId}
+      className="w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-ink-blue/98 p-5 text-ivory"
     >
-      <section className="mx-auto grid w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-ink-blue/98 p-5 text-ivory">
-        <header className="flex items-center justify-between gap-3">
-          <h2>{mode === 'sign-up' ? 'Criar conta' : 'Entrar'}</h2>
-          <button type="button" onClick={onClose} className="text-ivory-soft">
-            Fechar
-          </button>
-        </header>
-        <form onSubmit={handleSubmit} className="grid gap-3">
-          <label className="grid gap-1.5 text-[0.78rem] font-extrabold">
-            Email
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="w-full min-h-[46px] rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-ivory"
-            />
-          </label>
-          <label className="grid gap-1.5 text-[0.78rem] font-extrabold">
-            Senha
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full min-h-[46px] rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-ivory"
-            />
-          </label>
-          {error && <p className="text-sm text-danger-rose-200">{error}</p>}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex min-h-[46px] items-center justify-center rounded-control border border-line-gold bg-gilt/16 font-extrabold text-ivory disabled:opacity-50"
-          >
-            {mode === 'sign-up' ? 'Criar conta' : 'Entrar'}
-          </button>
-        </form>
-        <button
-          type="button"
-          onClick={() => setMode(mode === 'sign-up' ? 'sign-in' : 'sign-up')}
-          className="text-sm text-gold"
-        >
-          {mode === 'sign-up' ? 'Já tenho conta' : 'Criar conta nova'}
+      <header className="flex items-center justify-between gap-3">
+        <h2 id={titleId}>{mode === 'sign-up' ? 'Criar conta' : 'Entrar'}</h2>
+        <button type="button" onClick={onClose} className="text-ivory-soft">
+          Fechar
         </button>
-      </section>
-    </div>
+      </header>
+      <form onSubmit={handleSubmit} className="grid gap-3">
+        <label className="grid gap-1.5 text-[0.78rem] font-extrabold">
+          Email
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className="w-full min-h-[46px] rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-ivory"
+          />
+        </label>
+        <label className="grid gap-1.5 text-[0.78rem] font-extrabold">
+          Senha
+          <input
+            type="password"
+            required
+            minLength={6}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="w-full min-h-[46px] rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-ivory"
+          />
+        </label>
+        {error && <p className="text-sm text-danger-rose-200">{error}</p>}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="inline-flex min-h-[46px] items-center justify-center rounded-control border border-line-gold bg-gilt/16 font-extrabold text-ivory disabled:opacity-50"
+        >
+          {mode === 'sign-up' ? 'Criar conta' : 'Entrar'}
+        </button>
+      </form>
+      <button
+        type="button"
+        onClick={() => setMode(mode === 'sign-up' ? 'sign-in' : 'sign-up')}
+        className="text-sm text-gold"
+      >
+        {mode === 'sign-up' ? 'Já tenho conta' : 'Criar conta nova'}
+      </button>
+    </Dialog>
   )
 }

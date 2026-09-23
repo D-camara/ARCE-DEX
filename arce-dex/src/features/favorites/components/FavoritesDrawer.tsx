@@ -1,5 +1,6 @@
 import { HeartOff, X } from 'lucide-react'
-import type { MouseEvent } from 'react'
+import { useId, useRef, type MouseEvent } from 'react'
+import { useDialogBehavior } from '@/shared/ui'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon'
 
@@ -18,6 +19,10 @@ export function FavoritesDrawer({
   onRemove,
   onSelect,
 }: FavoritesDrawerProps) {
+  const drawerRef = useRef<HTMLElement>(null)
+  const titleId = useId()
+  useDialogBehavior(isOpen, onClose, drawerRef)
+
   function handleRemove(event: MouseEvent<HTMLButtonElement>, pokemonId: number) {
     event.stopPropagation()
     onRemove(pokemonId)
@@ -35,12 +40,18 @@ export function FavoritesDrawer({
         className={`fixed right-0 top-0 z-[1001] grid h-[100svh] w-full max-w-[calc(100vw-20px)] grid-rows-[auto_1fr] gap-3.5 overflow-hidden border-l border-parchment/12 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.1),transparent_22rem),linear-gradient(180deg,rgba(13,18,34,0.99),rgba(5,9,18,0.99))] p-4 shadow-[0_0_50px_rgba(0,0,0,0.9)] transition-transform duration-300 md:w-[420px] md:max-w-[420px] ${
           isOpen ? 'translate-x-0' : 'translate-x-[105%]'
         }`}
+        ref={drawerRef}
+        role="dialog"
+        aria-modal={isOpen}
+        aria-labelledby={titleId}
         aria-hidden={!isOpen}
+        // Off-screen while closed: keep it out of the Tab order too.
+        inert={!isOpen}
       >
         <header className="flex items-center justify-between gap-3">
           <div>
             <p className="text-gold">Favoritos</p>
-            <h2>Pokemon salvos</h2>
+            <h2 id={titleId}>Pokemon salvos</h2>
           </div>
           <button
             className="inline-grid h-[42px] w-[42px] place-items-center rounded-control border border-gilt-warm/26 bg-white/5"
