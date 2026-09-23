@@ -35,8 +35,12 @@ function App() {
   const actions = useDexActions({ view, dialogs, selectedPokemon: data.selectedPokemon })
 
   return (
-    <div className="mx-auto w-full max-w-[1180px] px-3.5 pt-[124px] pb-7 md:px-6 md:pt-20 max-xs:overflow-x-hidden max-xs:px-2 max-fold:pt-[110px] max-fold:px-1">
-      <header className="fixed inset-x-0 top-0 z-[1002] mx-auto flex min-h-[56px] w-full max-w-[1180px] items-center justify-between gap-4 border-b border-line bg-cosmic-soft/92 px-4 py-2 backdrop-blur-[18px] md:min-h-[60px] md:px-6 md:py-2.5 max-md:grid max-md:min-h-0 max-md:grid-cols-[1fr_auto] max-md:gap-3 max-md:px-4 max-md:py-3 max-phone:gap-2 max-phone:px-2.5 max-phone:py-2 max-fold:gap-1 max-fold:px-2">
+    // The header is sticky (in the flow), not fixed: its height changes with width (title
+    // wrapping, search stacking), so no fixed padding-top could keep content out from under it.
+    // Its negative margins cancel the container padding so it keeps the full container width.
+    // overflow-x-clip (not hidden): hidden would make this a scroll container and break sticky.
+    <div className="mx-auto w-full max-w-[1180px] px-3.5 pb-7 md:px-6 max-xs:overflow-x-clip max-xs:px-2 max-fold:px-1">
+      <header className="sticky top-0 z-[1002] -mx-3.5 mb-4 flex min-h-[56px] items-center justify-between gap-4 border-b border-line bg-cosmic-soft/92 px-4 py-2 backdrop-blur-[18px] md:min-h-[60px] md:px-6 md:py-2.5 max-md:grid max-md:min-h-0 max-md:grid-cols-[1fr_auto] max-md:gap-3 max-md:px-4 max-md:py-3 max-phone:gap-2 max-phone:px-2.5 max-phone:py-2 max-fold:gap-1 max-fold:px-2 md:-mx-6 md:mb-5 max-xs:-mx-2 max-fold:-mx-1">
         <div className="flex min-w-0 shrink-0 items-center gap-2.5 max-md:col-start-1 max-md:row-start-1 max-md:self-center">
           <span className="grid h-[38px] w-[38px] place-items-center rounded-[14px] border border-azure/45 bg-[linear-gradient(135deg,rgba(56,189,248,0.3),rgba(249,115,22,0.18))] font-black text-azure-100">
             A
@@ -95,8 +99,10 @@ function App() {
         <TeamLab onBack={() => view.setActiveView('dex')} />
       ) : (
         <main className="flex w-full flex-col gap-8">
-          <section className="grid gap-4 md:grid-cols-[minmax(0,1fr)_360px] md:items-start lg:grid-cols-[minmax(0,1fr)_390px]">
-            <div className="grid content-start gap-4">
+          <section className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_360px] md:items-start lg:grid-cols-[minmax(0,1fr)_390px]">
+            {/* grid-cols-1 = minmax(0,1fr): lets the column shrink below the tab bar's
+                nowrap width (the tab bar scrolls sideways instead of widening the card). */}
+            <div className="grid grid-cols-1 content-start gap-4">
               {data.selectedPokemonQuery.isLoading && <LoadingState />}
               {data.selectedPokemonQuery.isError && <ErrorState />}
               {data.selectedPokemon && (
