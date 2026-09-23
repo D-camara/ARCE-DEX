@@ -10,7 +10,6 @@ export function useMovesDetails(moves: PokemonMove[]) {
     queries: names.map((name) => ({
       queryKey: ['move-detail', name],
       queryFn: async () => mapMoveDetail(await getMove(name)),
-      staleTime: 1000 * 60 * 60,
     })),
   })
 }

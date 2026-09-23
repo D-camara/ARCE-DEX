@@ -20,7 +20,10 @@ import {
 } from './appDataAdapters'
 import type { useAppView } from './useAppView'
 
-export function useDexPageData(view: ReturnType<typeof useAppView>) {
+export function useDexPageData(
+  view: ReturnType<typeof useAppView>,
+  { isFavoritesOpen }: { isFavoritesOpen: boolean },
+) {
   const pokemonListQuery = usePokemonAutocompleteList()
   const selectedPokemonQuery = usePokemon(view.selectedIdentifier)
   const selectedPokemon = selectedPokemonQuery.data
@@ -56,11 +59,10 @@ export function useDexPageData(view: ReturnType<typeof useAppView>) {
   const autocompleteSummaryQuery = usePokemonSummaries(
     visibleAutocompleteSuggestions.map((pokemon) => pokemon.name),
   )
-  const relatedSummaryQuery = usePokemonSummaries([
-    ...searchHistory.slice(0, 8),
-    ...favoritePokemonIds,
-    ...formIdentifiers,
-  ])
+  const relatedSummaryQuery = usePokemonSummaries([...searchHistory.slice(0, 8), ...formIdentifiers])
+  // Favorites can be many and are only shown in the drawer: fetch them when it opens.
+  // Once fetched they stay cached, so closing the drawer doesn't lose them.
+  const favoriteSummaryQuery = usePokemonSummaries(favoritePokemonIds, { enabled: isFavoritesOpen })
 
   const selectedSummary = selectedPokemon ? [selectedPokemon] : []
   const evolutionSummaries = flattenEvolutionNodes(evolutionChainQuery.data?.root)
@@ -69,6 +71,7 @@ export function useDexPageData(view: ReturnType<typeof useAppView>) {
     autocompleteSummaryQuery.data,
     evolutionSummaries,
     relatedSummaryQuery.data,
+    favoriteSummaryQuery.data,
     selectedSummary,
   )
 

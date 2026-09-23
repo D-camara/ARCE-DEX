@@ -24,7 +24,7 @@ function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false)
   useCloudSync()
 
-  const data = useDexPageData(view)
+  const data = useDexPageData(view, { isFavoritesOpen: dialogs.isFavoritesOpen })
   useCanonicalPokemonUrl(view, data.selectedPokemon)
 
   const selectedPokemonId = data.selectedPokemon?.id
