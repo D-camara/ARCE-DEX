@@ -15,16 +15,16 @@ type TeamLabAnalysisProps = {
 }
 
 const articleClass =
-  'grid content-start gap-3 rounded-[20px] border border-[rgba(246,237,211,0.12)] bg-[rgba(9,11,16,0.7)] p-5 shadow-[0_20px_40px_rgba(0,0,0,0.7),inset_0_0_20px_rgba(246,237,211,0.02)]'
+  'grid content-start gap-3 rounded-[20px] border border-parchment/12 bg-ink/70 p-5 shadow-[0_20px_40px_rgba(0,0,0,0.7),inset_0_0_20px_rgba(246,237,211,0.02)]'
 const headingClass =
-  'mb-3.5 flex min-h-[24px] items-center border-b border-[rgba(246,237,211,0.1)] pb-2.5 pl-7 text-[1.05rem] font-extrabold uppercase tracking-wide text-[color:var(--color-gold-soft)]'
+  'mb-3.5 flex min-h-[24px] items-center border-b border-parchment/10 pb-2.5 pl-7 text-[1.05rem] font-extrabold uppercase tracking-wide text-[color:var(--color-gold-soft)]'
 const iconClass = 'text-gold -mb-8 z-[2]'
 const labelClass =
   'mt-3 mb-1 border-l-2 border-gold pl-2 text-[0.76rem] font-bold uppercase tracking-wide text-[color:var(--color-gold-soft)]'
 const emptyClass =
   'mt-1 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2 text-[color:var(--color-silver,#c9c7bd)]'
 const kpiRowClass =
-  'my-1 flex items-center justify-between rounded-xl border border-[rgba(246,237,211,0.06)] bg-[rgba(246,237,211,0.02)] px-3 py-2 text-[0.84rem] text-[color:var(--color-silver,#c9c7bd)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]'
+  'my-1 flex items-center justify-between rounded-xl border border-parchment/6 bg-parchment/2 px-3 py-2 text-[0.84rem] text-[color:var(--color-silver,#c9c7bd)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]'
 
 export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps) {
   const pokemons = team.slots.flatMap((slot) => (slot.pokemon ? [slot.pokemon] : []))
@@ -56,7 +56,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
   const alerts = getTeamAlerts(pokemons, commonWeaknesses)
 
   return (
-    <section className="grid gap-4 min-[760px]:grid-cols-2">
+    <section className="grid gap-4 md:grid-cols-2">
       <article className={articleClass}>
         <Shield size={18} className={iconClass} />
         <h3 className={headingClass}>Defesa</h3>
@@ -64,7 +64,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
         {commonWeaknesses.length > 0 ? (
           commonWeaknesses.map((summary) => (
             <div
-              className="mb-1 flex items-center justify-between gap-2.5 rounded-xl border border-[rgba(246,237,211,0.08)] bg-[rgba(246,237,211,0.02)] px-2.5 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
+              className="mb-1 flex items-center justify-between gap-2.5 rounded-xl border border-parchment/8 bg-parchment/2 px-2.5 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
               key={summary.type}
             >
               <TypeBadges compact types={[summary.type]} />
@@ -86,7 +86,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
         <p className="mb-0.5 text-[0.95rem] font-semibold text-ivory">
           {uniqueMoves.length}/24 golpes cadastrados.
         </p>
-        <p className="mb-3 rounded-r-md border-l-2 border-cosmic-blue bg-[rgba(134,216,247,0.04)] px-2.5 py-1.5 text-[0.8rem] leading-snug text-[color:var(--color-silver,#c9c7bd)] opacity-90">
+        <p className="mb-3 rounded-r-md border-l-2 border-cosmic-blue bg-cosmic-blue/4 px-2.5 py-1.5 text-[0.8rem] leading-snug text-[color:var(--color-silver,#c9c7bd)] opacity-90">
           {offensiveProfile.usedFallbackTypes
             ? 'Cobertura estimada pelos tipos dos Pokemon.'
             : 'Cobertura calculada pelos tipos dos golpes escolhidos.'}
@@ -95,16 +95,16 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
         <TypeBadges compact types={offensiveProfile.attackingTypes} />
         <p className={labelClass}>Divisao dos golpes</p>
         <div className="grid grid-cols-2 gap-2">
-          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
             Physical <strong className="text-ivory">{offensiveProfile.categoryCounts.physical}</strong>
           </span>
-          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
             Special <strong className="text-ivory">{offensiveProfile.categoryCounts.special}</strong>
           </span>
-          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
             Status <strong className="text-ivory">{offensiveProfile.categoryCounts.status}</strong>
           </span>
-          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+          <span className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-[0.78rem] text-muted shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
             Desconhecido <strong className="text-ivory">{unknownMoveCount}</strong>
           </span>
         </div>
@@ -112,7 +112,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
           {coverage.superEffectiveAgainst.map((type) => (
             <span
               key={type}
-              className="rounded-xl border border-[rgba(52,211,153,0.3)] bg-[rgba(52,211,153,0.08)] p-2 text-[#bbf7d0] shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
+              className="rounded-xl border border-success-400/30 bg-success-400/8 p-2 text-success-200 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
             >
               {type}
             </span>
@@ -141,7 +141,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
               {speedRows.map((row) => (
                 <span
                   key={row.name}
-                  className="flex items-center justify-between rounded-xl border border-[rgba(246,237,211,0.08)] bg-[rgba(246,237,211,0.02)] px-3 py-2 text-[0.82rem] text-[color:var(--color-silver,#c9c7bd)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
+                  className="flex items-center justify-between rounded-xl border border-parchment/8 bg-parchment/2 px-3 py-2 text-[0.82rem] text-[color:var(--color-silver,#c9c7bd)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
                 >
                   {row.name} <strong className="font-mono text-[0.9rem] text-gold">{row.speed}</strong>
                 </span>
@@ -168,7 +168,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
       </article>
 
       <article
-        className={`order-first min-[760px]:col-span-2 ${articleClass} !border-[rgba(201,166,70,0.25)] !bg-[linear-gradient(135deg,rgba(239,68,68,0.06),rgba(201,166,70,0.04)),rgba(9,11,16,0.85)] !shadow-[0_20px_40px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(239,68,68,0.03)]`}
+        className={`order-first md:col-span-2 ${articleClass} !border-gold/25 !bg-[linear-gradient(135deg,rgba(239,68,68,0.06),rgba(201,166,70,0.04)),rgba(9,11,16,0.85)] !shadow-[0_20px_40px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(239,68,68,0.03)]`}
       >
         <AlertTriangle size={18} className={iconClass} />
         <h3 className={headingClass}>Alertas</h3>
@@ -176,13 +176,13 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
           alerts.map((alert) => (
             <p
               key={alert}
-              className="mb-2 flex items-center gap-2 rounded-lg border border-[rgba(239,68,68,0.15)] border-l-4 border-l-[#ef4444] bg-[rgba(239,68,68,0.03)] px-3.5 py-2.5 text-[0.88rem] font-medium text-ivory shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+              className="mb-2 flex items-center gap-2 rounded-lg border border-danger-500/15 border-l-4 border-l-danger-500 bg-danger-500/3 px-3.5 py-2.5 text-[0.88rem] font-medium text-ivory shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
             >
               {alert}
             </p>
           ))
         ) : (
-          <p className="justify-center rounded-lg border border-[rgba(52,211,153,0.15)] border-l-4 border-l-[#34d399] bg-[rgba(52,211,153,0.03)] px-3.5 py-2.5 text-center text-[0.88rem] font-semibold text-[#34d399]">
+          <p className="justify-center rounded-lg border border-success-400/15 border-l-4 border-l-success-400 bg-success-400/3 px-3.5 py-2.5 text-center text-[0.88rem] font-semibold text-success-400">
             Nenhum alerta critico.
           </p>
         )}

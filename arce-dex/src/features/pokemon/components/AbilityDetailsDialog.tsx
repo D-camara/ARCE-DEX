@@ -22,11 +22,11 @@ export function AbilityDetailsDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[34] grid items-end bg-[rgba(2,6,23,0.64)] p-2.5 min-[760px]:items-center"
+      className="fixed inset-0 z-[34] grid items-end bg-abyss/64 p-2.5 md:items-center"
       role="presentation"
     >
       <section
-        className="mx-auto grid max-h-[min(720px,92svh)] w-[min(560px,100%)] gap-4 overflow-y-auto rounded-[20px] border border-[rgba(246,237,211,0.2)] bg-[rgba(9,11,16,0.95)] p-6 shadow-[0_25px_60px_rgba(0,0,0,0.6)] shadow-glow-gold backdrop-blur-2xl"
+        className="mx-auto grid max-h-[min(720px,92svh)] w-[min(560px,100%)] gap-4 overflow-y-auto rounded-[20px] border border-parchment/20 bg-ink/95 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.6)] shadow-glow-gold backdrop-blur-2xl"
         role="dialog"
         aria-modal="true"
       >
@@ -69,7 +69,7 @@ export function AbilityDetailsDialog({
               <h3>Flavor text</h3>
               <p className="text-ivory-soft">{ability.flavorText}</p>
             </section>
-            <span className="w-fit rounded-full bg-[rgba(56,189,248,0.13)] px-2.5 py-1.5 text-[0.78rem] font-extrabold text-[#e0f2fe]">
+            <span className="w-fit rounded-full bg-azure/13 px-2.5 py-1.5 text-[0.78rem] font-extrabold text-azure-100">
               {ability.generation}
             </span>
           </div>

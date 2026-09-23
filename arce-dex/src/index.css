@@ -20,6 +20,54 @@
   --color-cosmic-blue: #86d8f7;
   --color-astral-purple: #7d6ad8;
 
+  /*
+   * Exact colors the components paint. Some are near-duplicates of the tokens above
+   * (gilt vs gold, parchment vs ivory) — kept separate so tokenizing changed no pixels.
+   * Merging them is a design decision, not a refactor. Transparency goes in the class:
+   * border-parchment/12, bg-gilt/10.
+   */
+  --color-parchment: #f6edd3;
+  --color-gilt: #d4af37;
+  --color-gilt-warm: #f5d06c;
+
+  --color-panel: #121620;
+  --color-ink: #090b10;
+  --color-ink-blue: #090d14;
+  --color-ink-deep: #080d18;
+  --color-abyss: #020617;
+
+  --color-azure: #38bdf8;
+  --color-azure-100: #e0f2fe;
+  --color-azure-200: #bae6fd;
+  --color-info-200: #bfdbfe;
+  --color-info-500: #3b82f6;
+  --color-mist: #94a3b8;
+  --color-mist-200: #e5e7eb;
+
+  --color-success-200: #bbf7d0;
+  --color-success-400: #34d399;
+  --color-success-500: #22c55e;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+  --color-danger-rose-200: #fecdd3;
+  --color-danger-rose-400: #fb7185;
+
+  --color-arcane-200: #e9d5ff;
+  --color-arcane-500: #a855f7;
+  --color-arcane-violet-200: #ddd6fe;
+  --color-arcane-violet-500: #8b5cf6;
+
+  /* Only these breakpoints exist (max-xs:, md:, …). Same px values the classes used before. */
+  --breakpoint-*: initial;
+  --breakpoint-fold: 280px;
+  --breakpoint-xs: 375px;
+  --breakpoint-phone: 399px;
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 760px;
+  --breakpoint-lg: 1024px;
+
   --radius-card: 16px;
   --radius-control: 12px;
 

@@ -44,10 +44,10 @@ export function AuthForm({ onClose }: AuthFormProps) {
   if (confirmationSent) {
     return (
       <div
-        className="fixed inset-0 z-[34] grid items-end bg-[rgba(2,6,23,0.64)] p-2.5 min-[760px]:items-center"
+        className="fixed inset-0 z-[34] grid items-end bg-abyss/64 p-2.5 md:items-center"
         role="presentation"
       >
-        <section className="mx-auto grid w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-[rgba(9,13,20,0.98)] p-5 text-ivory">
+        <section className="mx-auto grid w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-ink-blue/98 p-5 text-ivory">
           <h2>Confirme seu email</h2>
           <p className="text-ivory-soft">
             Enviamos um link de confirmação para {email}. Clique nele antes de entrar.
@@ -66,10 +66,10 @@ export function AuthForm({ onClose }: AuthFormProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[34] grid items-end bg-[rgba(2,6,23,0.64)] p-2.5 min-[760px]:items-center"
+      className="fixed inset-0 z-[34] grid items-end bg-abyss/64 p-2.5 md:items-center"
       role="presentation"
     >
-      <section className="mx-auto grid w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-[rgba(9,13,20,0.98)] p-5 text-ivory">
+      <section className="mx-auto grid w-[min(420px,100%)] gap-3 rounded-2xl border border-line bg-ink-blue/98 p-5 text-ivory">
         <header className="flex items-center justify-between gap-3">
           <h2>{mode === 'sign-up' ? 'Criar conta' : 'Entrar'}</h2>
           <button type="button" onClick={onClose} className="text-ivory-soft">
@@ -84,7 +84,7 @@ export function AuthForm({ onClose }: AuthFormProps) {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full min-h-[46px] rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-ivory"
+              className="w-full min-h-[46px] rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-ivory"
             />
           </label>
           <label className="grid gap-1.5 text-[0.78rem] font-extrabold">
@@ -95,14 +95,14 @@ export function AuthForm({ onClose }: AuthFormProps) {
               minLength={6}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full min-h-[46px] rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-ivory"
+              className="w-full min-h-[46px] rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-ivory"
             />
           </label>
-          {error && <p className="text-sm text-[#fecdd3]">{error}</p>}
+          {error && <p className="text-sm text-danger-rose-200">{error}</p>}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex min-h-[46px] items-center justify-center rounded-control border border-line-gold bg-[rgba(212,175,55,0.16)] font-extrabold text-ivory disabled:opacity-50"
+            className="inline-flex min-h-[46px] items-center justify-center rounded-control border border-line-gold bg-gilt/16 font-extrabold text-ivory disabled:opacity-50"
           >
             {mode === 'sign-up' ? 'Criar conta' : 'Entrar'}
           </button>

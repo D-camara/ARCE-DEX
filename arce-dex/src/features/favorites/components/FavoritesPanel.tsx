@@ -9,7 +9,7 @@ type FavoritesPanelProps = {
 
 export function FavoritesPanel({ favorites, history }: FavoritesPanelProps) {
   return (
-    <section className="grid grid-cols-1 gap-2.5 min-[760px]:grid-cols-2">
+    <section className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
       <QuickList icon={<Star size={17} />} items={favorites} title="Favoritos" />
       <QuickList icon={<Clock size={17} />} items={history} title="Recentes" />
     </section>

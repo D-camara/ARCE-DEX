@@ -8,7 +8,7 @@ export function LoadingState() {
 
 export function ErrorState() {
   return (
-    <div className="min-h-[44px] rounded-2xl border border-line bg-[rgba(251,113,133,0.12)] p-3 text-center text-[0.82rem] text-[#fecdd3]">
+    <div className="min-h-[44px] rounded-2xl border border-line bg-danger-rose-400/12 p-3 text-center text-[0.82rem] text-danger-rose-200">
       Nao foi possivel carregar.
     </div>
   )
@@ -33,7 +33,7 @@ export function SkeletonCard() {
 
 export function Toast({ message = 'Acao concluida.' }: { message?: string }) {
   return (
-    <div className="fixed inset-x-3.5 bottom-4 z-40 mx-auto max-w-[430px] rounded-2xl border border-[rgba(212,175,55,0.3)] bg-[rgba(9,13,20,0.96)] p-4 text-ivory shadow-[0_10px_30px_rgba(0,0,0,0.6),inset_0_0_10px_rgba(212,175,55,0.1)] backdrop-blur-md">
+    <div className="fixed inset-x-3.5 bottom-4 z-40 mx-auto max-w-[430px] rounded-2xl border border-gilt/30 bg-ink-blue/96 p-4 text-ivory shadow-[0_10px_30px_rgba(0,0,0,0.6),inset_0_0_10px_rgba(212,175,55,0.1)] backdrop-blur-md">
       {message}
     </div>
   )

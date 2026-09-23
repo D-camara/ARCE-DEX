@@ -47,7 +47,7 @@ const emptyCopyClass = 'text-center italic tracking-wide text-muted opacity-80'
 const tabButtonBase =
   'min-h-[38px] whitespace-nowrap rounded-lg border border-transparent bg-transparent px-4 text-[0.88rem] font-bold uppercase tracking-wide text-ivory-soft transition-all hover:bg-white/[0.03] hover:text-ivory'
 const tabButtonActive =
-  'border-[rgba(212,175,55,0.3)] bg-[rgba(212,175,55,0.1)] text-gold shadow-glow-gold [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]'
+  'border-gilt/30 bg-gilt/10 text-gold shadow-glow-gold [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]'
 
 export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: PokemonTabsProps) {
   const [internalActiveTab, setInternalActiveTab] = useState<PokemonTabName>('Info')
@@ -59,9 +59,9 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
   }
 
   return (
-    <section className="-mt-4 rounded-b-3xl border border-[rgba(246,237,211,0.12)] border-t-[rgba(246,237,211,0.08)] bg-[rgba(9,11,16,0.7)] p-6 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)]">
+    <section className="-mt-4 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)]">
       <div
-        className="mb-4 flex gap-2 overflow-x-auto border-b border-[rgba(246,237,211,0.06)] pb-3"
+        className="mb-4 flex gap-2 overflow-x-auto border-b border-parchment/6 pb-3"
         role="tablist"
         aria-label="Dados do Pokemon"
       >
@@ -88,7 +88,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
           />
         )}
         {selectedTab === 'Golpes' && (
-          <div className="grid gap-2.5 min-[600px]:grid-cols-2 min-[600px]:gap-3">
+          <div className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
             {data.moves.length > 0 ? (
               data.moves.map((move) => <MoveCard key={move.name} move={move} />)
             ) : (
@@ -121,8 +121,8 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
                 <button
                   className={
                     form.name === data.currentPokemonName
-                      ? 'grid w-full max-w-[280px] min-h-[84px] cursor-pointer grid-cols-[58px_1fr] items-center gap-2.5 rounded-2xl border border-[rgba(212,175,55,0.5)] bg-[rgba(212,175,55,0.12)] p-2.5 text-left text-ivory shadow-glow-gold'
-                      : 'grid w-full max-w-[280px] min-h-[84px] cursor-pointer grid-cols-[58px_1fr] items-center gap-2.5 rounded-2xl border border-line bg-white/[0.04] p-2.5 text-left text-ivory transition-colors hover:border-[rgba(212,175,55,0.4)] hover:bg-[rgba(212,175,55,0.08)]'
+                      ? 'grid w-full max-w-[280px] min-h-[84px] cursor-pointer grid-cols-[58px_1fr] items-center gap-2.5 rounded-2xl border border-gilt/50 bg-gilt/12 p-2.5 text-left text-ivory shadow-glow-gold'
+                      : 'grid w-full max-w-[280px] min-h-[84px] cursor-pointer grid-cols-[58px_1fr] items-center gap-2.5 rounded-2xl border border-line bg-white/[0.04] p-2.5 text-left text-ivory transition-colors hover:border-gilt/40 hover:bg-gilt/8'
                   }
                   key={form.name}
                   onClick={() => onSelectPokemon?.(form.name)}
@@ -157,7 +157,7 @@ function InfoPanel({ items }: { items: PokemonTabData['infoItems'] }) {
   }
 
   return (
-    <dl className="m-0 grid grid-cols-1 gap-2.5 min-[600px]:grid-cols-2 min-[600px]:gap-3">
+    <dl className="m-0 grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
       {items.map((item) => (
         <div
           key={item.label}
@@ -234,8 +234,8 @@ function EvolutionBranch({
       <button
         className={
           isCurrent
-            ? 'inline-grid w-[min(128px,100%)] min-h-[128px] cursor-pointer gap-1 rounded-2xl border border-[rgba(212,175,55,0.5)] bg-[rgba(212,175,55,0.12)] p-2.5 text-center text-ivory shadow-glow-gold transition-all'
-            : 'inline-grid w-[min(128px,100%)] min-h-[128px] cursor-pointer gap-1 rounded-2xl border border-line bg-white/[0.04] p-2.5 text-center text-ivory transition-all hover:-translate-y-0.5 hover:border-[rgba(212,175,55,0.4)] hover:bg-[rgba(212,175,55,0.08)] hover:shadow-glow-gold'
+            ? 'inline-grid w-[min(128px,100%)] min-h-[128px] cursor-pointer gap-1 rounded-2xl border border-gilt/50 bg-gilt/12 p-2.5 text-center text-ivory shadow-glow-gold transition-all'
+            : 'inline-grid w-[min(128px,100%)] min-h-[128px] cursor-pointer gap-1 rounded-2xl border border-line bg-white/[0.04] p-2.5 text-center text-ivory transition-all hover:-translate-y-0.5 hover:border-gilt/40 hover:bg-gilt/8 hover:shadow-glow-gold'
         }
         onClick={() => onSelectPokemon?.(node.name)}
         type="button"
@@ -276,9 +276,9 @@ function formatMultiplier(multiplier: number) {
 }
 
 const moveCategoryClasses: Record<string, string> = {
-  physical: 'text-[#fecaca] bg-[rgba(239,68,68,0.18)]',
-  special: 'text-[#bfdbfe] bg-[rgba(59,130,246,0.18)]',
-  status: 'text-[#ddd6fe] bg-[rgba(139,92,246,0.18)]',
+  physical: 'text-danger-200 bg-danger-500/18',
+  special: 'text-info-200 bg-info-500/18',
+  status: 'text-arcane-violet-200 bg-arcane-violet-500/18',
 }
 
 function MoveCard({ move }: { move: PokemonMove }) {
@@ -286,28 +286,28 @@ function MoveCard({ move }: { move: PokemonMove }) {
     <article className="grid min-h-[46px] gap-2.5 rounded-2xl border border-line bg-white/[0.04] p-3">
       <header className="flex items-start justify-between gap-3">
         <h3 className="text-base">{move.displayName}</h3>
-        <strong className="shrink-0 text-[0.82rem] text-[#e0f2fe]">{formatMoveLevel(move)}</strong>
+        <strong className="shrink-0 text-[0.82rem] text-azure-100">{formatMoveLevel(move)}</strong>
       </header>
       <div className="flex flex-wrap gap-[7px]">
         {move.type && <TypeBadges types={[move.type]} />}
         {move.category && (
           <span
-            className={`inline-flex min-h-[28px] w-fit items-center justify-center whitespace-nowrap rounded-full px-[0.65rem] py-[0.35rem] text-[0.72rem] font-extrabold uppercase leading-none ${moveCategoryClasses[move.category] ?? 'bg-[rgba(148,163,184,0.16)] text-[#e5e7eb]'}`}
+            className={`inline-flex min-h-[28px] w-fit items-center justify-center whitespace-nowrap rounded-full px-[0.65rem] py-[0.35rem] text-[0.72rem] font-extrabold uppercase leading-none ${moveCategoryClasses[move.category] ?? 'bg-mist/16 text-mist-200'}`}
           >
             {move.categoryLabel ?? move.category}
           </span>
         )}
       </div>
       <dl className="m-0 grid grid-cols-3 gap-2">
-        <div className="min-w-0 rounded-xl bg-[rgba(2,6,23,0.38)] p-2">
+        <div className="min-w-0 rounded-xl bg-abyss/38 p-2">
           <dt className="text-[0.68rem] font-extrabold uppercase text-muted">Power</dt>
           <dd className="mt-0.5 font-extrabold">{formatMoveValue(move.power)}</dd>
         </div>
-        <div className="min-w-0 rounded-xl bg-[rgba(2,6,23,0.38)] p-2">
+        <div className="min-w-0 rounded-xl bg-abyss/38 p-2">
           <dt className="text-[0.68rem] font-extrabold uppercase text-muted">Accuracy</dt>
           <dd className="mt-0.5 font-extrabold">{formatMoveValue(move.accuracy)}</dd>
         </div>
-        <div className="min-w-0 rounded-xl bg-[rgba(2,6,23,0.38)] p-2">
+        <div className="min-w-0 rounded-xl bg-abyss/38 p-2">
           <dt className="text-[0.68rem] font-extrabold uppercase text-muted">PP</dt>
           <dd className="mt-0.5 font-extrabold">{formatMoveValue(move.pp)}</dd>
         </div>

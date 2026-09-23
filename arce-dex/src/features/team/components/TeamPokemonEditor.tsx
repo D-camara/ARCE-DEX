@@ -65,29 +65,29 @@ const statLabels: Record<PokemonStatName, string> = {
   speed: 'Speed',
 }
 
-const editorCardClass = 'grid gap-2.5 rounded-2xl border border-line bg-[rgba(18,22,32,0.4)] p-3.5 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]'
+const editorCardClass = 'grid gap-2.5 rounded-2xl border border-line bg-panel/40 p-3.5 shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]'
 const editorSectionHeaderClass = 'flex flex-wrap items-center justify-between gap-3'
 const editorGridClass = 'grid gap-2.5'
 const labelClass = 'grid gap-1.5 text-[0.78rem] font-extrabold'
 const inputClass =
-  'w-full min-h-[46px] rounded-xl border border-line bg-[rgba(18,22,32,0.6)] px-2.5 py-2 text-ivory shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] transition-all focus:border-[rgba(212,175,55,0.5)] focus:bg-[rgba(18,22,32,0.8)] focus:shadow-[0_0_0_2px_rgba(212,175,55,0.15),inset_0_2px_4px_rgba(0,0,0,0.3)] focus:outline-none'
+  'w-full min-h-[46px] rounded-xl border border-line bg-panel/60 px-2.5 py-2 text-ivory shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] transition-all focus:border-gilt/50 focus:bg-panel/80 focus:shadow-[0_0_0_2px_rgba(212,175,55,0.15),inset_0_2px_4px_rgba(0,0,0,0.3)] focus:outline-none'
 const helpTextClass = 'text-[0.82rem] leading-relaxed text-muted'
 const pillButtonClass =
-  'inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-full border border-line bg-[rgba(18,22,32,0.6)] px-3.5 text-[0.78rem] text-ivory-soft transition-all hover:border-[rgba(56,189,248,0.4)] hover:bg-[rgba(56,189,248,0.1)] hover:text-ivory'
+  'inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-full border border-line bg-panel/60 px-3.5 text-[0.78rem] text-ivory-soft transition-all hover:border-azure/40 hover:bg-azure/10 hover:text-ivory'
 
 const methodBadgeClasses: Record<string, string> = {
-  level: 'border-[rgba(34,197,94,0.34)] text-[#bbf7d0] bg-[rgba(34,197,94,0.12)]',
-  tm: 'border-[rgba(56,189,248,0.34)] text-[#bae6fd] bg-[rgba(56,189,248,0.12)]',
-  hm: 'border-[rgba(56,189,248,0.34)] text-[#bae6fd] bg-[rgba(56,189,248,0.12)]',
-  tr: 'border-[rgba(56,189,248,0.34)] text-[#bae6fd] bg-[rgba(56,189,248,0.12)]',
-  tutor: 'border-[rgba(168,85,247,0.34)] text-[#e9d5ff] bg-[rgba(168,85,247,0.12)]',
-  egg: 'border-[rgba(168,85,247,0.34)] text-[#e9d5ff] bg-[rgba(168,85,247,0.12)]',
+  level: 'border-success-500/34 text-success-200 bg-success-500/12',
+  tm: 'border-azure/34 text-azure-200 bg-azure/12',
+  hm: 'border-azure/34 text-azure-200 bg-azure/12',
+  tr: 'border-azure/34 text-azure-200 bg-azure/12',
+  tutor: 'border-arcane-500/34 text-arcane-200 bg-arcane-500/12',
+  egg: 'border-arcane-500/34 text-arcane-200 bg-arcane-500/12',
 }
 
 function methodBadgeClass(method: string) {
   const key = method.toLowerCase()
   return `inline-flex min-h-[22px] items-center rounded-full border px-2 text-[0.68rem] font-black uppercase ${
-    methodBadgeClasses[key] ?? 'border-[rgba(148,163,184,0.3)] text-ivory bg-white/[0.08]'
+    methodBadgeClasses[key] ?? 'border-mist/30 text-ivory bg-white/[0.08]'
   }`
 }
 
@@ -101,7 +101,7 @@ export function TeamPokemonEditor({
 }: TeamPokemonEditorProps) {
   if (!pokemon) {
     return (
-      <section className="grid gap-2.5 rounded-card border border-line bg-[rgba(18,22,32,0.7)] p-4 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+      <section className="grid gap-2.5 rounded-card border border-line bg-panel/70 p-4 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
         <p className="text-gold">Editor</p>
         <h2>Selecione um slot</h2>
         <p className="text-center italic tracking-wide text-muted opacity-80">
@@ -168,13 +168,13 @@ export function TeamPokemonEditor({
   }
 
   return (
-    <section className="grid gap-3.5 min-[760px]:grid-cols-2">
-      <section className={`${editorCardClass} min-[760px]:col-span-2`}>
+    <section className="grid gap-3.5 md:grid-cols-2">
+      <section className={`${editorCardClass} md:col-span-2`}>
         <header className={editorSectionHeaderClass}>
           <h3>Basico</h3>
           <span>Lv. {normalizedPokemon.level}</span>
         </header>
-        <div className={`${editorGridClass} min-[600px]:grid-cols-3`}>
+        <div className={`${editorGridClass} sm:grid-cols-3`}>
           <label className={labelClass}>
             Level
             <input
@@ -217,9 +217,9 @@ export function TeamPokemonEditor({
         </div>
       </section>
 
-      <section className={`${editorCardClass} min-[760px]:col-span-2`}>
+      <section className={`${editorCardClass} md:col-span-2`}>
         <h3>Item e Ability</h3>
-        <div className={`${editorGridClass} min-[600px]:grid-cols-2`}>
+        <div className={`${editorGridClass} sm:grid-cols-2`}>
           <label className={labelClass}>
             Ability
             <input
@@ -272,12 +272,12 @@ export function TeamPokemonEditor({
         </div>
       </section>
 
-      <section className={`${editorCardClass} min-[760px]:col-span-2`}>
+      <section className={`${editorCardClass} md:col-span-2`}>
         <header className={editorSectionHeaderClass}>
           <h3>Golpes</h3>
           <span>{moves.length}/4</span>
         </header>
-        <div className={`${editorGridClass} min-[760px]:grid-cols-2`}>
+        <div className={`${editorGridClass} md:grid-cols-2`}>
           {[0, 1, 2, 3].map((moveIndex) => {
             const moveName = moves[moveIndex] ?? ''
             const moveDetail = getMoveDetail(moveName)
@@ -300,7 +300,7 @@ export function TeamPokemonEditor({
                   />
                 </label>
                 {moveDetail ? (
-                  <div className="grid gap-2 rounded-2xl border border-[rgba(139,92,246,0.22)] bg-[rgba(139,92,246,0.06)] p-3 shadow-[inset_0_0_15px_rgba(0,0,0,0.3)]">
+                  <div className="grid gap-2 rounded-2xl border border-arcane-violet-500/22 bg-arcane-violet-500/6 p-3 shadow-[inset_0_0_15px_rgba(0,0,0,0.3)]">
                     <div className="flex flex-wrap items-center gap-2">
                       <TypeBadges compact types={[moveDetail.type]} />
                       <span className="rounded-full bg-white/[0.08] px-2 py-1 text-[0.72rem] font-extrabold capitalize text-ivory">
@@ -308,15 +308,15 @@ export function TeamPokemonEditor({
                       </span>
                     </div>
                     <dl className="m-0 flex flex-wrap items-center gap-2">
-                      <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-[rgba(2,6,23,0.36)] px-2 py-1.5">
+                      <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-abyss/36 px-2 py-1.5">
                         <dt className="text-[0.66rem] font-extrabold uppercase text-muted">Power</dt>
                         <dd className="m-0 text-[0.86rem] font-extrabold text-ivory">{moveDetail.power ?? '-'}</dd>
                       </div>
-                      <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-[rgba(2,6,23,0.36)] px-2 py-1.5">
+                      <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-abyss/36 px-2 py-1.5">
                         <dt className="text-[0.66rem] font-extrabold uppercase text-muted">Acc.</dt>
                         <dd className="m-0 text-[0.86rem] font-extrabold text-ivory">{moveDetail.accuracy ?? '-'}</dd>
                       </div>
-                      <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-[rgba(2,6,23,0.36)] px-2 py-1.5">
+                      <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-abyss/36 px-2 py-1.5">
                         <dt className="text-[0.66rem] font-extrabold uppercase text-muted">PP</dt>
                         <dd className="m-0 text-[0.86rem] font-extrabold text-ivory">{moveDetail.pp ?? '-'}</dd>
                       </div>
@@ -357,21 +357,21 @@ export function TeamPokemonEditor({
         </div>
       </section>
 
-      <section className={`${editorCardClass} min-[760px]:col-span-2`}>
+      <section className={`${editorCardClass} md:col-span-2`}>
         <header className={editorSectionHeaderClass}>
           <h3>Stats</h3>
           <span
             className={
               evTotal > 510
-                ? 'rounded-full border border-[rgba(251,113,133,0.48)] bg-[rgba(251,113,133,0.14)] px-2.5 py-1 text-[0.72rem] font-extrabold uppercase tracking-wide text-[#fecdd3] shadow-[0_0_15px_rgba(251,113,133,0.2)]'
-                : 'rounded-full border border-[rgba(56,189,248,0.38)] bg-[rgba(56,189,248,0.12)] px-2.5 py-1 text-[0.72rem] font-extrabold uppercase tracking-wide text-[#e0f2fe] shadow-glow-blue'
+                ? 'rounded-full border border-danger-rose-400/48 bg-danger-rose-400/14 px-2.5 py-1 text-[0.72rem] font-extrabold uppercase tracking-wide text-danger-rose-200 shadow-[0_0_15px_rgba(251,113,133,0.2)]'
+                : 'rounded-full border border-azure/38 bg-azure/12 px-2.5 py-1 text-[0.72rem] font-extrabold uppercase tracking-wide text-azure-100 shadow-glow-blue'
             }
           >
             {evTotal}/510 EVs
           </span>
         </header>
         {evTotal > 510 ? (
-          <p className="rounded-xl border border-[rgba(212,175,55,0.28)] bg-[rgba(212,175,55,0.08)] p-3 text-ivory shadow-glow-gold">
+          <p className="rounded-xl border border-gilt/28 bg-gilt/8 p-3 text-ivory shadow-glow-gold">
             O total recomendado competitivo e 510 EVs.
           </p>
         ) : null}
@@ -425,7 +425,7 @@ export function TeamPokemonEditor({
           <strong className="text-ivory">{hiddenPower.type}</strong>.
         </p>
         {hiddenPower.isPerfectIvSpread ? (
-          <p className="rounded-xl border border-[rgba(212,175,55,0.28)] bg-[rgba(212,175,55,0.08)] p-3 text-ivory shadow-glow-gold">
+          <p className="rounded-xl border border-gilt/28 bg-gilt/8 p-3 text-ivory shadow-glow-gold">
             Todos os IVs em 31 geralmente resultam em Hidden Power Dark.
           </p>
         ) : null}
@@ -433,7 +433,7 @@ export function TeamPokemonEditor({
           {COMPETITIVE_STAT_NAMES.map((stat) => (
             <span
               key={stat}
-              className="flex items-center justify-between gap-2 rounded-xl border border-line bg-[rgba(2,6,23,0.36)] px-2.5 py-2 text-[0.8rem] text-muted"
+              className="flex items-center justify-between gap-2 rounded-xl border border-line bg-abyss/36 px-2.5 py-2 text-[0.8rem] text-muted"
             >
               {statLabels[stat]} <strong className="text-ivory">{ivs[stat]}</strong>
             </span>
