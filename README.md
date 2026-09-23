@@ -1,6 +1,6 @@
 # Archivum Arceus
 
-App web mobile-first para consulta, análise e montagem de times Pokémon, usando dados da PokeAPI. Também instalável como PWA (opcional — quem quiser ícone na tela e uso offline). Login é opcional — o app funciona 100% sem conta; quem cria conta ganha sincronização entre dispositivos.
+App web mobile-first para consulta, análise e montagem de times Pokémon, usando dados da PokeAPI. Pokémon, aba e tela ficam na URL — dá pra compartilhar o link de um Pokémon (`?pokemon=garchomp&tab=golpes`). Também instalável como PWA (opcional — quem quiser ícone na tela e uso offline). Login é opcional — o app funciona 100% sem conta; quem cria conta ganha sincronização entre dispositivos.
 
 O app fica em [`arce-dex/`](./arce-dex). A raiz do repositório existe só pra abrigar isso, CI e docs — não tem código próprio nem `package.json`.
 

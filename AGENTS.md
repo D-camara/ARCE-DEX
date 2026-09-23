@@ -19,7 +19,7 @@ ARCE-DEX/                  ← raiz do repo, sem código próprio
 │   │   │   ├── favorites/
 │   │   │   ├── team/
 │   │   │   └── type-analysis/
-│   │   └── shared/         código sem dono único: ui, lib, services (PokeAPI client), types, settingsStore
+│   │   └── shared/         código sem dono único: ui (Dialog, CloseButton, EmptyHint…), lib, services (PokeAPI client), types, settingsStore
 │   ├── Dockerfile           multi-stage: base → dev / build → runtime (nginx)
 │   ├── docker-compose.yml   serviços `dev` (hot-reload) e `web` (prod)
 │   └── package.json
@@ -74,7 +74,10 @@ Antes de qualquer commit: `npm run build && npm run lint && npm run test` (dos t
 ## Convenções
 
 - **Feature-based, não por tipo técnico.** Não recriar `components/`, `hooks/`, `stores/` soltos na raiz de `src/` — isso já foi extinto de propósito.
-- **Sem CSS custom.** Se precisar de algo que Tailwind não cobre direto, usa classe arbitrária (`bg-[rgba(...)]`) inline no componente, não adiciona regra em `index.css`.
+- **Sem CSS custom.** Se precisar de algo que Tailwind não cobre direto, usa classe arbitrária inline no componente, não adiciona regra em `index.css` (só `@theme`).
+- **Cor e breakpoint vêm de token** (`@theme` em `src/index.css`): `bg-gilt/10`, `border-parchment/12`, `max-xs:`, `md:`. Cor literal em utilitário simples (`bg-[rgba(...)]`, `text-[#...]`) e breakpoint arbitrário (`max-[375px]:`) são **erro de lint**. Cor nova = token novo no `@theme`. Gradiente/sombra com `rgba` dentro ainda é permitido (efeito pontual). Alguns tokens são quase iguais (`gilt` × `gold`, `parchment` × `ivory`) — existem separados porque é o que a UI pinta hoje; unificar é decisão de design.
+- **Modal/drawer usa `Dialog` ou `useDialogBehavior` de `@/shared/ui`** (Esc, foco, Tab preso, trava de scroll, `aria-labelledby`). Não fazer overlay na mão.
+- **Estado navegável fica na URL** (`app/useUrlState.ts`): Pokémon selecionado, view e aba (`?pokemon=garchomp&tab=golpes&view=team`). Trocar Pokémon/view = `push` (botão voltar funciona), aba = `replace`. Estado efêmero (texto da busca, diálogo aberto) continua em `useState`.
 - **Zustand store = `create(persist(...))`** com storage em `@/shared/lib/storage` (localForage). Ver qualquer store existente como referência.
 - **Dado de tipo/efetividade de Pokémon** mora em `features/type-analysis` — não duplicar tabela de tipos em outro lugar.
 - **Nunca commitar sem rodar build+lint+test** (regra de verdade, não sugestão).
@@ -82,13 +85,19 @@ Antes de qualquer commit: `npm run build && npm run lint && npm run test` (dos t
 
 ## O que já foi feito (histórico)
 
-Três fases de refatoração/evolução já concluídas — specs e planos completos em `docs/superpowers/`:
+Quatro fases de refatoração/evolução já concluídas — specs e planos completos em `docs/superpowers/`:
 
 - **Fase 0** — reestruturação de `src/` pra feature-based (era tudo solto por tipo técnico antes).
 - **Fase 1** — TypeScript strict, migração 100% pra Tailwind, PWA de verdade, testes de store, Docker, CI, error boundary.
 - **Fase 2** — Supabase: auth (email/senha, confirmação de email obrigatória) + sync em tempo real de favoritos, times, histórico de busca e configurações entre dispositivos. `features/auth` cuida da sessão; `app/useCloudSync.ts` + `app/cloudSync/` fazem o pull/push/Realtime por tabela. localForage continua sendo a persistência local — funciona 100% offline/deslogado, sync é camada opcional por cima.
+- **Fase 3** — robustez e manutenção:
+  - **Sync por reconciliação** (`app/cloudSync/`): cada domínio tem um `reconcile()` (lê remoto → merge → aplica no store → envia a diferença), serializado por `createReconciler` e disparado por mudança local, Realtime, `online` e aba visível. Favoritos: merge de 3 vias contra um baseline por usuário (remoção em outro aparelho não ressuscita). Histórico/times/settings: last-write-wins por timestamp (`searchedAt`/`updatedAt`). Escrita que falha não avança o baseline → é refeita na próxima rodada. `lastSyncedUserId` impede que dados locais de uma conta subam pra outra. Espera a hidratação do store antes do primeiro merge.
+  - Estado na URL, tokens de design com guarda no lint, `Dialog` compartilhado, `App.tsx` sem repassar seletores, cache da PokeAPI tratado como estático.
 
 ## O que falta
 
 - Validar o Dockerfile de produção com carga real (só foi smoke-testado).
 - Reset de senha e OAuth ficaram fora do escopo da Fase 2 (ver `docs/superpowers/specs/2026-09-20-supabase-sync-design.md`).
+- Validar o sync da Fase 3 com Supabase real (roteiro manual na tarefa 1.9 de `docs/superpowers/plans/2026-09-23-fase3-hardening.md`) — os testes automatizados usam um cliente falso.
+- Tema claro: `settingsStore.theme` já sincroniza, mas nenhum componente lê. Com os tokens no `@theme`, implementar é redefinir as variáveis.
+- Unificar tokens quase iguais (`gilt`/`gold`, `parchment`/`ivory`, vários tons de vermelho) — muda pixels, então é decisão de design.

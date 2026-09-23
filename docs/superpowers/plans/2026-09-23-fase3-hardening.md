@@ -4,6 +4,24 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-23-fase3-hardening-design.md`
 
+## Status: executado (2026-09-23)
+
+Todas as tarefas foram feitas, menos a **1.9 (roteiro manual com Supabase real)**, porque o ambiente de execução não tinha as credenciais. Ela continua pendente. Decisões em aberto do spec: tema claro fica pra depois; o indicador de sync é só ícone.
+
+Onde a execução se desviou do plano, e por quê:
+
+- **1.5/1.6 num commit só.** A mudança de formato do histórico quebra os syncs antigos, então os dois precisavam entrar juntos.
+- **1.6: `startDomainSync` compartilhado** em vez de repetir o esqueleto nos 4 domínios. Também **espera a hidratação do store** antes do primeiro merge. Sem isso, o merge de 3 vias leria o store vazio como "usuário apagou tudo" e apagaria os favoritos remotos.
+- **1.6: o local é lido depois do último `await`** de cada `reconcile()`. Assim nenhuma edição do usuário no meio do sync é sobrescrita.
+- **1.6 times:** depois de gravar os slots, a linha do time é "tocada" de novo. Motivo: o Realtime só observa `teams` (`team_slots` não tem `user_id`), e o outro aparelho precisa recarregar o time já completo.
+- **2.3:** o Pokémon default (448) não é canonicalizado, pra URL inicial continuar limpa. A resposta da API também é gravada no cache sob o nome canônico, pra reescrever id → nome sem refazer a request.
+- **3.2 tokens:** o plano dizia "corrigir os tokens pros valores usados". Não dava: `text-gold` (`#c9a646`) é usado 23× **além** do literal `#d4af37`. Mudar o token mudaria esses 23 usos. Então foram criados tokens novos com os valores exatos (`gilt`, `parchment`, ...), e unificar fica como decisão de design. O `color-mix` do modificador de opacidade foi validado pixel a pixel contra `rgba()`.
+- **3.3:** só utilitários de cor simples (216) e breakpoints (106) foram migrados. Gradientes, sombras e filtros com `rgba` dentro continuam literais (efeitos pontuais) e são exceção explícita na regra de lint. O screenshot final difere do original só por 1/255 em algumas bordas semitransparentes de 1 px (arredondamento do `color-mix`).
+- **3.4 Dialog:** além do planejado, uma pilha de diálogos abertos (o header fica clicável acima de um modal, então dá pra empilhar). Só o do topo reage ao Esc, e a trava de scroll é um contador. O drawer de favoritos fechado ficou `inert` (antes o Tab chegava nos botões fora da tela). Sem portal, pra não mexer em empilhamento/z-index.
+- **3.5:** o levantamento não mostrou `Button`/`Panel`/`Chip` repetidos entre arquivos (as repetições eram locais). Foram extraídos o que se repete de verdade: `EmptyHint` (13×), `CloseButton` (3×) e `HeaderButton` (4×).
+- **4.1:** `TeamLab` (container na feature `team`) liga o `TeamLabView` ao store. O `TeamLabView` continua componente só de props.
+- **Verificação visual:** sem acesso à PokeAPI no ambiente, os screenshots usaram uma PokeAPI falsa determinística via interceptação do Playwright (44 capturas: 11 cenários × 4 larguras), comparadas pixel a pixel a cada etapa. Os scripts não foram versionados.
+
 **Objetivo:** tornar o sync à prova de perda de dados, colocar o estado navegável na URL, trocar cores/breakpoints soltos por tokens e componentes base (sem mudar nada visualmente) e limpar o que sobrou.
 
 ## Restrições globais
