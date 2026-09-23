@@ -13,6 +13,7 @@ import { useCloudSync } from './useCloudSync'
 import { SyncStatusIndicator } from './SyncStatusIndicator'
 import { useDexPageData } from './useDexPageData'
 import { useDexActions } from './useDexActions'
+import { useCanonicalPokemonUrl } from './useCanonicalPokemonUrl'
 
 function App() {
   const view = useAppView()
@@ -23,6 +24,7 @@ function App() {
   useCloudSync()
 
   const data = useDexPageData(view)
+  useCanonicalPokemonUrl(view, data.selectedPokemon)
 
   const activeTeamId = useTeamStore((state) => state.activeTeamId)
   const teams = useTeamStore((state) => state.teams)

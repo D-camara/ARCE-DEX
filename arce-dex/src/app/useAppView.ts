@@ -1,25 +1,45 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { PokemonTabName } from '@/features/pokemon'
+import { useUrlState } from './useUrlState'
+import type { AppViewName } from './urlState'
 
 export function useAppView() {
-  const [activeView, setActiveView] = useState<'dex' | 'team-lab'>('dex')
-  const [activePokemonTab, setActivePokemonTab] = useState<PokemonTabName>('Info')
+  const { state: urlState, update: updateUrlState } = useUrlState()
   const [query, setQuery] = useState('')
   const [isAutocompleteOpen, setIsAutocompleteOpen] = useState(false)
-  const [selectedIdentifier, setSelectedIdentifier] = useState<string | number>(448)
   const [selectedAbilityName, setSelectedAbilityName] = useState<string | null>(null)
 
+  // Pokémon and view changes are navigation (back button undoes them); tab changes aren't.
+  const setActiveView = useCallback(
+    (view: AppViewName) => updateUrlState({ view }, 'push'),
+    [updateUrlState],
+  )
+  const setActivePokemonTab = useCallback(
+    (tab: PokemonTabName) => updateUrlState({ tab }, 'replace'),
+    [updateUrlState],
+  )
+  const setSelectedIdentifier = useCallback(
+    (pokemon: string | number) => updateUrlState({ pokemon }, 'push'),
+    [updateUrlState],
+  )
+  /** Canonicalize (e.g. id → name) without adding a history entry. */
+  const replaceSelectedIdentifier = useCallback(
+    (pokemon: string | number) => updateUrlState({ pokemon }, 'replace'),
+    [updateUrlState],
+  )
+
   return {
-    activeView,
+    activeView: urlState.view,
     setActiveView,
-    activePokemonTab,
+    activePokemonTab: urlState.tab,
     setActivePokemonTab,
     query,
     setQuery,
     isAutocompleteOpen,
     setIsAutocompleteOpen,
-    selectedIdentifier,
+    selectedIdentifier: urlState.pokemon,
     setSelectedIdentifier,
+    replaceSelectedIdentifier,
     selectedAbilityName,
     setSelectedAbilityName,
   }
