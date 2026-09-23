@@ -9,6 +9,7 @@ import type {
 } from '@/shared/types/pokemon'
 import { TypeBadges } from './TypeBadges'
 import { typeBadgeStyle } from '../lib/type-colors'
+import { EmptyHint } from '@/shared/ui'
 
 export type PokemonTabData = {
   currentPokemonName: string
@@ -43,7 +44,6 @@ const tabLabels: Record<PokemonTabName, string> = {
   Formas: 'Formas',
 }
 
-const emptyCopyClass = 'text-center italic tracking-wide text-muted opacity-80'
 const tabButtonBase =
   'min-h-[38px] whitespace-nowrap rounded-lg border border-transparent bg-transparent px-4 text-[0.88rem] font-bold uppercase tracking-wide text-ivory-soft transition-all hover:bg-white/[0.03] hover:text-ivory'
 const tabButtonActive =
@@ -92,7 +92,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
             {data.moves.length > 0 ? (
               data.moves.map((move) => <MoveCard key={move.name} move={move} />)
             ) : (
-              <p className={emptyCopyClass}>Nenhum golpe carregado.</p>
+              <EmptyHint>Nenhum golpe carregado.</EmptyHint>
             )}
           </div>
         )}
@@ -142,7 +142,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
                 </button>
               ))
             ) : (
-              <p className={emptyCopyClass}>Nenhuma forma alternativa encontrada para este Pokemon.</p>
+              <EmptyHint>Nenhuma forma alternativa encontrada para este Pokemon.</EmptyHint>
             )}
           </div>
         )}
@@ -153,7 +153,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
 
 function InfoPanel({ items }: { items: PokemonTabData['infoItems'] }) {
   if (items.length === 0) {
-    return <p className={emptyCopyClass}>Dados extras nao carregados.</p>
+    return <EmptyHint>Dados extras nao carregados.</EmptyHint>
   }
 
   return (
@@ -190,7 +190,7 @@ function EffectivenessGroup({ label, items }: { label: string; items: TypeEffect
           ))}
         </div>
       ) : (
-        <p className={emptyCopyClass}>Nenhum item neste grupo.</p>
+        <EmptyHint>Nenhum item neste grupo.</EmptyHint>
       )}
     </section>
   )
@@ -206,7 +206,7 @@ function EvolutionTree({
   root: EvolutionNode | undefined
 }) {
   if (!root) {
-    return <p className={emptyCopyClass}>Linha evolutiva nao carregada.</p>
+    return <EmptyHint>Linha evolutiva nao carregada.</EmptyHint>
   }
 
   return (

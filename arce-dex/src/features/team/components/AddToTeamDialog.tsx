@@ -1,6 +1,5 @@
 import { useId } from 'react'
-import { X } from 'lucide-react'
-import { Dialog } from '@/shared/ui'
+import { CloseButton, Dialog } from '@/shared/ui'
 import type { Pokemon } from '@/shared/types/pokemon'
 import type { Team } from '@/shared/types/team'
 import { TypeBadges } from '@/features/pokemon'
@@ -44,14 +43,7 @@ export function AddToTeamDialog({
           <p className="text-gold">Adicionar ao time</p>
           <h2 id={titleId}>{pokemon.displayName}</h2>
         </div>
-        <button
-          className="inline-grid h-[42px] w-[42px] place-items-center rounded-control border border-line bg-white/[0.04]"
-          type="button"
-          onClick={onClose}
-        >
-          <X size={18} />
-          <span className="sr-only">Fechar seletor</span>
-        </button>
+        <CloseButton label="Fechar seletor" onClick={onClose} />
       </header>
 
       <div className="grid gap-2.5">

@@ -1,6 +1,6 @@
-import { HeartOff, X } from 'lucide-react'
+import { HeartOff } from 'lucide-react'
 import { useId, useRef, type MouseEvent } from 'react'
-import { useDialogBehavior } from '@/shared/ui'
+import { CloseButton, useDialogBehavior } from '@/shared/ui'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon'
 
@@ -53,14 +53,7 @@ export function FavoritesDrawer({
             <p className="text-gold">Favoritos</p>
             <h2 id={titleId}>Pokemon salvos</h2>
           </div>
-          <button
-            className="inline-grid h-[42px] w-[42px] place-items-center rounded-control border border-gilt-warm/26 bg-white/5"
-            type="button"
-            onClick={onClose}
-          >
-            <X size={18} />
-            <span className="sr-only">Fechar favoritos</span>
-          </button>
+          <CloseButton label="Fechar favoritos" onClick={onClose} tone="gold" />
         </header>
 
         <div className="grid min-h-0 gap-2.5 overflow-y-auto">

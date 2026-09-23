@@ -17,6 +17,7 @@ import {
   getDefaultIvs,
   normalizeCompetitivePokemon,
 } from '@/shared/lib/stats'
+import { EmptyHint } from '@/shared/ui'
 
 type TeamPokemonEditorProps = {
   abilityOptions?: PokemonAbility[]
@@ -104,9 +105,9 @@ export function TeamPokemonEditor({
       <section className="grid gap-2.5 rounded-card border border-line bg-panel/70 p-4 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
         <p className="text-gold">Editor</p>
         <h2>Selecione um slot</h2>
-        <p className="text-center italic tracking-wide text-muted opacity-80">
+        <EmptyHint>
           Escolha um Pokemon do time para editar dados competitivos.
-        </p>
+        </EmptyHint>
       </section>
     )
   }

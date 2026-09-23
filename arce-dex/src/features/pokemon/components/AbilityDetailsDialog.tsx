@@ -1,6 +1,5 @@
 import { useId } from 'react'
-import { X } from 'lucide-react'
-import { Dialog } from '@/shared/ui'
+import { CloseButton, Dialog, EmptyHint } from '@/shared/ui'
 import type { AbilityDetail } from '@/shared/types/pokemon'
 
 type AbilityDetailsDialogProps = {
@@ -34,23 +33,16 @@ export function AbilityDetailsDialog({
             {ability?.displayName ?? 'Carregando'}
           </h2>
         </div>
-        <button
-          className="inline-grid h-[42px] w-[42px] place-items-center rounded-control border border-line bg-white/[0.04]"
-          type="button"
-          onClick={onClose}
-        >
-          <X size={18} />
-          <span className="sr-only">Fechar habilidade</span>
-        </button>
+        <CloseButton label="Fechar habilidade" onClick={onClose} />
       </header>
 
       {isLoading && (
-        <p className="text-center italic tracking-wide text-muted opacity-80">Carregando descricao...</p>
+        <EmptyHint>Carregando descricao...</EmptyHint>
       )}
       {isError && (
-        <p className="text-center italic tracking-wide text-muted opacity-80">
+        <EmptyHint>
           Nao foi possivel carregar esta habilidade.
-        </p>
+        </EmptyHint>
       )}
       {!isLoading && !isError && ability && (
         <div className="grid gap-3">

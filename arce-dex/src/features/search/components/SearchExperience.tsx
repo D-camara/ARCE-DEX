@@ -5,6 +5,7 @@ import {
   normalizePokemonSearchText,
 } from '@/shared/lib/pokemon-search'
 import { TypeBadges } from '@/features/pokemon'
+import { EmptyHint } from '@/shared/ui'
 
 type SearchExperienceProps = {
   suggestions: PokemonSummary[]
@@ -18,7 +19,6 @@ type SearchExperienceProps = {
   onSelect: (pokemon: PokemonSummary) => void
 }
 
-const emptyCopyClass = 'text-center italic tracking-wide text-muted opacity-80'
 
 export function SearchExperience({
   isAutocompleteOpen,
@@ -60,8 +60,8 @@ export function SearchExperience({
             </label>
             {shouldShowSuggestions && (
               <div className="absolute left-0 top-[calc(100%+0.5rem)] z-[70] flex max-h-[min(360px,calc(100svh-150px))] w-full flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-2xl border border-azure/28 bg-ink-deep/98 p-1.5 shadow-[0_22px_55px_rgba(0,0,0,0.48)] backdrop-blur-xl">
-                {isLoading && <p className={emptyCopyClass}>Carregando Pokemon...</p>}
-                {isError && <p className={emptyCopyClass}>Nao foi possivel carregar a PokeAPI.</p>}
+                {isLoading && <EmptyHint>Carregando Pokemon...</EmptyHint>}
+                {isError && <EmptyHint>Nao foi possivel carregar a PokeAPI.</EmptyHint>}
                 {!isLoading && !isError && visibleSuggestions.length > 0
                   ? visibleSuggestions.map((pokemon) => (
                       <button
@@ -92,7 +92,7 @@ export function SearchExperience({
                     ))
                   : null}
                 {!isLoading && !isError && visibleSuggestions.length === 0 ? (
-                  <p className={emptyCopyClass}>Nenhum Pokemon encontrado para essa busca.</p>
+                  <EmptyHint>Nenhum Pokemon encontrado para essa busca.</EmptyHint>
                 ) : null}
               </div>
             )}

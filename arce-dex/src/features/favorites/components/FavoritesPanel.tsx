@@ -1,6 +1,7 @@
 import { Clock, Star } from 'lucide-react'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon'
+import { EmptyHint } from '@/shared/ui'
 
 type FavoritesPanelProps = {
   favorites: PokemonSummary[]
@@ -42,7 +43,7 @@ function QuickList({
         </div>
       ))}
       {items.length === 0 && (
-        <p className="text-center italic tracking-wide text-muted opacity-80">Nenhum Pokemon nesta lista.</p>
+        <EmptyHint>Nenhum Pokemon nesta lista.</EmptyHint>
       )}
     </article>
   )

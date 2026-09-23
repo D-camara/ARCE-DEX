@@ -11,6 +11,7 @@ import { useAppView } from './useAppView'
 import { useAppDialogs } from './useAppDialogs'
 import { useCloudSync } from './useCloudSync'
 import { SyncStatusIndicator } from './SyncStatusIndicator'
+import { HeaderButton } from './HeaderButton'
 import { useDexPageData } from './useDexPageData'
 import { useDexActions } from './useDexActions'
 import { useCanonicalPokemonUrl } from './useCanonicalPokemonUrl'
@@ -79,47 +80,31 @@ function App() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2 max-md:col-start-2 max-md:row-start-1 max-md:justify-self-end max-md:self-center">
-          <button
-            type="button"
-            onClick={() => view.setActiveView('team-lab')}
-            className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-parchment/12 bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-parchment/25 hover:bg-white/[0.08] hover:text-ivory max-md:min-h-[34px] max-xs:h-9 max-xs:w-9 max-xs:min-h-[36px] max-xs:min-w-[36px] max-xs:rounded-full max-xs:p-0"
+          <HeaderButton
+            icon={<Menu size={16} />}
+            label="Meu Time"
             title="Meu Time"
-          >
-            <Menu size={16} />
-            <span className="max-xs:hidden">Meu Time</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => dialogs.setIsFavoritesOpen(true)}
-            className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-parchment/12 bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-parchment/25 hover:bg-white/[0.08] hover:text-ivory max-md:min-h-[34px] max-xs:h-9 max-xs:w-9 max-xs:min-h-[36px] max-xs:min-w-[36px] max-xs:rounded-full max-xs:p-0"
+            onClick={() => view.setActiveView('team-lab')}
+          />
+          <HeaderButton
+            icon={<Heart size={16} />}
+            label="Favoritos"
             title="Favoritos"
-          >
-            <Heart size={16} />
-            <span className="max-xs:hidden">Favoritos</span>
-          </button>
+            onClick={() => dialogs.setIsFavoritesOpen(true)}
+          />
           {isSupabaseConfigured &&
             (authStatus === 'authenticated' ? (
               <>
                 <SyncStatusIndicator />
-                <button
-                  type="button"
-                  onClick={() => supabase?.auth.signOut()}
-                  className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-parchment/12 bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-parchment/25 hover:bg-white/[0.08] hover:text-ivory max-md:min-h-[34px] max-xs:h-9 max-xs:w-9 max-xs:min-h-[36px] max-xs:min-w-[36px] max-xs:rounded-full max-xs:p-0"
+                <HeaderButton
+                  icon={<LogOut size={16} />}
+                  label="Sair"
                   title={authUser?.email ?? 'Sair'}
-                >
-                  <LogOut size={16} />
-                  <span className="max-xs:hidden">Sair</span>
-                </button>
+                  onClick={() => void supabase?.auth.signOut()}
+                />
               </>
             ) : (
-              <button
-                type="button"
-                onClick={() => setIsAuthOpen(true)}
-                className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-parchment/12 bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-parchment/25 hover:bg-white/[0.08] hover:text-ivory max-md:min-h-[34px] max-xs:h-9 max-xs:w-9 max-xs:min-h-[36px] max-xs:min-w-[36px] max-xs:rounded-full max-xs:p-0"
-              >
-                <LogIn size={16} />
-                <span className="max-xs:hidden">Entrar</span>
-              </button>
+              <HeaderButton icon={<LogIn size={16} />} label="Entrar" onClick={() => setIsAuthOpen(true)} />
             ))}
         </div>
       </header>

@@ -1,6 +1,7 @@
 import { Clock } from 'lucide-react'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon'
+import { EmptyHint } from '@/shared/ui'
 
 type RecentPokemonPanelProps = {
   pokemon: PokemonSummary[]
@@ -31,7 +32,7 @@ export function RecentPokemonPanel({ onSelect, pokemon }: RecentPokemonPanelProp
           </button>
         ))}
         {pokemon.length === 0 && (
-          <p className="text-center italic tracking-wide text-muted opacity-80">Nenhum Pokemon recente ainda.</p>
+          <EmptyHint>Nenhum Pokemon recente ainda.</EmptyHint>
         )}
       </div>
     </section>
