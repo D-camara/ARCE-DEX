@@ -22,7 +22,7 @@ function createDefaultTeam(index: number): Team {
   }
 }
 
-function createDefaultTeams(): Team[] {
+export function createDefaultTeams(): Team[] {
   return Array.from({ length: MAX_TEAMS }, (_, index) => createDefaultTeam(index))
 }
 
@@ -42,7 +42,23 @@ function normalizeTeam(team: Team, teamIndex: number): Team {
     id: team.id || `team-${teamIndex + 1}`,
     name: team.name.trim() || `Time ${teamIndex + 1}`,
     slots: normalizeTeamSlots(team, teamIndex),
+    ...(team.updatedAt ? { updatedAt: team.updatedAt } : {}),
   }
+}
+
+/**
+ * Stamps `updatedAt` on every team whose object identity changed. Actions only rebuild the
+ * team they touch (the rest keep their reference), so this marks exactly the edited teams —
+ * which is what cloud sync's last-write-wins per team relies on.
+ */
+export function stampChangedTeams(
+  previousTeams: Team[],
+  nextTeams: Team[],
+  now = new Date().toISOString(),
+): Team[] {
+  return nextTeams.map((team, index) =>
+    team === previousTeams[index] ? team : { ...team, updatedAt: now },
+  )
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -177,168 +193,180 @@ type TeamStore = {
 
 export const useTeamStore = create<TeamStore>()(
   persist(
-    (set, get) => ({
-      activeTeamId: 'team-1',
-      teams: createDefaultTeams(),
-      getActiveTeam: () =>
-        get().teams.find((team) => team.id === get().activeTeamId) ?? get().teams[0],
-      setActiveTeam: (teamId) =>
-        set((state) => ({
-          activeTeamId: state.teams.some((team) => team.id === teamId)
-            ? teamId
-            : state.activeTeamId,
-        })),
-      addPokemon: (pokemon, slotIndex) => {
-        let wasAdded = false
+    (rawSet, get) => {
+      const set = (
+        update: (state: TeamStore) => Partial<TeamStore> | TeamStore,
+      ) =>
+        rawSet((state) => {
+          const next = update(state)
+          return next.teams && next.teams !== state.teams
+            ? { ...next, teams: stampChangedTeams(state.teams, next.teams) }
+            : next
+        })
 
-        set((state) => ({
-          teams: state.teams.map((team) => {
-            if (team.id !== state.activeTeamId) {
-              return team
-            }
+      return {
+        activeTeamId: 'team-1',
+        teams: createDefaultTeams(),
+        getActiveTeam: () =>
+          get().teams.find((team) => team.id === get().activeTeamId) ?? get().teams[0],
+        setActiveTeam: (teamId) =>
+          set((state) => ({
+            activeTeamId: state.teams.some((team) => team.id === teamId)
+              ? teamId
+              : state.activeTeamId,
+          })),
+        addPokemon: (pokemon, slotIndex) => {
+          let wasAdded = false
 
-            const nextSlotIndex =
-              slotIndex ?? team.slots.findIndex((slot) => slot.pokemon === null)
+          set((state) => ({
+            teams: state.teams.map((team) => {
+              if (team.id !== state.activeTeamId) {
+                return team
+              }
 
-            if (nextSlotIndex < 0 || nextSlotIndex >= TEAM_SIZE) {
-              return team
-            }
+              const nextSlotIndex =
+                slotIndex ?? team.slots.findIndex((slot) => slot.pokemon === null)
 
-            wasAdded = true
+              if (nextSlotIndex < 0 || nextSlotIndex >= TEAM_SIZE) {
+                return team
+              }
 
-            return {
-              ...team,
-              slots: team.slots.map((slot, index) =>
-                index === nextSlotIndex
-                  ? { ...slot, pokemon: normalizeCompetitivePokemon(pokemon) }
-                  : slot,
-              ),
-            }
-          }),
-        }))
+              wasAdded = true
 
-        return wasAdded
-      },
-      addPokemonToTeam: (teamId, pokemon) => {
-        let wasAdded = false
+              return {
+                ...team,
+                slots: team.slots.map((slot, index) =>
+                  index === nextSlotIndex
+                    ? { ...slot, pokemon: normalizeCompetitivePokemon(pokemon) }
+                    : slot,
+                ),
+              }
+            }),
+          }))
 
-        set((state) => ({
-          teams: state.teams.map((team) => {
-            if (team.id !== teamId) {
-              return team
-            }
+          return wasAdded
+        },
+        addPokemonToTeam: (teamId, pokemon) => {
+          let wasAdded = false
 
-            const nextSlotIndex = team.slots.findIndex((slot) => slot.pokemon === null)
+          set((state) => ({
+            teams: state.teams.map((team) => {
+              if (team.id !== teamId) {
+                return team
+              }
 
-            if (nextSlotIndex < 0) {
-              return team
-            }
+              const nextSlotIndex = team.slots.findIndex((slot) => slot.pokemon === null)
 
-            wasAdded = true
+              if (nextSlotIndex < 0) {
+                return team
+              }
 
-            return {
-              ...team,
-              slots: team.slots.map((slot, index) =>
-                index === nextSlotIndex
-                  ? { ...slot, pokemon: normalizeCompetitivePokemon(pokemon) }
-                  : slot,
-              ),
-            }
-          }),
-          activeTeamId: wasAdded ? teamId : state.activeTeamId,
-        }))
+              wasAdded = true
 
-        return wasAdded
-      },
-      updatePokemonInTeam: (teamId, slotIndex, updates) =>
-        set((state) => ({
-          teams: state.teams.map((team) =>
-            team.id === teamId
-              ? {
-                  ...team,
-                  slots: team.slots.map((slot, index) => {
-                    if (index !== slotIndex || !slot.pokemon) {
-                      return slot
-                    }
+              return {
+                ...team,
+                slots: team.slots.map((slot, index) =>
+                  index === nextSlotIndex
+                    ? { ...slot, pokemon: normalizeCompetitivePokemon(pokemon) }
+                    : slot,
+                ),
+              }
+            }),
+            activeTeamId: wasAdded ? teamId : state.activeTeamId,
+          }))
 
-                    return {
-                      ...slot,
-                      pokemon: normalizeCompetitivePokemon({
-                        ...slot.pokemon,
-                        ...updates,
-                        id: slot.pokemon.id,
-                        name: slot.pokemon.name,
-                        displayName: slot.pokemon.displayName,
-                        sprite: slot.pokemon.sprite,
-                        types: slot.pokemon.types,
-                      }),
-                    }
-                  }),
-                }
-              : team,
-          ),
-        })),
-      removePokemon: (slotIndex, teamId) =>
-        set((state) => {
-          const targetTeamId = teamId ?? state.activeTeamId
-
-          return {
+          return wasAdded
+        },
+        updatePokemonInTeam: (teamId, slotIndex, updates) =>
+          set((state) => ({
             teams: state.teams.map((team) =>
-              team.id === targetTeamId
+              team.id === teamId
                 ? {
                     ...team,
-                    slots: team.slots.map((slot, index) =>
-                      index === slotIndex ? { ...slot, pokemon: null } : slot,
-                    ),
+                    slots: team.slots.map((slot, index) => {
+                      if (index !== slotIndex || !slot.pokemon) {
+                        return slot
+                      }
+
+                      return {
+                        ...slot,
+                        pokemon: normalizeCompetitivePokemon({
+                          ...slot.pokemon,
+                          ...updates,
+                          id: slot.pokemon.id,
+                          name: slot.pokemon.name,
+                          displayName: slot.pokemon.displayName,
+                          sprite: slot.pokemon.sprite,
+                          types: slot.pokemon.types,
+                        }),
+                      }
+                    }),
                   }
                 : team,
             ),
-          }
-        }),
-      renameTeam: (teamId, name) =>
-        set((state) => ({
-          teams: state.teams.map((team) =>
-            team.id === teamId ? { ...team, name: name.trim() || team.name } : team,
-          ),
-        })),
-      clearTeam: (teamId) =>
-        set((state) => {
-          const targetTeamId = teamId ?? state.activeTeamId
+          })),
+        removePokemon: (slotIndex, teamId) =>
+          set((state) => {
+            const targetTeamId = teamId ?? state.activeTeamId
 
-          return {
-            teams: state.teams.map((team, index) =>
-              team.id === targetTeamId ? { ...team, slots: createEmptySlots(index) } : team,
+            return {
+              teams: state.teams.map((team) =>
+                team.id === targetTeamId
+                  ? {
+                      ...team,
+                      slots: team.slots.map((slot, index) =>
+                        index === slotIndex ? { ...slot, pokemon: null } : slot,
+                      ),
+                    }
+                  : team,
+              ),
+            }
+          }),
+        renameTeam: (teamId, name) =>
+          set((state) => ({
+            teams: state.teams.map((team) =>
+              team.id === teamId ? { ...team, name: name.trim() || team.name } : team,
             ),
-          }
-        }),
-      exportActiveTeam: () => exportTeam(get().getActiveTeam()),
-      importTeam: (payload, teamId) => {
-        let wasImported = false
+          })),
+        clearTeam: (teamId) =>
+          set((state) => {
+            const targetTeamId = teamId ?? state.activeTeamId
 
-        set((state) => {
-          const targetTeamId = teamId ?? state.activeTeamId
+            return {
+              teams: state.teams.map((team, index) =>
+                team.id === targetTeamId ? { ...team, slots: createEmptySlots(index) } : team,
+              ),
+            }
+          }),
+        exportActiveTeam: () => exportTeam(get().getActiveTeam()),
+        importTeam: (payload, teamId) => {
+          let wasImported = false
 
-          return {
-            teams: state.teams.map((team, index) => {
-              if (team.id !== targetTeamId) {
-                return team
-              }
+          set((state) => {
+            const targetTeamId = teamId ?? state.activeTeamId
 
-              const importedTeam = parseImportedTeam(payload, team, index)
+            return {
+              teams: state.teams.map((team, index) => {
+                if (team.id !== targetTeamId) {
+                  return team
+                }
 
-              if (!importedTeam) {
-                return team
-              }
+                const importedTeam = parseImportedTeam(payload, team, index)
 
-              wasImported = true
-              return importedTeam
-            }),
-          }
-        })
+                if (!importedTeam) {
+                  return team
+                }
 
-        return wasImported
-      },
-    }),
+                wasImported = true
+                return importedTeam
+              }),
+            }
+          })
+
+          return wasImported
+        },
+      }
+    },
     {
       name: 'arce-dex:team-store',
       storage: createJSONStorage(() => createLocalForageStateStorage()),

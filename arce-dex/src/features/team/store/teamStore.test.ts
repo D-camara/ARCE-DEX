@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { useTeamStore, MAX_TEAMS, TEAM_SIZE } from './teamStore'
+import { useTeamStore, MAX_TEAMS, TEAM_SIZE, stampChangedTeams } from './teamStore'
 import type { TeamPokemon } from '@/shared/types/team'
 
 const pikachu: TeamPokemon = {
@@ -83,5 +83,31 @@ describe('teamStore', () => {
     const wasImported = useTeamStore.getState().importTeam('not json')
 
     expect(wasImported).toBe(false)
+  })
+
+  it('stamps updatedAt only on the team that was edited', () => {
+    useTeamStore.getState().renameTeam('team-2', 'Rain')
+
+    const teams = useTeamStore.getState().teams
+    expect(Date.parse(teams[1].updatedAt ?? '')).not.toBeNaN()
+    expect(teams.filter((team) => team.updatedAt)).toHaveLength(1)
+  })
+
+  it('does not stamp anything when an action changes nothing', () => {
+    useTeamStore.getState().setActiveTeam('team-3')
+
+    expect(useTeamStore.getState().teams.some((team) => team.updatedAt)).toBe(false)
+  })
+})
+
+describe('stampChangedTeams', () => {
+  it('stamps teams whose reference changed and keeps the rest as-is', () => {
+    const previous = useTeamStore.getState().teams
+    const next = previous.map((team, index) => (index === 0 ? { ...team, name: 'X' } : team))
+
+    const stamped = stampChangedTeams(previous, next, '2026-01-01T00:00:00.000Z')
+
+    expect(stamped[0].updatedAt).toBe('2026-01-01T00:00:00.000Z')
+    expect(stamped[1]).toBe(previous[1])
   })
 })

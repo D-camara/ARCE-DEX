@@ -70,6 +70,8 @@ export type Team = {
   id: string
   name: string
   slots: TeamSlot[]
+  /** Set whenever the team is edited; cloud sync resolves conflicts per team with it. */
+  updatedAt?: string
 }
 
 export type SavedTeam = Team

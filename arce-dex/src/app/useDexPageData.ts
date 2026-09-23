@@ -42,7 +42,11 @@ export function useDexPageData(view: ReturnType<typeof useAppView>) {
   )
 
   const favoritePokemonIds = useFavoritesStore((state) => state.favoritePokemonIds)
-  const searchHistory = useSearchHistoryStore((state) => state.history)
+  const searchHistoryEntries = useSearchHistoryStore((state) => state.history)
+  const searchHistory = useMemo(
+    () => searchHistoryEntries.map((entry) => entry.term),
+    [searchHistoryEntries],
+  )
   const formIdentifiers = selectedSpecies?.varieties.map((form) => form.name) ?? []
   const summaries = useMemo(() => pokemonListQuery.data?.results ?? [], [pokemonListQuery.data])
   const visibleAutocompleteSuggestions = useMemo(
