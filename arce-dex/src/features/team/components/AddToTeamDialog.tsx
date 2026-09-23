@@ -1,13 +1,12 @@
 import { useId } from 'react'
 import { CloseButton, Dialog } from '@/shared/ui'
 import type { Pokemon } from '@/shared/types/pokemon'
-import type { Team } from '@/shared/types/team'
 import { TypeBadges } from '@/features/pokemon'
+import { useTeamStore } from '../store/teamStore'
 
 type AddToTeamDialogProps = {
   isOpen: boolean
   pokemon: Pokemon | undefined
-  teams: Team[]
   selectedTeamId: string
   onClose: () => void
   onSelectTeam: (teamId: string) => void
@@ -17,13 +16,13 @@ type AddToTeamDialogProps = {
 export function AddToTeamDialog({
   isOpen,
   pokemon,
-  teams,
   selectedTeamId,
   onClose,
   onConfirm,
   onSelectTeam,
 }: AddToTeamDialogProps) {
   const titleId = useId()
+  const teams = useTeamStore((state) => state.teams)
 
   if (!pokemon) {
     return null

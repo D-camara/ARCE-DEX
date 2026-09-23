@@ -3,10 +3,10 @@ import { Heart, LogIn, LogOut, Menu } from 'lucide-react'
 import { AuthForm, useAuthStore } from '@/features/auth'
 import { isSupabaseConfigured, supabase } from '@/shared/services/supabase/client'
 import { AbilityDetailsDialog, PokemonCard, PokemonTabs } from '@/features/pokemon'
-import { AddToTeamDialog, TeamLabView, useTeamStore } from '@/features/team'
+import { AddToTeamDialog, TeamLab } from '@/features/team'
 import { ErrorState, LoadingState, Toast } from '@/shared/ui/StatusStates'
 import { FavoritesDrawer, RecentPokemonPanel, useFavoritesStore } from '@/features/favorites'
-import { SearchExperience, useSearchHistoryStore } from '@/features/search'
+import { SearchExperience } from '@/features/search'
 import { useAppView } from './useAppView'
 import { useAppDialogs } from './useAppDialogs'
 import { useCloudSync } from './useCloudSync'
@@ -27,30 +27,12 @@ function App() {
   const data = useDexPageData(view)
   useCanonicalPokemonUrl(view, data.selectedPokemon)
 
-  const activeTeamId = useTeamStore((state) => state.activeTeamId)
-  const teams = useTeamStore((state) => state.teams)
-  const setActiveTeam = useTeamStore((state) => state.setActiveTeam)
-  const addPokemonToTeam = useTeamStore((state) => state.addPokemonToTeam)
-  const removePokemon = useTeamStore((state) => state.removePokemon)
-  const renameTeam = useTeamStore((state) => state.renameTeam)
-  const clearTeam = useTeamStore((state) => state.clearTeam)
-  const updatePokemonInTeam = useTeamStore((state) => state.updatePokemonInTeam)
+  const selectedPokemonId = data.selectedPokemon?.id
+  const isSelectedFavorite = useFavoritesStore(
+    (state) => selectedPokemonId !== undefined && state.favoritePokemonIds.includes(selectedPokemonId),
+  )
 
-  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite)
-  const isFavorite = useFavoritesStore((state) => state.isFavorite)
-  const addSearch = useSearchHistoryStore((state) => state.addSearch)
-
-  const actions = useDexActions({
-    view,
-    dialogs,
-    selectedPokemon: data.selectedPokemon,
-    teams,
-    activeTeamId,
-    addPokemonToTeam,
-    toggleFavorite,
-    isFavorite,
-    addSearch,
-  })
+  const actions = useDexActions({ view, dialogs, selectedPokemon: data.selectedPokemon })
 
   return (
     <div className="mx-auto w-full max-w-[1180px] px-3.5 pt-[124px] pb-7 md:px-6 md:pt-20 max-xs:overflow-x-hidden max-xs:px-2 max-fold:pt-[110px] max-fold:px-1">
@@ -110,16 +92,7 @@ function App() {
       </header>
 
       {view.activeView === 'team-lab' ? (
-        <TeamLabView
-          activeTeamId={activeTeamId}
-          onBack={() => view.setActiveView('dex')}
-          onClearTeam={clearTeam}
-          onRemovePokemon={removePokemon}
-          onRenameTeam={renameTeam}
-          onSelectTeam={setActiveTeam}
-          onUpdatePokemon={updatePokemonInTeam}
-          teams={teams}
-        />
+        <TeamLab onBack={() => view.setActiveView('dex')} />
       ) : (
         <main className="flex w-full flex-col gap-8">
           <section className="grid gap-4 md:grid-cols-[minmax(0,1fr)_360px] md:items-start lg:grid-cols-[minmax(0,1fr)_390px]">
@@ -129,7 +102,7 @@ function App() {
               {data.selectedPokemon && (
                 <>
                   <PokemonCard
-                    isFavorite={isFavorite(data.selectedPokemon.id)}
+                    isFavorite={isSelectedFavorite}
                     key={data.selectedPokemon.id}
                     onAddToTeam={actions.handleAddToTeam}
                     onPlayCry={actions.handlePlayCry}
@@ -161,7 +134,6 @@ function App() {
         onSelectTeam={dialogs.setSelectedAddTeamId}
         pokemon={data.selectedPokemon}
         selectedTeamId={dialogs.selectedAddTeamId}
-        teams={teams}
       />
 
       <FavoritesDrawer
