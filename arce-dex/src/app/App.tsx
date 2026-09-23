@@ -10,6 +10,7 @@ import { SearchExperience, useSearchHistoryStore } from '@/features/search'
 import { useAppView } from './useAppView'
 import { useAppDialogs } from './useAppDialogs'
 import { useCloudSync } from './useCloudSync'
+import { SyncStatusIndicator } from './SyncStatusIndicator'
 import { useDexPageData } from './useDexPageData'
 import { useDexActions } from './useDexActions'
 
@@ -96,15 +97,18 @@ function App() {
           </button>
           {isSupabaseConfigured &&
             (authStatus === 'authenticated' ? (
-              <button
-                type="button"
-                onClick={() => supabase?.auth.signOut()}
-                className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[rgba(246,237,211,0.12)] bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-[rgba(246,237,211,0.25)] hover:bg-white/[0.08] hover:text-ivory max-[760px]:min-h-[34px] max-[375px]:h-9 max-[375px]:w-9 max-[375px]:min-h-[36px] max-[375px]:min-w-[36px] max-[375px]:rounded-full max-[375px]:p-0"
-                title={authUser?.email ?? 'Sair'}
-              >
-                <LogOut size={16} />
-                <span className="max-[375px]:hidden">Sair</span>
-              </button>
+              <>
+                <SyncStatusIndicator />
+                <button
+                  type="button"
+                  onClick={() => supabase?.auth.signOut()}
+                  className="inline-flex min-h-[36px] cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[rgba(246,237,211,0.12)] bg-white/[0.04] px-4 py-1.5 text-[0.85rem] font-semibold text-ivory-soft transition-colors duration-150 hover:border-[rgba(246,237,211,0.25)] hover:bg-white/[0.08] hover:text-ivory max-[760px]:min-h-[34px] max-[375px]:h-9 max-[375px]:w-9 max-[375px]:min-h-[36px] max-[375px]:min-w-[36px] max-[375px]:rounded-full max-[375px]:p-0"
+                  title={authUser?.email ?? 'Sair'}
+                >
+                  <LogOut size={16} />
+                  <span className="max-[375px]:hidden">Sair</span>
+                </button>
+              </>
             ) : (
               <button
                 type="button"
