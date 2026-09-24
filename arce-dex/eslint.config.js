@@ -22,6 +22,18 @@ export default defineConfig([
       'no-restricted-imports': [
         'error',
         {
+          paths: [
+            {
+              name: 'framer-motion',
+              message: "Use 'motion' (motion/react), the current package name.",
+            },
+            {
+              name: 'motion/react',
+              importNames: ['motion'],
+              message:
+                "Use `m` from 'motion/react-m' inside the app's LazyMotion (see shared/ui/motion) — `motion.*` pulls the whole engine into the main bundle.",
+            },
+          ],
           patterns: [
             {
               group: [
