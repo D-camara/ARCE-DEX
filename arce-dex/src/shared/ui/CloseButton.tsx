@@ -16,7 +16,7 @@ const toneClass = {
 export function CloseButton({ label, onClick, tone = 'default' }: CloseButtonProps) {
   return (
     <button
-      className={`inline-grid h-[42px] w-[42px] place-items-center rounded-control border ${toneClass[tone]}`}
+      className={`inline-grid h-11 w-11 place-items-center rounded-control border ${toneClass[tone]}`}
       type="button"
       onClick={onClick}
     >

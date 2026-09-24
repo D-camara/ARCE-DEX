@@ -37,7 +37,7 @@ function QuickList({
           <img src={pokemon.imageUrl} alt="" className="h-11 w-11 object-contain" />
           <div className="grid min-w-0 flex-1 gap-1">
             <strong>{pokemon.displayName}</strong>
-            <small className="text-[0.72rem] text-muted">#{String(pokemon.id).padStart(4, '0')}</small>
+            <small className="text-xs text-muted">#{String(pokemon.id).padStart(4, '0')}</small>
             <TypeBadges compact types={pokemon.types} />
           </div>
         </div>

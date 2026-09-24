@@ -45,7 +45,7 @@ const tabLabels: Record<PokemonTabName, string> = {
 }
 
 const tabButtonBase =
-  'min-h-[38px] whitespace-nowrap rounded-lg border border-transparent bg-transparent px-4 text-[0.88rem] font-bold uppercase tracking-wide text-ivory-soft transition-all hover:bg-white/[0.03] hover:text-ivory'
+  'min-h-11 whitespace-nowrap rounded-lg border border-transparent bg-transparent px-4 text-[0.88rem] font-bold uppercase tracking-wide text-ivory-soft transition-all hover:bg-white/[0.03] hover:text-ivory'
 const tabButtonActive =
   'border-gilt/30 bg-gilt/10 text-gold shadow-glow-gold [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]'
 
@@ -59,7 +59,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
   }
 
   return (
-    <section className="-mt-4 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)]">
+    <section className="-mt-4 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 max-sm:p-4 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)]">
       <div
         className="mb-4 flex gap-2 overflow-x-auto border-b border-parchment/6 pb-3"
         role="tablist"
@@ -132,11 +132,11 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
                   <span className="grid min-w-0 gap-1">
                     <strong>{form.displayName}</strong>
                     {form.id !== null && (
-                      <small className="text-[0.72rem] text-muted">
+                      <small className="text-xs text-muted">
                         #{String(form.id).padStart(4, '0')}
                       </small>
                     )}
-                    <em className="text-[0.72rem] not-italic text-muted">{form.category}</em>
+                    <em className="text-xs not-italic text-muted">{form.category}</em>
                     {form.types && form.types.length > 0 && <TypeBadges compact types={form.types} />}
                   </span>
                 </button>
@@ -183,7 +183,7 @@ function EffectivenessGroup({ label, items }: { label: string; items: TypeEffect
             <span
               key={item.type}
               style={typeBadgeStyle(item.type)}
-              className="inline-flex min-h-[28px] w-fit max-w-max items-center justify-center gap-1 whitespace-nowrap rounded-full border border-line bg-surface-2 px-[0.65rem] py-[0.35rem] text-[0.72rem] font-extrabold uppercase leading-none text-ivory [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]"
+              className="inline-flex min-h-[28px] w-fit max-w-max items-center justify-center gap-1 whitespace-nowrap rounded-full border border-line bg-surface-2 px-[0.65rem] py-[0.35rem] text-xs font-extrabold uppercase leading-none text-ivory [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]"
             >
               {item.type} {formatMultiplier(item.multiplier)}
             </span>
@@ -244,8 +244,8 @@ function EvolutionBranch({
           <img src={node.sprite} alt="" className="h-[68px] w-[68px] justify-self-center object-contain" />
         )}
         <strong>{node.displayName}</strong>
-        {node.id !== null && <small className="text-[0.72rem] text-muted">#{String(node.id).padStart(4, '0')}</small>}
-        <small className="text-[0.72rem] text-muted">{node.method}</small>
+        {node.id !== null && <small className="text-xs text-muted">#{String(node.id).padStart(4, '0')}</small>}
+        <small className="text-xs text-muted">{node.method}</small>
       </button>
       {node.evolvesTo.length > 0 && (
         <div className="flex flex-wrap gap-2.5 border-l border-line pl-3.5">
@@ -292,7 +292,7 @@ function MoveCard({ move }: { move: PokemonMove }) {
         {move.type && <TypeBadges types={[move.type]} />}
         {move.category && (
           <span
-            className={`inline-flex min-h-[28px] w-fit items-center justify-center whitespace-nowrap rounded-full px-[0.65rem] py-[0.35rem] text-[0.72rem] font-extrabold uppercase leading-none ${moveCategoryClasses[move.category] ?? 'bg-mist/16 text-mist-200'}`}
+            className={`inline-flex min-h-[28px] w-fit items-center justify-center whitespace-nowrap rounded-full px-[0.65rem] py-[0.35rem] text-xs font-extrabold uppercase leading-none ${moveCategoryClasses[move.category] ?? 'bg-mist/16 text-mist-200'}`}
           >
             {move.categoryLabel ?? move.category}
           </span>
@@ -300,15 +300,15 @@ function MoveCard({ move }: { move: PokemonMove }) {
       </div>
       <dl className="m-0 grid grid-cols-3 gap-2">
         <div className="min-w-0 rounded-xl bg-abyss/38 p-2">
-          <dt className="text-[0.68rem] font-extrabold uppercase text-muted">Power</dt>
+          <dt className="text-xs font-extrabold uppercase text-muted">Power</dt>
           <dd className="mt-0.5 font-extrabold">{formatMoveValue(move.power)}</dd>
         </div>
         <div className="min-w-0 rounded-xl bg-abyss/38 p-2">
-          <dt className="text-[0.68rem] font-extrabold uppercase text-muted">Accuracy</dt>
+          <dt className="text-xs font-extrabold uppercase text-muted">Accuracy</dt>
           <dd className="mt-0.5 font-extrabold">{formatMoveValue(move.accuracy)}</dd>
         </div>
         <div className="min-w-0 rounded-xl bg-abyss/38 p-2">
-          <dt className="text-[0.68rem] font-extrabold uppercase text-muted">PP</dt>
+          <dt className="text-xs font-extrabold uppercase text-muted">PP</dt>
           <dd className="mt-0.5 font-extrabold">{formatMoveValue(move.pp)}</dd>
         </div>
       </dl>

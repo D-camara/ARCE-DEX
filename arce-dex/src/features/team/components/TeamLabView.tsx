@@ -88,7 +88,7 @@ export function TeamLabView({
                   <h1 className="m-0 text-[1.7rem] font-black leading-tight tracking-tight text-ivory [text-shadow:0_2px_10px_rgba(0,0,0,0.6)]">
                     {selectedPokemon.displayName}
                   </h1>
-                  <span className="inline-flex items-center rounded-md border border-gilt/25 bg-gilt/10 px-2 py-1 text-[0.72rem] font-bold tracking-wide text-gold-soft">
+                  <span className="inline-flex items-center rounded-md border border-gilt/25 bg-gilt/10 px-2 py-1 text-xs font-bold tracking-wide text-gold-soft">
                     Lv. {selectedPokemon.level ?? 100}
                   </span>
                 </div>
@@ -183,8 +183,8 @@ export function TeamLabView({
         </div>
       </section>
 
-      <section className="-mt-3 grid gap-3 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 pt-4 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)] md:-mt-3.5">
-        <div className="grid grid-cols-6 gap-2">
+      <section className="-mt-3 grid gap-3 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 pt-4 max-sm:px-4 max-sm:pb-4 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)] md:-mt-3.5">
+        <div className="grid grid-cols-6 gap-2 max-xs:gap-1.5">
           {teams.map((team, index) => (
             <button
               className={

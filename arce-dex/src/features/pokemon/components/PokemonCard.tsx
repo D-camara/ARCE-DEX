@@ -56,11 +56,13 @@ export function PokemonCard({
               <button
                 className={
                   isShiny
-                    ? 'inline-flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-parchment bg-[linear-gradient(135deg,#D4AF37,#F6EDD3)] text-cosmic backdrop-blur-md transition-all hover:-translate-y-0.5'
-                    : 'inline-flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-parchment/20 bg-white/5 text-ivory backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-gilt/50 hover:bg-white/10 hover:shadow-glow-gold'
+                    ? 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-parchment bg-[linear-gradient(135deg,#D4AF37,#F6EDD3)] text-cosmic backdrop-blur-md transition-all hover:-translate-y-0.5'
+                    : 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-parchment/20 bg-white/5 text-ivory backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-gilt/50 hover:bg-white/10 hover:shadow-glow-gold'
                 }
                 onClick={() => setIsShiny((value) => !value)}
                 type="button"
+                aria-label={isShiny ? 'Mostrar normal' : 'Mostrar shiny'}
+                aria-pressed={isShiny}
                 title={isShiny ? 'Mostrar normal' : 'Mostrar shiny'}
               >
                 <Sparkles size={18} />
@@ -68,9 +70,10 @@ export function PokemonCard({
             )}
             {pokemon.cryUrl && (
               <button
-                className="inline-flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border border-parchment/20 bg-white/5 text-ivory backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-gilt/50 hover:bg-white/10 hover:shadow-glow-gold"
+                className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-parchment/20 bg-white/5 text-ivory backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-gilt/50 hover:bg-white/10 hover:shadow-glow-gold"
                 onClick={onPlayCry}
                 type="button"
+                aria-label="Ouvir cry"
                 title="Ouvir cry"
               >
                 <Volume2 size={18} />
@@ -94,11 +97,11 @@ export function PokemonCard({
         <div className="grid gap-4">
           <dl className="m-0 grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-0.5 rounded-xl border border-parchment/10 bg-panel/50 p-2.5 px-3 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
-              <dt className="text-[0.7rem] font-bold uppercase tracking-[0.15em] text-gold">Altura</dt>
+              <dt className="text-xs font-bold uppercase tracking-[0.15em] text-gold">Altura</dt>
               <dd className="m-0 text-[1.1rem] font-extrabold text-ivory">{(pokemon.height / 10).toFixed(1)} m</dd>
             </div>
             <div className="flex flex-col gap-0.5 rounded-xl border border-parchment/10 bg-panel/50 p-2.5 px-3 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
-              <dt className="text-[0.7rem] font-bold uppercase tracking-[0.15em] text-gold">Peso</dt>
+              <dt className="text-xs font-bold uppercase tracking-[0.15em] text-gold">Peso</dt>
               <dd className="m-0 text-[1.1rem] font-extrabold text-ivory">{(pokemon.weight / 10).toFixed(1)} kg</dd>
             </div>
           </dl>

@@ -26,7 +26,7 @@ export function RecentPokemonPanel({ onSelect, pokemon }: RecentPokemonPanelProp
             <img src={item.imageUrl} alt="" className="h-11 w-11 object-contain" />
             <span className="flex flex-col gap-1">
               <strong className="text-[0.98rem] font-bold text-ivory">{item.displayName}</strong>
-              <small className="text-[0.72rem] text-muted">#{String(item.id).padStart(4, '0')}</small>
+              <small className="text-xs text-muted">#{String(item.id).padStart(4, '0')}</small>
               <TypeBadges compact types={item.types} />
             </span>
           </button>
