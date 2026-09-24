@@ -1,7 +1,7 @@
-import { useCallback, useState } from 'react'
+import { Suspense, useCallback, useState } from 'react'
 import { Heart, LogIn, LogOut, Menu } from 'lucide-react'
 import { AuthForm, useAuthStore } from '@/features/auth'
-import { isSupabaseConfigured, supabase } from '@/shared/services/supabase/client'
+import { getSupabase, isSupabaseConfigured } from '@/shared/services/supabase/client'
 import { AbilityDetailsDialog, PokemonCard, PokemonTabs } from '@/features/pokemon'
 import { AddToTeamDialog, TeamLab } from '@/features/team'
 import { ErrorState, LoadingState, Toast } from '@/shared/ui/StatusStates'
@@ -89,7 +89,7 @@ function App() {
                   icon={<LogOut size={16} />}
                   label="Sair"
                   title={authUser?.email ?? 'Sair'}
-                  onClick={() => void supabase?.auth.signOut()}
+                  onClick={() => void getSupabase().then((client) => client?.auth.signOut())}
                 />
               </>
             ) : (
@@ -99,7 +99,9 @@ function App() {
       </header>
 
       {view.activeView === 'team-lab' ? (
-        <TeamLab onBack={() => view.setActiveView('dex')} />
+        <Suspense fallback={<LoadingState />}>
+          <TeamLab onBack={() => view.setActiveView('dex')} />
+        </Suspense>
       ) : (
         <main className="flex w-full flex-col gap-8">
           <section className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_360px] md:items-start lg:grid-cols-[minmax(0,1fr)_390px]">

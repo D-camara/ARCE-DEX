@@ -1,4 +1,4 @@
-import { supabase } from '@/shared/services/supabase/client'
+import { getSupabase } from '@/shared/services/supabase/client'
 import { useSettingsStore } from '@/shared/stores/settingsStore'
 import { mergeLww } from './merge/mergeLww'
 import type { DataOwnership } from './syncBaseline'
@@ -11,11 +11,11 @@ function isTheme(value: unknown): value is Theme {
 }
 
 export async function startSettingsSync(userId: string, ownership: DataOwnership): Promise<DomainSync | null> {
-  if (!supabase) {
+  const loadedClient = await getSupabase()
+  if (!loadedClient) {
     return null
   }
-
-  const client = supabase
+  const client = loadedClient
   let lastApplied: { theme: Theme; updatedAt?: string } | null = null
 
   async function reconcile(currentOwnership: DataOwnership) {

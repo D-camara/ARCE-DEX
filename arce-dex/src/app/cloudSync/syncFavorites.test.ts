@@ -61,7 +61,7 @@ const fake = vi.hoisted(() => {
   return { state, client }
 })
 
-vi.mock('@/shared/services/supabase/client', () => ({ supabase: fake.client, isSupabaseConfigured: true }))
+vi.mock('@/shared/services/supabase/client', () => ({ getSupabase: async () => fake.client, isSupabaseConfigured: true }))
 
 const { startFavoritesSync } = await import('./syncFavorites')
 

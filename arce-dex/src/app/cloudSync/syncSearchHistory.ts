@@ -1,4 +1,4 @@
-import { supabase } from '@/shared/services/supabase/client'
+import { getSupabase } from '@/shared/services/supabase/client'
 import { MAX_HISTORY_ITEMS, useSearchHistoryStore, type SearchHistoryEntry } from '@/features/search'
 import { mergeLww, type LwwEntry } from './merge/mergeLww'
 import type { DataOwnership } from './syncBaseline'
@@ -14,11 +14,11 @@ export async function startSearchHistorySync(
   userId: string,
   ownership: DataOwnership,
 ): Promise<DomainSync | null> {
-  if (!supabase) {
+  const loadedClient = await getSupabase()
+  if (!loadedClient) {
     return null
   }
-
-  const client = supabase
+  const client = loadedClient
   let lastApplied: SearchHistoryEntry[] | null = null
 
   async function reconcile(currentOwnership: DataOwnership) {
