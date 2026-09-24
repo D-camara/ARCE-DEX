@@ -51,6 +51,12 @@ export default defineConfig([
     },
   },
   {
+    // Playwright tests: `use` in fixtures is Playwright's, not a React hook; they run in Node.
+    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    languageOptions: { globals: globals.node },
+    rules: { 'react-hooks/rules-of-hooks': 'off' },
+  },
+  {
     // Design tokens are enforced, not just documented (see @theme in src/index.css).
     // Covers single-color utilities and breakpoints. Gradients/shadows/filters with an
     // rgba() inside (bg-[linear-gradient(...)], shadow-[0_10px_30px_rgba(...)]) are
