@@ -66,10 +66,8 @@ export function getPokemonSpecies(identifier: string | number) {
   return pokeApiGet<PokeApiPokemonSpeciesResponse>(`/pokemon-species/${identifier}`)
 }
 
-export async function findPokemonSpecies(identifier: string | number) {
-  const pokemon = await findPokemon(identifier)
-
-  return pokeApiGet<PokeApiPokemonSpeciesResponse>(pokemon.species.url)
+export function getPokemonSpeciesByUrl(url: string) {
+  return pokeApiGet<PokeApiPokemonSpeciesResponse>(url)
 }
 
 export function getPokemonForm(identifier: string | number) {

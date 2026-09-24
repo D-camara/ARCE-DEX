@@ -18,6 +18,7 @@ import {
   mergePokemonSummaries,
   preparePokemonLevelUpMoves,
 } from './appDataAdapters'
+import { normalizePokemonSearch } from '@/shared/lib/utils'
 import type { useAppView } from './useAppView'
 
 export function useDexPageData(
@@ -28,7 +29,7 @@ export function useDexPageData(
   const selectedPokemonQuery = usePokemon(view.selectedIdentifier)
   const selectedPokemon = selectedPokemonQuery.data
   const selectedAbilityQuery = useAbility(view.selectedAbilityName)
-  const selectedSpeciesQuery = usePokemonSpecies(view.selectedIdentifier)
+  const selectedSpeciesQuery = usePokemonSpecies(selectedPokemon?.speciesUrl ?? null)
   const selectedSpecies = selectedSpeciesQuery.data
   const evolutionChainQuery = useEvolutionChain(selectedSpecies?.evolutionChainUrl ?? null)
   const baseMoves = useMemo(
@@ -59,7 +60,18 @@ export function useDexPageData(
   const autocompleteSummaryQuery = usePokemonSummaries(
     visibleAutocompleteSuggestions.map((pokemon) => pokemon.name),
   )
-  const relatedSummaryQuery = usePokemonSummaries([...searchHistory.slice(0, 8), ...formIdentifiers])
+  // The selected Pokémon is already in the summary cache via selectedSummary (and its query
+  // seeds the summary keys). Asking for it here too would race that query with a 2nd request.
+  const selectedKeys = new Set(
+    [view.selectedIdentifier, selectedPokemon?.name, selectedPokemon?.id].map((identifier) =>
+      typeof identifier === 'string' ? normalizePokemonSearch(identifier) : identifier,
+    ),
+  )
+  const relatedSummaryQuery = usePokemonSummaries(
+    [...searchHistory.slice(0, 8), ...formIdentifiers].filter(
+      (identifier) => !selectedKeys.has(normalizePokemonSearch(identifier)),
+    ),
+  )
   // Favorites can be many and are only shown in the drawer: fetch them when it opens.
   // Once fetched they stay cached, so closing the drawer doesn't lose them.
   const favoriteSummaryQuery = usePokemonSummaries(favoritePokemonIds, { enabled: isFavoritesOpen })

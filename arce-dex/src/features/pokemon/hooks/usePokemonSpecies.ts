@@ -1,23 +1,16 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { findPokemonSpecies } from '@/shared/services/pokeapi/endpoints'
+import { useQuery } from '@tanstack/react-query'
+import { getPokemonSpeciesByUrl } from '@/shared/services/pokeapi/endpoints'
 import { mapPokemonSpecies } from '@/shared/services/pokeapi/mappers'
-import { normalizePokemonSearch } from '@/shared/lib/utils'
 
-export function usePokemonSpecies(identifier: string | number | null) {
-  const normalizedIdentifier =
-    typeof identifier === 'string' ? normalizePokemonSearch(identifier) : identifier
-
-  const queryClient = useQueryClient()
-
+/**
+ * Takes the species URL from the already-loaded Pokémon (`pokemon.speciesUrl`) instead of
+ * resolving the Pokémon again: no duplicate /pokemon request, and the cache key doesn't
+ * change when the URL is canonicalized from an id to a name.
+ */
+export function usePokemonSpecies(speciesUrl: string | null) {
   return useQuery({
-    queryKey: ['pokemon-species', normalizedIdentifier],
-    queryFn: async () => {
-      const result = mapPokemonSpecies(await findPokemonSpecies(normalizedIdentifier as string | number))
-      // Also cache under the canonical name: the URL gets rewritten from id/alias to the
-      // name once loaded, and that must not trigger a second fetch.
-      queryClient.setQueryData(['pokemon-species', result.name], result)
-      return result
-    },
-    enabled: normalizedIdentifier !== null && normalizedIdentifier !== '',
+    queryKey: ['pokemon-species', speciesUrl],
+    queryFn: async () => mapPokemonSpecies(await getPokemonSpeciesByUrl(speciesUrl as string)),
+    enabled: speciesUrl !== null,
   })
 }
