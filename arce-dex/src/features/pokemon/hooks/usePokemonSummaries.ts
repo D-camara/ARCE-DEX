@@ -3,7 +3,7 @@ import { getPokemon } from '@/shared/services/pokeapi/endpoints'
 import { mapPokemonSummary } from '@/shared/services/pokeapi/mappers'
 import { normalizePokemonSearch } from '@/shared/lib/utils'
 
-export function usePokemonSummaries(identifiers: Array<string | number>) {
+export function usePokemonSummaries(identifiers: Array<string | number>, { enabled = true } = {}) {
   const normalizedIdentifiers = [...new Set(
     identifiers
       .map((identifier) =>
@@ -16,7 +16,7 @@ export function usePokemonSummaries(identifiers: Array<string | number>) {
     queries: normalizedIdentifiers.map((identifier) => ({
       queryKey: ['pokemon-summary', identifier],
       queryFn: async () => mapPokemonSummary(await getPokemon(identifier)),
-      staleTime: 1000 * 60 * 30,
+      enabled,
     })),
   })
 

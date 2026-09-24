@@ -7,6 +7,5 @@ export function useAbility(name: string | null) {
     queryKey: ['ability', name],
     queryFn: async () => mapAbilityDetail(await getAbility(name as string)),
     enabled: Boolean(name),
-    staleTime: 1000 * 60 * 60,
   })
 }

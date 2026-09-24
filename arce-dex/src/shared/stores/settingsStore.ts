@@ -6,6 +6,8 @@ type ThemeMode = 'light' | 'dark' | 'system'
 
 type SettingsStore = {
   theme: ThemeMode
+  /** Set by setTheme; cloud sync resolves conflicts with it (last write wins). */
+  updatedAt?: string
   setTheme: (theme: ThemeMode) => void
 }
 
@@ -13,7 +15,7 @@ export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
       theme: 'system',
-      setTheme: (theme) => set({ theme }),
+      setTheme: (theme) => set({ theme, updatedAt: new Date().toISOString() }),
     }),
     {
       name: 'arce-dex:settings-store',

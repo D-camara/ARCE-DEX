@@ -5,6 +5,7 @@ import {
   normalizePokemonSearchText,
 } from '@/shared/lib/pokemon-search'
 import { TypeBadges } from '@/features/pokemon'
+import { EmptyHint } from '@/shared/ui'
 
 type SearchExperienceProps = {
   suggestions: PokemonSummary[]
@@ -18,7 +19,6 @@ type SearchExperienceProps = {
   onSelect: (pokemon: PokemonSummary) => void
 }
 
-const emptyCopyClass = 'text-center italic tracking-wide text-muted opacity-80'
 
 export function SearchExperience({
   isAutocompleteOpen,
@@ -47,7 +47,7 @@ export function SearchExperience({
           }}
         >
           <div className="relative">
-            <label className="flex min-h-[38px] items-center gap-2 rounded-[10px] border border-[rgba(201,166,70,0.22)] bg-[rgba(9,11,16,0.85)] px-3 transition-colors focus-within:border-gold focus-within:bg-[#0d0d10] focus-within:shadow-glow-gold [&:focus-within_svg]:text-gold">
+            <label className="flex min-h-[38px] items-center gap-2 rounded-[10px] border border-gold/22 bg-ink/85 px-3 transition-colors focus-within:border-gold focus-within:bg-cosmic-soft focus-within:shadow-glow-gold [&:focus-within_svg]:text-gold">
               <Search size={16} className="shrink-0 text-muted transition-colors" />
               <input
                 onChange={(event) => onChange(event.target.value)}
@@ -55,13 +55,13 @@ export function SearchExperience({
                 placeholder="Nome, numero ou #448"
                 type="search"
                 value={value}
-                className="min-h-[36px] w-full border-0 bg-transparent text-[0.88rem] text-ivory outline-none placeholder:text-[#94a3b8]"
+                className="min-h-[36px] w-full border-0 bg-transparent text-[0.88rem] text-ivory outline-none placeholder:text-mist"
               />
             </label>
             {shouldShowSuggestions && (
-              <div className="absolute left-0 top-[calc(100%+0.5rem)] z-[70] flex max-h-[min(360px,calc(100svh-150px))] w-full flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-2xl border border-[rgba(56,189,248,0.28)] bg-[rgba(8,13,24,0.98)] p-1.5 shadow-[0_22px_55px_rgba(0,0,0,0.48)] backdrop-blur-xl">
-                {isLoading && <p className={emptyCopyClass}>Carregando Pokemon...</p>}
-                {isError && <p className={emptyCopyClass}>Nao foi possivel carregar a PokeAPI.</p>}
+              <div className="absolute left-0 top-[calc(100%+0.5rem)] z-[70] flex max-h-[min(360px,calc(100svh-150px))] w-full flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-2xl border border-azure/28 bg-ink-deep/98 p-1.5 shadow-[0_22px_55px_rgba(0,0,0,0.48)] backdrop-blur-xl">
+                {isLoading && <EmptyHint>Carregando Pokemon...</EmptyHint>}
+                {isError && <EmptyHint>Nao foi possivel carregar a PokeAPI.</EmptyHint>}
                 {!isLoading && !isError && visibleSuggestions.length > 0
                   ? visibleSuggestions.map((pokemon) => (
                       <button
@@ -92,7 +92,7 @@ export function SearchExperience({
                     ))
                   : null}
                 {!isLoading && !isError && visibleSuggestions.length === 0 ? (
-                  <p className={emptyCopyClass}>Nenhum Pokemon encontrado para essa busca.</p>
+                  <EmptyHint>Nenhum Pokemon encontrado para essa busca.</EmptyHint>
                 ) : null}
               </div>
             )}
@@ -102,7 +102,7 @@ export function SearchExperience({
           <button
             type="button"
             onClick={() => onSearch(value)}
-            className="flex min-h-[38px] items-center justify-center gap-2 rounded-[10px] border border-[rgba(212,175,55,0.4)] bg-[linear-gradient(135deg,rgba(212,175,55,0.15),rgba(246,237,211,0.05))] px-3.5 text-[0.82rem] font-bold uppercase tracking-wide text-ivory shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_0_10px_rgba(212,175,55,0.1)] transition-all hover:border-[rgba(212,175,55,0.6)] hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.25),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
+            className="flex min-h-[38px] items-center justify-center gap-2 rounded-[10px] border border-gilt/40 bg-[linear-gradient(135deg,rgba(212,175,55,0.15),rgba(246,237,211,0.05))] px-3.5 text-[0.82rem] font-bold uppercase tracking-wide text-ivory shadow-[0_4px_12px_rgba(0,0,0,0.3),inset_0_0_10px_rgba(212,175,55,0.1)] transition-all hover:border-gilt/60 hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.25),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
           >
             <Search size={16} />
             Buscar

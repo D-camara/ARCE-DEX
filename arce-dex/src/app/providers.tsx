@@ -7,8 +7,9 @@ import { AppErrorFallback } from './AppErrorFallback'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 10,
-      gcTime: 1000 * 60 * 60,
+      // PokeAPI data is effectively static: never refetch what's already in memory.
+      staleTime: Infinity,
+      gcTime: 1000 * 60 * 60 * 24,
       retry: 1,
       refetchOnWindowFocus: false,
     },

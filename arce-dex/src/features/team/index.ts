@@ -1,3 +1,3 @@
-export { TeamLabView } from './components/TeamLabView'
+export { TeamLab } from './components/TeamLab'
 export { AddToTeamDialog } from './components/AddToTeamDialog'
-export { useTeamStore } from './store/teamStore'
+export { createDefaultTeams, useTeamStore } from './store/teamStore'

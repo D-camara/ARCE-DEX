@@ -1,53 +1,73 @@
 import { supabase } from '@/shared/services/supabase/client'
 import { useSettingsStore } from '@/shared/stores/settingsStore'
-import { decideSyncStrategy } from './decideSyncStrategy'
-import { subscribeToTableChanges } from './realtimeChannel'
+import { mergeLww } from './merge/mergeLww'
+import type { DataOwnership } from './syncBaseline'
+import { startDomainSync, type DomainSync } from './startDomainSync'
 
-export async function startSettingsSync(userId: string): Promise<() => void> {
+type Theme = 'light' | 'dark' | 'system'
+
+function isTheme(value: unknown): value is Theme {
+  return value === 'light' || value === 'dark' || value === 'system'
+}
+
+export async function startSettingsSync(userId: string, ownership: DataOwnership): Promise<DomainSync | null> {
   if (!supabase) {
-    return () => {}
+    return null
   }
 
   const client = supabase
+  let lastApplied: { theme: Theme; updatedAt?: string } | null = null
 
-  const { data: remoteRows } = await client.from('settings').select('theme').eq('user_id', userId)
-  const strategy = decideSyncStrategy(remoteRows ?? [])
-
-  if (strategy === 'push') {
-    const theme = useSettingsStore.getState().theme
-    await client.from('settings').insert({ user_id: userId, theme })
-  } else {
-    const theme = (remoteRows ?? [])[0]?.theme as string | undefined
-    if (theme === 'light' || theme === 'dark' || theme === 'system') {
-      useSettingsStore.setState({ theme })
-    }
-  }
-
-  let isApplyingRemote = false
-
-  const channel = await subscribeToTableChanges(client, `settings-${userId}`, 'settings', userId, async () => {
-    isApplyingRemote = true
-    const { data } = await client.from('settings').select('theme').eq('user_id', userId).maybeSingle()
-    const theme = data?.theme as string | undefined
-    if (theme === 'light' || theme === 'dark' || theme === 'system') {
-      useSettingsStore.setState({ theme })
-    }
-    isApplyingRemote = false
-  })
-
-  const unsubscribeStore = useSettingsStore.subscribe((state) => {
-    if (isApplyingRemote) {
-      return
-    }
-
-    void client
+  async function reconcile(currentOwnership: DataOwnership) {
+    const { data, error } = await client
       .from('settings')
-      .upsert({ user_id: userId, theme: state.theme, updated_at: new Date().toISOString() })
-      .then()
-  })
+      .select('theme, updated_at')
+      .eq('user_id', userId)
+      .maybeSingle()
+    if (error) {
+      throw error
+    }
 
-  return () => {
-    unsubscribeStore()
-    void client.removeChannel(channel)
+    const remote =
+      data && isTheme(data.theme)
+        ? [{ key: 'settings', updatedAt: data.updated_at as string, value: data.theme }]
+        : []
+    const { theme, updatedAt } = useSettingsStore.getState()
+    const local = currentOwnership === 'other-user' ? [] : [{ key: 'settings', updatedAt, value: theme }]
+    const { merged, toUpsert } = mergeLww(local, remote)
+    const winner = merged[0]
+
+    if (winner && (winner.value !== theme || winner.updatedAt !== updatedAt)) {
+      useSettingsStore.setState({ theme: winner.value, updatedAt: winner.updatedAt })
+    }
+    const state = useSettingsStore.getState()
+    lastApplied = { theme: state.theme, updatedAt: state.updatedAt }
+
+    if (toUpsert.length > 0) {
+      const { error: upsertError } = await client.from('settings').upsert({
+        user_id: userId,
+        theme: toUpsert[0].value,
+        updated_at: toUpsert[0].updatedAt ?? new Date(0).toISOString(),
+      })
+      if (upsertError) {
+        throw upsertError
+      }
+    }
   }
+
+  return startDomainSync({
+    client,
+    domain: 'settings',
+    table: 'settings',
+    userId,
+    ownership,
+    store: useSettingsStore,
+    reconcile,
+    subscribeToLocalChanges: (onChange) =>
+      useSettingsStore.subscribe((state) => {
+        if (state.theme !== lastApplied?.theme || state.updatedAt !== lastApplied?.updatedAt) {
+          onChange()
+        }
+      }),
+  })
 }

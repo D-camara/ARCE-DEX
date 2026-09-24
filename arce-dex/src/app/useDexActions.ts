@@ -1,6 +1,8 @@
 import { normalizePokemonSearch } from '@/shared/lib/utils'
 import type { Pokemon, PokemonSummary } from '@/shared/types/pokemon'
-import type { Team } from '@/shared/types/team'
+import { useFavoritesStore } from '@/features/favorites'
+import { useSearchHistoryStore } from '@/features/search'
+import { useTeamStore } from '@/features/team'
 import { toTeamPokemon } from './appDataAdapters'
 import type { useAppView } from './useAppView'
 import type { useAppDialogs } from './useAppDialogs'
@@ -9,25 +11,13 @@ type UseDexActionsParams = {
   view: ReturnType<typeof useAppView>
   dialogs: ReturnType<typeof useAppDialogs>
   selectedPokemon: Pokemon | undefined
-  teams: Team[]
-  activeTeamId: string
-  addPokemonToTeam: (teamId: string, pokemon: ReturnType<typeof toTeamPokemon>) => boolean
-  toggleFavorite: (pokemonId: number) => void
-  isFavorite: (pokemonId: number) => boolean
-  addSearch: (value: string) => void
 }
 
-export function useDexActions({
-  view,
-  dialogs,
-  selectedPokemon,
-  teams,
-  activeTeamId,
-  addPokemonToTeam,
-  toggleFavorite,
-  isFavorite,
-  addSearch,
-}: UseDexActionsParams) {
+// Handlers read stores at call time (getState) — they don't need to re-render on store changes.
+const addSearch = (value: string) => useSearchHistoryStore.getState().addSearch(value)
+const toggleFavorite = (pokemonId: number) => useFavoritesStore.getState().toggleFavorite(pokemonId)
+
+export function useDexActions({ view, dialogs, selectedPokemon }: UseDexActionsParams) {
   function handleSearch(value: string) {
     const normalizedSearch = normalizePokemonSearch(value)
 
@@ -58,7 +48,7 @@ export function useDexActions({
       return
     }
 
-    dialogs.setSelectedAddTeamId(activeTeamId)
+    dialogs.setSelectedAddTeamId(useTeamStore.getState().activeTeamId)
     dialogs.setIsAddToTeamOpen(true)
   }
 
@@ -74,6 +64,7 @@ export function useDexActions({
       return
     }
 
+    const { teams, addPokemonToTeam } = useTeamStore.getState()
     const team = teams.find((item) => item.id === teamId)
     const wasAdded = addPokemonToTeam(teamId, toTeamPokemon(selectedPokemon))
     dialogs.showToastMessage(
@@ -89,7 +80,7 @@ export function useDexActions({
       return
     }
 
-    const willFavorite = !isFavorite(selectedPokemon.id)
+    const willFavorite = !useFavoritesStore.getState().isFavorite(selectedPokemon.id)
     toggleFavorite(selectedPokemon.id)
     dialogs.showToastMessage(willFavorite ? 'Pokemon favoritado.' : 'Pokemon removido dos favoritos.')
   }
