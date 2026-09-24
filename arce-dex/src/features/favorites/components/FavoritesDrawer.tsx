@@ -1,6 +1,8 @@
 import { HeartOff } from 'lucide-react'
 import { useId, useRef, type MouseEvent } from 'react'
-import { CloseButton, useDialogBehavior } from '@/shared/ui'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { CloseButton, duration, ease, useDialogBehavior } from '@/shared/ui'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon'
 
@@ -30,12 +32,18 @@ export function FavoritesDrawer({
 
   return (
     <>
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-[1000] animate-[fade-in-backdrop_0.24s_ease_forwards] bg-abyss/70 backdrop-blur-sm"
-          onClick={onClose}
-        />
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <m.div
+            key="favorites-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: duration.base, ease: ease.out } }}
+            exit={{ opacity: 0, transition: { duration: duration.exit, ease: ease.in } }}
+            className="fixed inset-0 z-[1000] bg-abyss/70 backdrop-blur-sm"
+            onClick={onClose}
+          />
+        )}
+      </AnimatePresence>
       <aside
         className={`fixed right-0 top-0 z-[1001] grid h-[100svh] w-full max-w-[calc(100vw-20px)] grid-rows-[auto_1fr] gap-3.5 overflow-hidden border-l border-parchment/12 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.1),transparent_22rem),linear-gradient(180deg,rgba(13,18,34,0.99),rgba(5,9,18,0.99))] p-4 shadow-[0_0_50px_rgba(0,0,0,0.9)] transition-transform duration-300 md:w-[420px] md:max-w-[420px] ${
           isOpen ? 'translate-x-0' : 'translate-x-[105%]'

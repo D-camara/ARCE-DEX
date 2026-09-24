@@ -1,4 +1,5 @@
 import { Suspense, useCallback, useState } from 'react'
+import { AnimatePresence } from 'motion/react'
 import { Heart, LogIn, LogOut, Menu } from 'lucide-react'
 import { AuthForm, useAuthStore } from '@/features/auth'
 import { getSupabase, isSupabaseConfigured } from '@/shared/services/supabase/client'
@@ -166,7 +167,9 @@ function App() {
         onClose={() => view.setSelectedAbilityName(null)}
       />
 
-      {dialogs.showToast && <Toast message={dialogs.toastMessage} />}
+      <AnimatePresence>
+        {dialogs.showToast && <Toast key="toast" message={dialogs.toastMessage} />}
+      </AnimatePresence>
 
       {isAuthOpen && <AuthForm onClose={() => setIsAuthOpen(false)} />}
     </div>
