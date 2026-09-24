@@ -49,16 +49,16 @@ export function TeamSlotCard({
         <TypeBadges compact types={slot.pokemon.types} />
         <dl className="mt-2.5 grid grid-cols-[repeat(auto-fit,minmax(86px,1fr))] gap-2">
           <div className="min-w-0 rounded-xl border border-parchment/5 bg-panel/60 p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
-            <dt className="m-0 truncate text-[0.72rem] text-muted">Lv.</dt>
-            <dd className="m-0 truncate text-[0.72rem]">{slot.pokemon.level ?? 50}</dd>
+            <dt className="m-0 truncate text-xs text-muted">Lv.</dt>
+            <dd className="m-0 truncate text-xs">{slot.pokemon.level ?? 50}</dd>
           </div>
           <div className="min-w-0 rounded-xl border border-parchment/5 bg-panel/60 p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
-            <dt className="m-0 truncate text-[0.72rem] text-muted">Ability</dt>
-            <dd className="m-0 truncate text-[0.72rem]">{slot.pokemon.ability || 'Livre'}</dd>
+            <dt className="m-0 truncate text-xs text-muted">Ability</dt>
+            <dd className="m-0 truncate text-xs">{slot.pokemon.ability || 'Livre'}</dd>
           </div>
           <div className="min-w-0 rounded-xl border border-parchment/5 bg-panel/60 p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
-            <dt className="m-0 truncate text-[0.72rem] text-muted">Item</dt>
-            <dd className="m-0 flex items-center gap-1.5 truncate text-[0.72rem]">
+            <dt className="m-0 truncate text-xs text-muted">Item</dt>
+            <dd className="m-0 flex items-center gap-1.5 truncate text-xs">
               <Package size={13} className="shrink-0 text-gold" />
               {slot.pokemon.item || 'Sem item'}
             </dd>

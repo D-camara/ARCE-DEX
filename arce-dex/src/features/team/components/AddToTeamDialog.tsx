@@ -65,7 +65,7 @@ export function AddToTeamDialog({
                 {index + 1}
               </span>
               <strong className="min-w-0 [overflow-wrap:anywhere]">{team.name}</strong>
-              <small className="text-[0.72rem] text-muted">{filledSlots}/6 slots</small>
+              <small className="text-xs text-muted">{filledSlots}/6 slots</small>
               {isFull && <em className="col-[2/-1] not-italic text-danger-rose-200">Cheio</em>}
             </button>
           )

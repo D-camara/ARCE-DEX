@@ -87,7 +87,7 @@ const methodBadgeClasses: Record<string, string> = {
 
 function methodBadgeClass(method: string) {
   const key = method.toLowerCase()
-  return `inline-flex min-h-[22px] items-center rounded-full border px-2 text-[0.68rem] font-black uppercase ${
+  return `inline-flex min-h-[22px] items-center rounded-full border px-2 text-xs font-black uppercase ${
     methodBadgeClasses[key] ?? 'border-mist/30 text-ivory bg-white/[0.08]'
   }`
 }
@@ -304,21 +304,21 @@ export function TeamPokemonEditor({
                   <div className="grid gap-2 rounded-2xl border border-arcane-violet-500/22 bg-arcane-violet-500/6 p-3 shadow-[inset_0_0_15px_rgba(0,0,0,0.3)]">
                     <div className="flex flex-wrap items-center gap-2">
                       <TypeBadges compact types={[moveDetail.type]} />
-                      <span className="rounded-full bg-white/[0.08] px-2 py-1 text-[0.72rem] font-extrabold capitalize text-ivory">
+                      <span className="rounded-full bg-white/[0.08] px-2 py-1 text-xs font-extrabold capitalize text-ivory">
                         {moveDetail.category}
                       </span>
                     </div>
                     <dl className="m-0 flex flex-wrap items-center gap-2">
                       <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-abyss/36 px-2 py-1.5">
-                        <dt className="text-[0.66rem] font-extrabold uppercase text-muted">Power</dt>
+                        <dt className="text-xs font-extrabold uppercase text-muted">Power</dt>
                         <dd className="m-0 text-[0.86rem] font-extrabold text-ivory">{moveDetail.power ?? '-'}</dd>
                       </div>
                       <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-abyss/36 px-2 py-1.5">
-                        <dt className="text-[0.66rem] font-extrabold uppercase text-muted">Acc.</dt>
+                        <dt className="text-xs font-extrabold uppercase text-muted">Acc.</dt>
                         <dd className="m-0 text-[0.86rem] font-extrabold text-ivory">{moveDetail.accuracy ?? '-'}</dd>
                       </div>
                       <div className="grid min-w-[54px] gap-0.5 rounded-lg bg-abyss/36 px-2 py-1.5">
-                        <dt className="text-[0.66rem] font-extrabold uppercase text-muted">PP</dt>
+                        <dt className="text-xs font-extrabold uppercase text-muted">PP</dt>
                         <dd className="m-0 text-[0.86rem] font-extrabold text-ivory">{moveDetail.pp ?? '-'}</dd>
                       </div>
                     </dl>
@@ -364,8 +364,8 @@ export function TeamPokemonEditor({
           <span
             className={
               evTotal > 510
-                ? 'rounded-full border border-danger-rose-400/48 bg-danger-rose-400/14 px-2.5 py-1 text-[0.72rem] font-extrabold uppercase tracking-wide text-danger-rose-200 shadow-[0_0_15px_rgba(251,113,133,0.2)]'
-                : 'rounded-full border border-azure/38 bg-azure/12 px-2.5 py-1 text-[0.72rem] font-extrabold uppercase tracking-wide text-azure-100 shadow-glow-blue'
+                ? 'rounded-full border border-danger-rose-400/48 bg-danger-rose-400/14 px-2.5 py-1 text-xs font-extrabold uppercase tracking-wide text-danger-rose-200 shadow-[0_0_15px_rgba(251,113,133,0.2)]'
+                : 'rounded-full border border-azure/38 bg-azure/12 px-2.5 py-1 text-xs font-extrabold uppercase tracking-wide text-azure-100 shadow-glow-blue'
             }
           >
             {evTotal}/510 EVs
@@ -379,10 +379,16 @@ export function TeamPokemonEditor({
         <div className="grid gap-2.5">
           {COMPETITIVE_STAT_NAMES.map((stat) => (
             <div
-              className="grid grid-cols-[minmax(56px,0.55fr)_repeat(2,minmax(0,1fr))] items-end gap-2 rounded-2xl border border-line bg-white/[0.04] p-2.5"
+              className="grid grid-cols-[minmax(5.5rem,1fr)_repeat(2,minmax(0,1fr))] items-end gap-2 rounded-2xl border border-line bg-white/[0.04] p-2.5"
               key={stat}
             >
-              <strong>{statLabels[stat]}</strong>
+              {/* Name + base/final share the first column so a long name ("Sp. Def") never
+                  runs into the EV field on narrow phones. */}
+              <div className="grid min-w-0 content-end gap-0.5 self-stretch pb-1">
+                <strong className="leading-tight">{statLabels[stat]}</strong>
+                <span className="text-xs text-ivory-soft">Base {calculatedStats?.[stat].base ?? '-'}</span>
+                <span className="text-xs text-ivory-soft">Final {calculatedStats?.[stat].final ?? '-'}</span>
+              </div>
               <label className={labelClass}>
                 EV
                 <input
@@ -405,12 +411,6 @@ export function TeamPokemonEditor({
                   onChange={(event) => updateStat('ivs', stat, event.target.value)}
                 />
               </label>
-              <span className="col-[1/-1] text-[0.78rem] text-ivory-soft">
-                Base {calculatedStats?.[stat].base ?? '-'}
-              </span>
-              <span className="col-[1/-1] text-[0.78rem] text-ivory-soft">
-                Final {calculatedStats?.[stat].final ?? '-'}
-              </span>
             </div>
           ))}
         </div>
