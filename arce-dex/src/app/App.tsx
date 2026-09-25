@@ -3,7 +3,7 @@ import { AnimatePresence } from 'motion/react'
 import { Heart, LogIn, LogOut, Menu } from 'lucide-react'
 import { AuthForm, useAuthStore } from '@/features/auth'
 import { getSupabase, isSupabaseConfigured } from '@/shared/services/supabase/client'
-import { AbilityDetailsDialog, PokemonCard, PokemonTabs } from '@/features/pokemon'
+import { AbilityDetailsDialog, PokemonCard, PokemonCardSkeleton, PokemonTabs } from '@/features/pokemon'
 import { AddToTeamDialog, TeamLab } from '@/features/team'
 import { ErrorState, LoadingState, Toast } from '@/shared/ui/StatusStates'
 import { FavoritesDrawer, RecentPokemonPanel, useFavoritesStore } from '@/features/favorites'
@@ -109,7 +109,7 @@ function App() {
             {/* grid-cols-1 = minmax(0,1fr): lets the column shrink below the tab bar's
                 nowrap width (the tab bar scrolls sideways instead of widening the card). */}
             <div className="grid grid-cols-1 content-start gap-4">
-              {data.selectedPokemonQuery.isLoading && <LoadingState />}
+              {data.selectedPokemonQuery.isLoading && <PokemonCardSkeleton />}
               {data.selectedPokemonQuery.isError && <ErrorState />}
               {data.selectedPokemon && (
                 <>

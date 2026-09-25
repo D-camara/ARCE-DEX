@@ -1,5 +1,6 @@
 export { AbilityDetailsDialog } from './components/AbilityDetailsDialog'
 export { PokemonCard } from './components/PokemonCard'
+export { PokemonCardSkeleton } from './components/PokemonCardSkeleton'
 export { PokemonTabs, type PokemonTabName, type PokemonTabData } from './components/PokemonTabs'
 export { TypeBadges } from './components/TypeBadges'
 export { usePokemon } from './hooks/usePokemon'

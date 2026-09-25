@@ -98,6 +98,13 @@ Regra da skill: toda animação precisa expressar causa e efeito, com 1–2 elem
 - [ ] Substituir as animações CSS atuais onde o Motion assumir (`fade-in-backdrop`), mantendo `prefers-reduced-motion`.
 
 ### 4.3 Componentes do 21st.dev (depende de liberar a rede)
+
+**Descoberto na execução (2026-09-25):**
+- **Download:** o registro aceita a key via `Authorization: Bearer <key>` em `https://21st.dev/r/<autor>/<slug>`. Já a busca da CLI (`21st search`) respondeu 403 com a mesma key, então a busca é feita pelas páginas públicas (`https://21st.dev/s/<termo>`), que trazem nome, licença, dependências e preview.
+- **Cota:** no plano gratuito são **2 downloads de componente por dia** (`retrieval_limit_reached`). Escolha antes de baixar.
+- **Sem ponte global de tokens:** `muted` já é cor de **texto** neste tema, enquanto no shadcn `bg-muted` é fundo, e a ponte faria os dois colidirem. Cada componente é adaptado na entrada (ex.: `bg-muted` → `bg-parchment/8`).
+- **Instalados:** `shadcn/skeleton` (MIT) → `shared/ui/Skeleton` + `PokemonCardSkeleton`. Falta o `serafimcloud/empty-state` (MIT), que ficou para quando a cota renovar.
+- **Custo:** `cn` (`clsx` + `tailwind-merge`) adiciona ~9 KB gzip, e é base para qualquer componente shadcn/21st.
 - [ ] Configurar o shadcn à mão (`components.json`, `cn`, ponte de tokens).
 - [ ] Instalar a skill do 21st (`npx skills add 21st-dev/skill`).
 - [ ] Você escolhe os componentes no site (ou eu busco pela CLI, se a rede permitir). Candidatos naturais:
