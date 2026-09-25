@@ -1,9 +1,12 @@
+import type { ReactNode } from 'react'
 import { Package, Pencil, Trash2 } from 'lucide-react'
 import type { TeamSlot } from '@/shared/types/team'
 import { formatPokemonName } from '@/shared/lib/utils'
 import { TypeBadges } from '@/features/pokemon'
 
 type TeamSlotCardProps = {
+  /** Replaces the Edit/Remove row (the lab's "Organizar" mode puts the move controls here). */
+  actions?: ReactNode
   isSelected: boolean
   slot: TeamSlot
   slotIndex: number
@@ -12,6 +15,7 @@ type TeamSlotCardProps = {
 }
 
 export function TeamSlotCard({
+  actions,
   isSelected,
   onEdit,
   onRemove,
@@ -69,24 +73,26 @@ export function TeamSlotCard({
           {slot.pokemon.role || 'Sem função'} · {(slot.pokemon.moves ?? []).length}/4 golpes
         </p>
       </div>
-      <div className="col-[1/-1] grid grid-cols-2 gap-2">
-        <button
-          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control border border-line bg-parchment/4 transition-colors hover:border-parchment/25 hover:bg-parchment/8 hover:text-ivory"
-          type="button"
-          onClick={() => onEdit(slotIndex)}
-        >
-          <Pencil size={15} />
-          Editar
-        </button>
-        <button
-          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control border border-line bg-parchment/4 transition-colors hover:border-parchment/25 hover:bg-parchment/8 hover:text-ivory"
-          type="button"
-          onClick={() => onRemove(slotIndex)}
-        >
-          <Trash2 size={15} />
-          Remover
-        </button>
-      </div>
+      {actions ?? (
+        <div className="col-[1/-1] grid grid-cols-2 gap-2">
+          <button
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control border border-line bg-parchment/4 transition-colors hover:border-parchment/25 hover:bg-parchment/8 hover:text-ivory"
+            type="button"
+            onClick={() => onEdit(slotIndex)}
+          >
+            <Pencil size={15} />
+            Editar
+          </button>
+          <button
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-control border border-line bg-parchment/4 transition-colors hover:border-parchment/25 hover:bg-parchment/8 hover:text-ivory"
+            type="button"
+            onClick={() => onRemove(slotIndex)}
+          >
+            <Trash2 size={15} />
+            Remover
+          </button>
+        </div>
+      )}
     </article>
   )
 }

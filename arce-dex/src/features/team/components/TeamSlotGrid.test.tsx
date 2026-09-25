@@ -21,6 +21,7 @@ function Harness() {
     <TeamSlotGrid
       isClearing={false}
       onEdit={() => {}}
+      onMoveSlot={() => {}}
       onRemove={(slotIndex) =>
         setTeam((current) => ({
           ...current,

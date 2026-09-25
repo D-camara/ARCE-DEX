@@ -16,6 +16,7 @@ type TeamLabViewProps = {
   onBack: () => void
   onClearTeam: (teamId: string) => void
   onRemovePokemon: (slotIndex: number, teamId: string) => void
+  onMoveSlot: (teamId: string, fromIndex: number, toIndex: number) => void
   onRenameTeam: (teamId: string, name: string) => void
   onSelectTeam: (teamId: string) => void
   onUpdatePokemon: (
@@ -46,6 +47,7 @@ export function TeamLabView({
   activeTeamId,
   onBack,
   onClearTeam,
+  onMoveSlot,
   onRemovePokemon,
   onRenameTeam,
   onSelectTeam,
@@ -155,6 +157,16 @@ export function TeamLabView({
           setIsClearing(false)
           onRemovePokemon(slotIndex, activeTeam.id)
         }}
+        onMoveSlot={(fromIndex, toIndex) => {
+          // The selection (used by Editar) follows the Pokémon, not the position.
+          setSelectedSlotIndex((selected) => {
+            if (selected === fromIndex) return toIndex
+            if (fromIndex < selected && selected <= toIndex) return selected - 1
+            if (toIndex <= selected && selected < fromIndex) return selected + 1
+            return selected
+          })
+          onMoveSlot(activeTeam.id, fromIndex, toIndex)
+        }}
         onStaggered={setStaggeredTeamId}
         selectedSlotIndex={selectedSlotIndex}
         staggeredTeamId={staggeredTeamId}
@@ -166,6 +178,7 @@ export function TeamLabView({
     activeTeam,
     analysisSnapshots,
     isClearing,
+    onMoveSlot,
     rememberAnalysis,
     staggeredTeamId,
     onRemovePokemon,

@@ -5,13 +5,14 @@ import { TeamLabView } from './TeamLabView'
 export default function TeamLab({ onBack }: { onBack: () => void }) {
   const activeTeamId = useTeamStore((state) => state.activeTeamId)
   const teams = useTeamStore((state) => state.teams)
-  const { setActiveTeam, removePokemon, renameTeam, clearTeam, updatePokemonInTeam } = useTeamStore.getState()
+  const { setActiveTeam, removePokemon, moveSlot, renameTeam, clearTeam, updatePokemonInTeam } = useTeamStore.getState()
 
   return (
     <TeamLabView
       activeTeamId={activeTeamId}
       onBack={onBack}
       onClearTeam={clearTeam}
+      onMoveSlot={moveSlot}
       onRemovePokemon={removePokemon}
       onRenameTeam={renameTeam}
       onSelectTeam={setActiveTeam}
