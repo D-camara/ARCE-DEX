@@ -18,9 +18,13 @@ export default defineConfig({
     reducedMotion: 'reduce',
     trace: 'retain-on-failure',
   },
+  // One project per kind of screen the app must work on (see docs/design-system/MASTER.md).
   projects: [
     { name: 'mobile', use: { ...devices['Pixel 7'], viewport: { width: 375, height: 740 } } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
+    { name: 'tablet', use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 }, hasTouch: true } },
+    { name: 'mobile-landscape', use: { ...devices['Pixel 7 landscape'], viewport: { width: 740, height: 360 } } },
+    { name: 'fold', use: { ...devices['Pixel 7'], viewport: { width: 280, height: 653 } } },
   ],
   webServer: {
     command: 'npm run build && npm run preview -- --port 4173 --strictPort',

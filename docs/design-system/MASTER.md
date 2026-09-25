@@ -36,6 +36,12 @@ Tokens quase iguais (`gilt`/`gold`, `parchment`/`ivory`) existem porque é o que
 ## Layout e toque
 
 - Mobile-first. Breakpoints: `fold` 280, `xs` 375, `phone` 399, `sm` 600, `md` 760, `lg` 1024.
+- **Tipos de tela suportados, cobertos pelo e2e no CI:** celular (375), celular deitado (740×360), dobrável fechado (280), tablet (768) e desktop (1280). Auditoria manual também em 320, 430, 820, 932×430, 1024, 1440, 1920 e 2560.
+- **Tela de toque ≠ tela estreita:** use `pointer-coarse:` para tamanhos de toque (44px), não só `max-sm:`. Tablet e celular deitado são largos, mas continuam sendo de toque.
+- **Duas colunas (conteúdo + lateral) só a partir de `lg`.** Em `md`, o card ficava espremido em ~340px.
+- **Tela baixa (`short:` = altura ≤ 500px, celular deitado):** o header deixa de ser sticky (`short:static`), senão ocuparia ~1/3 da altura.
+- **Grid com uma coluna:** use `grid-cols-1` (`minmax(0,1fr)`), nunca a trilha implícita `auto`, porque conteúdo `nowrap` (abas) estica o card além da tela.
+- **Nada de `min-width` no `body`:** com ele, o celular de 280px renderizava a página com 320px e reduzia o zoom.
 - Alvo de toque ≥ 44×44px (`h-11 w-11`) em controles interativos.
 - Nada mais largo que a viewport. Barras roláveis (abas) rolam **dentro** do card.
 - Header sticky e compacto. Nada de conteúdo por trás de elemento fixo.

@@ -48,17 +48,22 @@ for (const [screen, open] of Object.entries(screens)) {
     expect(result.overflowing, 'nada mais largo que a tela').toEqual([])
     expect(result.tinyText, 'nenhum texto abaixo de 12px').toEqual([])
     expect(result.headerCoversContent, 'header não cobre o conteúdo').toBe(false)
-    if (testInfo.project.name === 'mobile') {
-      expect(result.smallTargets, 'alvos de toque ≥ 44px no celular').toEqual([])
+    if (testInfo.project.use.hasTouch) {
+      expect(result.smallTargets, 'alvos de toque ≥ 44px em tela de toque').toEqual([])
     }
   })
 }
 
-test('header continua visível ao rolar', async ({ app }) => {
+test('header continua visível ao rolar (e rola junto em tela baixa)', async ({ app }, testInfo) => {
   await openApp(app, '/?tab=golpes')
   await app.mouse.wheel(0, 900)
   await expect.poll(() => app.evaluate(() => scrollY)).toBeGreaterThan(0)
 
   const top = await app.locator('header').first().evaluate((el) => el.getBoundingClientRect().top)
-  expect(top).toBe(0)
+  // Phones in landscape: a sticky header would take a third of the height, so it scrolls away.
+  if (testInfo.project.name === 'mobile-landscape') {
+    expect(top).toBeLessThan(0)
+  } else {
+    expect(top).toBe(0)
+  }
 })

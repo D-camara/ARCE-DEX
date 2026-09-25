@@ -9,7 +9,7 @@ export function PokemonCardSkeleton() {
     <article
       role="status"
       aria-label="Carregando Pokémon"
-      className="grid overflow-hidden rounded-t-3xl border border-parchment/12 bg-ink/70 lg:grid-cols-[minmax(280px,40%)_1fr]"
+      className="grid grid-cols-1 overflow-hidden rounded-t-3xl border border-parchment/12 bg-ink/70 lg:grid-cols-[minmax(280px,40%)_1fr]"
     >
       <div className="grid place-items-center gap-3 border-b border-parchment/5 p-6 px-4 lg:border-b-0 lg:border-r lg:p-8">
         <Skeleton className="h-[130px] w-[130px] rounded-full lg:h-[240px] lg:w-[240px]" />

@@ -157,7 +157,7 @@ export function SearchExperience({
             transition={spring.snappy}
             type="submit"
             aria-label="Buscar"
-            className="inline-flex h-10 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-gilt/40 bg-gilt/15 px-3 text-[0.8rem] font-bold uppercase tracking-wide text-ivory transition-colors hover:border-gilt/60 hover:bg-gilt/25 max-sm:h-11 max-sm:px-0"
+            className="inline-flex h-10 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-gilt/40 bg-gilt/15 px-3 text-[0.8rem] font-bold uppercase tracking-wide text-ivory transition-colors hover:border-gilt/60 hover:bg-gilt/25 pointer-coarse:h-11 max-sm:h-11 max-sm:px-0"
           >
             <ArrowRight size={16} className="sm:hidden" aria-hidden="true" />
             <span className="max-sm:hidden">Buscar</span>

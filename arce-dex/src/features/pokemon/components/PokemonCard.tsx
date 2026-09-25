@@ -35,7 +35,7 @@ export function PokemonCard({
   const displayedSprite = isShiny && pokemon.shinySprite ? pokemon.shinySprite : pokemon.imageUrl
 
   return (
-    <article className="grid overflow-hidden rounded-t-3xl border border-parchment/12 bg-ink/70 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.03)] lg:grid-cols-[minmax(280px,40%)_1fr]">
+    <article className="grid grid-cols-1 overflow-hidden rounded-t-3xl border border-parchment/12 bg-ink/70 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.03)] lg:grid-cols-[minmax(280px,40%)_1fr]">
       <div className="relative grid place-items-center border-b border-parchment/5 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.12),transparent_70%),rgba(5,7,12,0.5)] p-6 px-4 lg:border-b-0 lg:border-r lg:p-8">
         {/* The aura grows in once per Pokémon instead of pulsing forever (decorative loops distract). */}
         <m.div
