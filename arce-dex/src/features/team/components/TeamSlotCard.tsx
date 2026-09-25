@@ -1,5 +1,6 @@
 import { Package, Pencil, Trash2 } from 'lucide-react'
 import type { TeamSlot } from '@/shared/types/team'
+import { formatPokemonName } from '@/shared/lib/utils'
 import { TypeBadges } from '@/features/pokemon'
 
 type TeamSlotCardProps = {
@@ -25,7 +26,7 @@ export function TeamSlotCard({
         </span>
         <div>
           <strong>Slot vazio</strong>
-          <p className="text-muted">Adicione um Pokemon pela busca principal.</p>
+          <p className="text-muted">Adicione um Pokémon pela busca principal.</p>
         </div>
       </article>
     )
@@ -47,14 +48,14 @@ export function TeamSlotCard({
       <div className="relative z-[1] min-w-0">
         <strong>{slot.pokemon.displayName}</strong>
         <TypeBadges compact types={slot.pokemon.types} />
-        <dl className="mt-2.5 grid grid-cols-[repeat(auto-fit,minmax(86px,1fr))] gap-2">
+        <dl className="mt-2.5 grid grid-cols-[repeat(auto-fit,minmax(96px,1fr))] gap-2">
           <div className="min-w-0 rounded-xl border border-parchment/5 bg-panel/60 p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
             <dt className="m-0 truncate text-xs text-muted">Lv.</dt>
             <dd className="m-0 truncate text-xs">{slot.pokemon.level ?? 50}</dd>
           </div>
           <div className="min-w-0 rounded-xl border border-parchment/5 bg-panel/60 p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
             <dt className="m-0 truncate text-xs text-muted">Ability</dt>
-            <dd className="m-0 truncate text-xs">{slot.pokemon.ability || 'Livre'}</dd>
+            <dd className="m-0 truncate text-xs">{slot.pokemon.ability ? formatPokemonName(slot.pokemon.ability) : 'Livre'}</dd>
           </div>
           <div className="min-w-0 rounded-xl border border-parchment/5 bg-panel/60 p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
             <dt className="m-0 truncate text-xs text-muted">Item</dt>
@@ -65,7 +66,7 @@ export function TeamSlotCard({
           </div>
         </dl>
         <p className="mt-2 truncate text-[0.76rem] text-muted">
-          {slot.pokemon.role || 'Sem funcao'} · {(slot.pokemon.moves ?? []).length}/4 golpes
+          {slot.pokemon.role || 'Sem função'} · {(slot.pokemon.moves ?? []).length}/4 golpes
         </p>
       </div>
       <div className="col-[1/-1] grid grid-cols-2 gap-2">

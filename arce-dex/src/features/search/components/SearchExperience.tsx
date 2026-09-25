@@ -199,7 +199,7 @@ export function SearchExperience({
                     )}
                     <span className="grid min-w-0 gap-1">
                       <span className="flex min-w-0 items-baseline justify-between gap-2">
-                        <strong className="truncate font-extrabold leading-tight">{pokemon.displayName}</strong>
+                        <strong className="line-clamp-2 font-extrabold leading-tight">{pokemon.displayName}</strong>
                         <small className="shrink-0 text-xs font-bold text-muted">
                           {pokemon.id > 0 ? `#${String(pokemon.id).padStart(4, '0')}` : ''}
                         </small>

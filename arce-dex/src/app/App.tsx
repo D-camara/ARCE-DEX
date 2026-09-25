@@ -16,6 +16,7 @@ import { HeaderButton } from './HeaderButton'
 import { useDexPageData } from './useDexPageData'
 import { useDexActions } from './useDexActions'
 import { useCanonicalPokemonUrl } from './useCanonicalPokemonUrl'
+import { DEFAULT_URL_STATE } from './urlState'
 
 function App() {
   const view = useAppView()
@@ -49,8 +50,8 @@ function App() {
             A
           </span>
           <span className="grid min-w-0 gap-0.5">
-            <strong className="truncate text-[1.02rem] leading-none">Archivum Arceus</strong>
-            <small className="block text-xs text-muted max-sm:hidden">Pokemon battle helper</small>
+            <strong className="truncate text-[1.02rem] leading-none max-sm:text-[0.95rem] max-xs:sr-only">Archivum Arceus</strong>
+            <small className="block text-xs text-muted max-sm:hidden">Pokémon battle helper</small>
           </span>
         </div>
 
@@ -69,7 +70,7 @@ function App() {
           />
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 max-md:col-start-2 max-md:row-start-1 max-md:justify-self-end max-md:self-center">
+        <div className="flex shrink-0 items-center gap-2 max-sm:gap-1.5 max-md:col-start-2 max-md:row-start-1 max-md:justify-self-end max-md:self-center">
           <HeaderButton
             icon={<Menu size={16} />}
             label="Meu Time"
@@ -84,7 +85,8 @@ function App() {
           />
           {isSupabaseConfigured &&
             (authStatus === 'authenticated' ? (
-              <>
+              <span className="relative flex items-center gap-2">
+                {/* On phones the sync status becomes a small badge on the account button. */}
                 <SyncStatusIndicator />
                 <HeaderButton
                   icon={<LogOut size={16} />}
@@ -92,7 +94,7 @@ function App() {
                   title={authUser?.email ?? 'Sair'}
                   onClick={() => void getSupabase().then((client) => client?.auth.signOut())}
                 />
-              </>
+              </span>
             ) : (
               <HeaderButton icon={<LogIn size={16} />} label="Entrar" onClick={() => setIsAuthOpen(true)} />
             ))}
@@ -110,7 +112,22 @@ function App() {
                 nowrap width (the tab bar scrolls sideways instead of widening the card). */}
             <div className="grid grid-cols-1 content-start gap-4">
               {data.selectedPokemonQuery.isLoading && <PokemonCardSkeleton />}
-              {data.selectedPokemonQuery.isError && <ErrorState />}
+              {data.selectedPokemonQuery.isError &&
+                (/404|não encontrado/i.test(String(data.selectedPokemonQuery.error?.message)) ? (
+                  <ErrorState
+                    title={`Não encontramos “${view.selectedIdentifier}”.`}
+                    hint="Confira o nome ou busque pelo número da Pokédex (ex.: 448)."
+                    actionLabel="Voltar ao início"
+                    onAction={() => view.setSelectedIdentifier(DEFAULT_URL_STATE.pokemon)}
+                  />
+                ) : (
+                  <ErrorState
+                    title="Sem conexão com a PokeAPI."
+                    hint="Verifique sua internet e tente de novo."
+                    actionLabel="Tentar de novo"
+                    onAction={() => void data.selectedPokemonQuery.refetch()}
+                  />
+                ))}
               {data.selectedPokemon && (
                 <>
                   <PokemonCard

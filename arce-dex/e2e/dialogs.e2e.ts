@@ -27,7 +27,7 @@ test.describe('diálogos', () => {
     await openApp(app)
     await app.getByRole('button', { name: 'Favoritar' }).click()
     await app.getByRole('button', { name: /favoritos/i }).click()
-    await expect(app.getByRole('dialog', { name: 'Pokemon salvos' })).toBeVisible()
+    await expect(app.getByRole('dialog', { name: 'Pokémon salvos' })).toBeVisible()
 
     await app.keyboard.press('Escape')
     await expect(app.locator('aside[inert]')).toHaveCount(1)

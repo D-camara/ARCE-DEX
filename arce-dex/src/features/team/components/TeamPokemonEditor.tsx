@@ -44,7 +44,7 @@ const natureOptions: PokemonNature[] = [
 ]
 
 const roleOptions: Array<{ label: string; value: TeamRole }> = [
-  { label: 'Sem funcao', value: '' },
+  { label: 'Sem função', value: '' },
   { label: 'Sweeper fisico', value: 'physical-sweeper' },
   { label: 'Sweeper especial', value: 'special-sweeper' },
   { label: 'Tank fisico', value: 'physical-tank' },
@@ -172,7 +172,7 @@ export function TeamPokemonEditor({
     <section className="grid gap-3.5 md:grid-cols-2">
       <section className={`${editorCardClass} md:col-span-2`}>
         <header className={editorSectionHeaderClass}>
-          <h3>Basico</h3>
+          <h3>Básico</h3>
           <span>Lv. {normalizedPokemon.level}</span>
         </header>
         <div className={`${editorGridClass} sm:grid-cols-3`}>

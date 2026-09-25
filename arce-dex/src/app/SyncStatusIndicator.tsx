@@ -13,8 +13,8 @@ export function SyncStatusIndicator() {
   const { label, icon: Icon, className } = statusDisplay[status]
 
   return (
-    <span role="status" aria-label={label} title={label} className="grid h-9 w-9 shrink-0 place-items-center">
-      <Icon size={16} className={className} aria-hidden="true" />
+    <span role="status" aria-label={label} title={label} className="grid h-9 w-9 shrink-0 place-items-center max-sm:pointer-events-none max-sm:absolute max-sm:-right-1 max-sm:-top-1 max-sm:z-[1] max-sm:h-5 max-sm:w-5 max-sm:rounded-full max-sm:border max-sm:border-line max-sm:bg-cosmic-soft">
+      <Icon size={16} className={`${className} max-sm:size-3`} aria-hidden="true" />
     </span>
   )
 }

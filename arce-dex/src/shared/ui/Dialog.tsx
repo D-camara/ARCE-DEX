@@ -28,7 +28,7 @@ export function Dialog({ isOpen, onClose, labelledBy, className, children }: Dia
       {isOpen && (
         <m.div
           key="dialog-overlay"
-          className="fixed inset-0 z-[34] grid items-end bg-abyss/64 p-2.5 md:items-center"
+          className="fixed inset-0 z-[1100] grid items-end bg-abyss/64 p-2.5 md:items-center"
           role="presentation"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: duration.base, ease: ease.out } }}

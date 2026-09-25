@@ -64,7 +64,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
       <div
         className="mb-4 flex gap-2 overflow-x-auto border-b border-parchment/6 pb-3"
         role="tablist"
-        aria-label="Dados do Pokemon"
+        aria-label="Dados do Pokémon"
       >
         {tabs.map((tab) => (
           <button
@@ -155,7 +155,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
                 </button>
               ))
             ) : (
-              <EmptyHint>Nenhuma forma alternativa encontrada para este Pokemon.</EmptyHint>
+              <EmptyHint>Nenhuma forma alternativa encontrada para este Pokémon.</EmptyHint>
             )}
           </div>
         )}
@@ -166,7 +166,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
 
 function InfoPanel({ items }: { items: PokemonTabData['infoItems'] }) {
   if (items.length === 0) {
-    return <EmptyHint>Dados extras nao carregados.</EmptyHint>
+    return <EmptyHint>Dados extras não carregados.</EmptyHint>
   }
 
   return (
@@ -219,7 +219,7 @@ function EvolutionTree({
   root: EvolutionNode | undefined
 }) {
   if (!root) {
-    return <EmptyHint>Linha evolutiva nao carregada.</EmptyHint>
+    return <EmptyHint>Linha evolutiva não carregada.</EmptyHint>
   }
 
   return (

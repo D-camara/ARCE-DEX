@@ -16,7 +16,7 @@ export function TeamAnalysisPanel({ analysis }: TeamAnalysisPanelProps) {
   return (
     <section className="rounded-2xl border border-line bg-panel/70 p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
       <header>
-        <p className="text-gold">Analise do time</p>
+        <p className="text-gold">Análise do time</p>
         <h2>Cobertura rapida</h2>
       </header>
       <div className="grid gap-2.5">

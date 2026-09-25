@@ -32,7 +32,7 @@ export function RecentPokemonPanel({ onSelect, pokemon }: RecentPokemonPanelProp
           </button>
         ))}
         {pokemon.length === 0 && (
-          <EmptyHint>Nenhum Pokemon recente ainda.</EmptyHint>
+          <EmptyHint>Nenhum Pokémon recente ainda.</EmptyHint>
         )}
       </div>
     </section>

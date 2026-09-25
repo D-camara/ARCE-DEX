@@ -206,11 +206,11 @@ export function mapAbilityDetail(ability: PokeApiAbilityResponse): AbilityDetail
     name: ability.name,
     displayName: formatPokemonName(ability.name),
     generation: formatGenerationName(ability.generation.name),
-    shortEffect: effectEntry?.short_effect ?? 'Descricao nao encontrada para esta habilidade.',
-    effect: effectEntry?.effect ?? 'Descricao nao encontrada para esta habilidade.',
+    shortEffect: effectEntry?.short_effect ?? 'Descrição não encontrada para esta habilidade.',
+    effect: effectEntry?.effect ?? 'Descrição não encontrada para esta habilidade.',
     flavorText:
       flavorEntry?.flavor_text.replace(/\s+/g, ' ') ??
-      'Flavor text nao encontrado para esta habilidade.',
+      'Flavor text não encontrado para esta habilidade.',
   }
 }
 
@@ -220,11 +220,11 @@ export function mapMoveDetail(
 ): MoveDetail {
   const effectEntry = findLocalizedEntry(move.effect_entries)
   const shortEffect = cleanEffectText(
-    effectEntry?.short_effect ?? 'Descricao nao informada',
+    effectEntry?.short_effect ?? 'Descrição não informada',
     move.effect_chance,
   )
   const effect = cleanEffectText(
-    effectEntry?.effect ?? effectEntry?.short_effect ?? 'Descricao nao informada',
+    effectEntry?.effect ?? effectEntry?.short_effect ?? 'Descrição não informada',
     move.effect_chance,
   )
   const category = mapMoveCategory(move.damage_class.name)
@@ -310,7 +310,7 @@ function formatEvolutionMethod(node: PokeApiEvolutionNode): string {
   const detail = node.evolution_details[0]
 
   if (!detail) {
-    return 'Pokemon base'
+    return 'Pokémon base'
   }
 
   if (detail.min_level !== null) {
@@ -347,7 +347,7 @@ function formatEvolutionMethod(node: PokeApiEvolutionNode): string {
     return formatPokemonName(detail.trigger.name)
   }
 
-  return 'Metodo nao informado'
+  return 'Método não informado'
 }
 
 export function mapEvolutionChain(chain: PokeApiEvolutionChainResponse): EvolutionChain {

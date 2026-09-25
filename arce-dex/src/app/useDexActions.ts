@@ -82,12 +82,12 @@ export function useDexActions({ view, dialogs, selectedPokemon }: UseDexActionsP
 
     const willFavorite = !useFavoritesStore.getState().isFavorite(selectedPokemon.id)
     toggleFavorite(selectedPokemon.id)
-    dialogs.showToastMessage(willFavorite ? 'Pokemon favoritado.' : 'Pokemon removido dos favoritos.')
+    dialogs.showToastMessage(willFavorite ? 'Pokémon favoritado.' : 'Pokémon removido dos favoritos.')
   }
 
   function handleRemoveFavorite(pokemonId: number) {
     toggleFavorite(pokemonId)
-    dialogs.showToastMessage('Pokemon removido dos favoritos.')
+    dialogs.showToastMessage('Pokémon removido dos favoritos.')
   }
 
   function handlePlayCry() {
@@ -98,7 +98,7 @@ export function useDexActions({ view, dialogs, selectedPokemon }: UseDexActionsP
     const audio = new Audio(selectedPokemon.cryUrl)
 
     void audio.play().catch(() => {
-      dialogs.showToastMessage('Nao foi possivel tocar o cry agora.')
+      dialogs.showToastMessage('Não foi possível tocar o cry agora.')
     })
   }
 

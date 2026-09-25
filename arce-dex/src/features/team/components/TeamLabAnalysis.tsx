@@ -88,7 +88,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
         </p>
         <p className="mb-3 rounded-r-md border-l-2 border-cosmic-blue bg-cosmic-blue/4 px-2.5 py-1.5 text-[0.8rem] leading-snug text-[color:var(--color-silver,#c9c7bd)] opacity-90">
           {offensiveProfile.usedFallbackTypes
-            ? 'Cobertura estimada pelos tipos dos Pokemon.'
+            ? 'Cobertura estimada pelos tipos dos Pokémon.'
             : 'Cobertura calculada pelos tipos dos golpes escolhidos.'}
         </p>
         <p className={labelClass}>Tipos ofensivos</p>
@@ -149,7 +149,7 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
             </div>
           </>
         ) : (
-          <p className={emptyClass}>Base stats ainda nao carregados.</p>
+          <p className={emptyClass}>Base stats ainda não carregados.</p>
         )}
       </article>
 
@@ -255,7 +255,7 @@ function getTeamAlerts(
 
   commonWeaknesses
     .filter((summary) => summary.weakTo >= 3)
-    .forEach((summary) => alerts.push(`${summary.weakTo} Pokemon fracos a ${summary.type}.`))
+    .forEach((summary) => alerts.push(`${summary.weakTo} Pokémon fracos a ${summary.type}.`))
 
   itemCounts.forEach((count, item) => {
     if (count > 1) {
@@ -273,11 +273,11 @@ function getTeamAlerts(
   const withoutRole = pokemons.filter((pokemon) => !pokemon.role)
 
   if (withoutMoves.length > 0) {
-    alerts.push(`${withoutMoves.length} Pokemon sem golpes cadastrados.`)
+    alerts.push(`${withoutMoves.length} Pokémon sem golpes cadastrados.`)
   }
 
   if (withoutRole.length > 0) {
-    alerts.push(`${withoutRole.length} Pokemon sem funcao definida.`)
+    alerts.push(`${withoutRole.length} Pokémon sem função definida.`)
   }
 
   const roles = summarizeRoles(pokemons)

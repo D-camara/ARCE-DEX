@@ -100,22 +100,22 @@ function createPokemonInfoItems(species: PokemonSpecies | undefined) {
   }
 
   return [
-    { label: 'Geracao', value: species.generation },
+    { label: 'Geração', value: species.generation },
     { label: 'Taxa de captura', value: String(species.captureRate) },
-    { label: 'Genero', value: formatGenderRate(species.genderRate) },
-    { label: 'Grupo de ovos', value: species.eggGroups.join(', ') || 'Nao informado' },
-    { label: 'Lendario', value: formatBoolean(species.isLegendary) },
-    { label: 'Mitico', value: formatBoolean(species.isMythical) },
+    { label: 'Gênero', value: formatGenderRate(species.genderRate) },
+    { label: 'Grupo de ovos', value: species.eggGroups.join(', ') || 'Não informado' },
+    { label: 'Lendário', value: formatBoolean(species.isLegendary) },
+    { label: 'Mítico', value: formatBoolean(species.isMythical) },
     { label: 'Baby', value: formatBoolean(species.isBaby) },
     {
       label: 'Felicidade base',
-      value: species.baseHappiness === null ? 'Nao informado' : String(species.baseHappiness),
+      value: species.baseHappiness === null ? 'Não informado' : String(species.baseHappiness),
     },
   ]
 }
 
 function formatBoolean(value: boolean) {
-  return value ? 'Sim' : 'Nao'
+  return value ? 'Sim' : 'Não'
 }
 
 function formatGenderRate(genderRate: number) {
@@ -126,7 +126,7 @@ function formatGenderRate(genderRate: number) {
   const femaleRate = (genderRate / 8) * 100
   const maleRate = 100 - femaleRate
 
-  return `${maleRate}% macho / ${femaleRate}% femea`
+  return `${maleRate}% macho / ${femaleRate}% fêmea`
 }
 
 export function createTeamAnalysis(team: Team) {

@@ -51,7 +51,7 @@ export async function findPokemon(identifier: string | number) {
 
   throw lastError instanceof Error
     ? lastError
-    : new Error('Pokemon nao encontrado para essa busca.')
+    : new Error('Pokémon não encontrado para essa busca.')
 }
 
 export function getEvolutionChain(id: string | number) {
