@@ -92,4 +92,29 @@ test.describe('animações ligadas', () => {
     await expect(drawer.getByText(firstName!)).toHaveCount(0)
     await expect(drawer.getByRole('button', { name: `Remover ${secondName} dos favoritos`, exact: true })).toBeFocused()
   })
+
+  test('trocar Pokédex ↔ Laboratório: foco na tela nova, sem rolagem lateral, e interrompível', async ({ app }) => {
+    await openApp(app)
+    const overflow = await worstOverflowDuring(app, 600, () =>
+      app.getByRole('button', { name: /meu time/i }).click(),
+    )
+    expect(overflow).toBeLessThanOrEqual(0)
+    const lab = app.getByRole('region', { name: 'Laboratório do time' })
+    await expect(lab).toBeFocused()
+    // At rest the view has no leftover transform (a transform would trap fixed descendants).
+    await expect.poll(() => lab.evaluate((el) => getComputedStyle(el).transform)).toBe('none')
+
+    await app.goBack()
+    await expect(app.getByRole('region', { name: 'Pokédex' })).toBeFocused()
+
+    // Back and forth faster than the animation: ends on the last requested view.
+    await app.getByRole('button', { name: /meu time/i }).click()
+    await app.goBack()
+    await app.goForward()
+    await app.goBack()
+    await expect(app).not.toHaveURL(/view=team/)
+    await expect(app.getByRole('region', { name: 'Pokédex' })).toBeVisible()
+    await expect(app.getByRole('region', { name: 'Laboratório do time' })).toHaveCount(0)
+    await expect(app.getByRole('group', { name: 'Stats base' })).toBeVisible()
+  })
 })

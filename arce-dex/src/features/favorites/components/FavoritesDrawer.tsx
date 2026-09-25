@@ -79,7 +79,7 @@ export function FavoritesDrawer({
         <header className="flex items-center justify-between gap-3">
           <div>
             <p className="text-gold">Favoritos</p>
-            <h2 className="outline-none" id={titleId} ref={titleRef} tabIndex={-1}>
+            <h2 id={titleId} ref={titleRef} tabIndex={-1}>
               Pokémon salvos
             </h2>
           </div>
