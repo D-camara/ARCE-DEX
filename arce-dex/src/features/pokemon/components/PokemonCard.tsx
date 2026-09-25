@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import * as m from 'motion/react-m'
 import { Heart, Info, Plus, ShieldCheck, Sparkles, Volume2 } from 'lucide-react'
-import { duration, ease, spring } from '@/shared/ui'
+import { duration, ease, spring, useCountUp } from '@/shared/ui'
 import type { Pokemon, PokemonStatName } from '@/shared/types/pokemon'
 import { TypeBadges } from './TypeBadges'
 
@@ -119,10 +119,15 @@ export function PokemonCard({
           <AbilityList abilities={pokemon.abilities} onSelectAbility={onSelectAbility} />
         </div>
 
-        <div className="grid gap-2 rounded-2xl border border-parchment/10 bg-panel/50 p-3 px-4 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
+        <div
+          aria-label="Stats base"
+          className="grid gap-2 rounded-2xl border border-parchment/10 bg-panel/50 p-3 px-4 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]"
+          role="group"
+        >
           {Object.entries(pokemon.stats).map(([name, value]) => (
             <StatBar key={name} label={statLabels[name as PokemonStatName]} value={value} />
           ))}
+          <StatTotal value={Object.values(pokemon.stats).reduce((total, value) => total + value, 0)} />
         </div>
 
         <div className="mt-2 flex gap-3">
@@ -185,9 +190,37 @@ function AbilityList({
   )
 }
 
+/**
+ * The number counts up with the bar (same duration and curve). Screen readers get only the
+ * final value: the animated digits are aria-hidden.
+ */
+function CountingNumber({ value }: { value: number }) {
+  const displayed = useCountUp(value)
+  return (
+    <>
+      <span aria-hidden="true">{displayed}</span>
+      <span className="sr-only">{value}</span>
+    </>
+  )
+}
+
+function StatTotal({ value }: { value: number }) {
+  return (
+    <div
+      className="mt-1 flex items-center justify-between gap-2 border-t border-parchment/8 pt-2 text-[0.82rem] text-ivory-soft"
+      data-stat={value}
+    >
+      <span className="font-bold uppercase tracking-wide text-gold">Total</span>
+      <strong className="tabular-nums text-gold-soft">
+        <CountingNumber value={value} />
+      </strong>
+    </div>
+  )
+}
+
 function StatBar({ label, value }: { label: string; value: number }) {
   return (
-    <div className="grid grid-cols-[34px_1fr_34px] items-center gap-2 text-[0.82rem] text-ivory-soft">
+    <div className="grid grid-cols-[34px_1fr_34px] items-center gap-2 text-[0.82rem] text-ivory-soft" data-stat={value}>
       <span>{label}</span>
       <div className="h-[9px] overflow-hidden rounded-full bg-white/[0.08]">
         {/* Grows from the left (scaleX, not width: transform-only animation). */}
@@ -198,7 +231,9 @@ function StatBar({ label, value }: { label: string; value: number }) {
           style={{ width: `${Math.min(value, 150) / 1.5}%` }}
         />
       </div>
-      <strong>{value}</strong>
+      <strong className="tabular-nums">
+        <CountingNumber value={value} />
+      </strong>
     </div>
   )
 }

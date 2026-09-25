@@ -37,4 +37,22 @@ test.describe('animações ligadas', () => {
     expect(Math.abs(indicator!.width - tab!.width)).toBeLessThanOrEqual(3)
     await expect(tablist.locator('span[aria-hidden="true"]')).toHaveCount(1)
   })
+
+  test('números dos stats terminam no valor certo, e o Total é a soma', async ({ app }) => {
+    await openApp(app)
+    const stats = app.getByRole('group', { name: 'Stats base' })
+    const rows = stats.locator('[data-stat]')
+    await expect(rows).toHaveCount(7)
+    // Count-up finished: every visible (aria-hidden) number equals its final value.
+    await expect
+      .poll(() =>
+        rows.evaluateAll((els) =>
+          els.every((row) => row.querySelector('[aria-hidden="true"]')?.textContent === row.getAttribute('data-stat')),
+        ),
+      )
+      .toBe(true)
+    const values = await rows.evaluateAll((els) => els.map((row) => Number(row.getAttribute('data-stat'))))
+    const total = values.pop()
+    expect(total).toBe(values.reduce((sum, value) => sum + value, 0))
+  })
 })
