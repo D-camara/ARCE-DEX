@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useTeamStore, MAX_TEAMS, TEAM_SIZE, stampChangedTeams } from './teamStore'
+import { useTeamHighlightStore } from './teamHighlightStore'
 import type { TeamPokemon } from '@/shared/types/team'
 
 const pikachu: TeamPokemon = {
@@ -16,6 +17,42 @@ beforeEach(() => {
 })
 
 describe('teamStore', () => {
+  it('moves a slot to another position and shifts the ones in between', () => {
+    const lucario: TeamPokemon = { ...pikachu, id: 448, name: 'lucario', displayName: 'Lucario' }
+    const { addPokemonToTeam, moveSlot } = useTeamStore.getState()
+    addPokemonToTeam('team-1', pikachu)
+    addPokemonToTeam('team-1', lucario)
+    const old = new Date(0).toISOString()
+    useTeamStore.setState((state) => ({ teams: state.teams.map((team) => ({ ...team, updatedAt: old })) }))
+
+    moveSlot('team-1', 0, 2)
+
+    const after = useTeamStore.getState().teams[0]
+    expect(after.slots.map((slot) => slot.pokemon?.name ?? null).slice(0, 3)).toEqual(['lucario', null, 'pikachu'])
+    // Stamped, so cloud sync (last-write-wins per team) pushes the new order.
+    expect(after.updatedAt).not.toBe(old)
+  })
+
+  it('ignores a move to the same place or out of range (no stamp)', () => {
+    useTeamStore.getState().addPokemonToTeam('team-1', pikachu)
+    const before = useTeamStore.getState().teams[0]
+
+    useTeamStore.getState().moveSlot('team-1', 0, 0)
+    useTeamStore.getState().moveSlot('team-1', 0, 9)
+
+    expect(useTeamStore.getState().teams[0]).toBe(before)
+  })
+
+  it('marks the slot filled from the Pokédex so the lab can highlight it once', () => {
+    useTeamHighlightStore.getState().clear()
+    useTeamStore.getState().addPokemonToTeam('team-2', pikachu)
+    useTeamStore.getState().addPokemonToTeam('team-2', pikachu)
+
+    expect(useTeamHighlightStore.getState().recentlyAdded).toEqual({ teamId: 'team-2', slotIndex: 1 })
+    // Ephemeral: never part of the persisted/synced team state.
+    expect(JSON.stringify(useTeamStore.getState().teams)).not.toContain('recentlyAdded')
+  })
+
   it('starts with MAX_TEAMS empty teams', () => {
     const { teams } = useTeamStore.getState()
 

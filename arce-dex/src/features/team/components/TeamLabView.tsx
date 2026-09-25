@@ -1,10 +1,14 @@
 import { ArrowLeft, Eraser, Pencil } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { LayoutGroup } from 'motion/react'
+import * as m from 'motion/react-m'
 import { TeamLabAnalysis } from './TeamLabAnalysis'
 import { TeamPokemonEditor } from './TeamPokemonEditor'
-import { TeamSlotCard } from './TeamSlotCard'
+import { TeamSlotGrid } from './TeamSlotGrid'
 import { usePokemon, useMoveDetails } from '@/features/pokemon'
 import type { Team, TeamPokemon } from '@/shared/types/team'
+import { TabIndicator } from '@/shared/ui'
+import type { TeamAnalysisSnapshot } from '../lib/analysisDiff'
 
 type TeamLabViewProps = {
   activeTeamId: string
@@ -12,6 +16,7 @@ type TeamLabViewProps = {
   onBack: () => void
   onClearTeam: (teamId: string) => void
   onRemovePokemon: (slotIndex: number, teamId: string) => void
+  onMoveSlot: (teamId: string, fromIndex: number, toIndex: number) => void
   onRenameTeam: (teamId: string, name: string) => void
   onSelectTeam: (teamId: string) => void
   onUpdatePokemon: (
@@ -42,6 +47,7 @@ export function TeamLabView({
   activeTeamId,
   onBack,
   onClearTeam,
+  onMoveSlot,
   onRemovePokemon,
   onRenameTeam,
   onSelectTeam,
@@ -50,6 +56,14 @@ export function TeamLabView({
 }: TeamLabViewProps) {
   const [selectedSlotIndex, setSelectedSlotIndex] = useState(0)
   const [activeTab, setActiveTab] = useState<LabTab>('Time')
+  const [staggeredTeamId, setStaggeredTeamId] = useState<string | null>(null)
+  const [isClearing, setIsClearing] = useState(false)
+  // Last analysis seen per team (memory only): the next visit highlights what changed.
+  const [analysisSnapshots] = useState(() => new Map<string, TeamAnalysisSnapshot>())
+  const rememberAnalysis = useCallback(
+    (snapshot: TeamAnalysisSnapshot) => analysisSnapshots.set(activeTeamId, snapshot),
+    [activeTeamId, analysisSnapshots],
+  )
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
   const selectedSlot = activeTeam.slots[selectedSlotIndex]
   const selectedPokemon = selectedSlot?.pokemon ?? null
@@ -121,29 +135,52 @@ export function TeamLabView({
     }
 
     if (activeTab === 'Analise') {
-      return <TeamLabAnalysis moveDetails={teamMoveDetailsQuery.data} team={activeTeam} />
+      return (
+        <TeamLabAnalysis
+          key={activeTeam.id}
+          moveDetails={teamMoveDetailsQuery.data}
+          onSeen={rememberAnalysis}
+          previousSnapshot={analysisSnapshots.get(activeTeam.id) ?? null}
+          team={activeTeam}
+        />
+      )
     }
 
     return (
-      <section className="grid gap-2.5 md:grid-cols-2 lg:grid-cols-3">
-        {activeTeam.slots.map((slot, index) => (
-          <TeamSlotCard
-            isSelected={index === selectedSlotIndex}
-            key={slot.id}
-            onEdit={(slotIndex) => {
-              setSelectedSlotIndex(slotIndex)
-              setActiveTab('Editor')
-            }}
-            onRemove={(slotIndex) => onRemovePokemon(slotIndex, activeTeam.id)}
-            slot={slot}
-            slotIndex={index}
-          />
-        ))}
-      </section>
+      <TeamSlotGrid
+        isClearing={isClearing}
+        onEdit={(slotIndex) => {
+          setSelectedSlotIndex(slotIndex)
+          setActiveTab('Editor')
+        }}
+        onRemove={(slotIndex) => {
+          setIsClearing(false)
+          onRemovePokemon(slotIndex, activeTeam.id)
+        }}
+        onMoveSlot={(fromIndex, toIndex) => {
+          // The selection (used by Editar) follows the Pokémon, not the position.
+          setSelectedSlotIndex((selected) => {
+            if (selected === fromIndex) return toIndex
+            if (fromIndex < selected && selected <= toIndex) return selected - 1
+            if (toIndex <= selected && selected < fromIndex) return selected + 1
+            return selected
+          })
+          onMoveSlot(activeTeam.id, fromIndex, toIndex)
+        }}
+        onStaggered={setStaggeredTeamId}
+        selectedSlotIndex={selectedSlotIndex}
+        staggeredTeamId={staggeredTeamId}
+        team={activeTeam}
+      />
     )
   }, [
     activeTab,
     activeTeam,
+    analysisSnapshots,
+    isClearing,
+    onMoveSlot,
+    rememberAnalysis,
+    staggeredTeamId,
     onRemovePokemon,
     onUpdatePokemon,
     selectedAbilityOptions,
@@ -184,25 +221,34 @@ export function TeamLabView({
       </section>
 
       <section className="-mt-3 grid gap-3 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 pt-4 max-sm:px-4 max-sm:pb-4 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)] md:-mt-3.5">
-        <div className="grid grid-cols-6 gap-2 max-xs:grid-cols-3">
-          {teams.map((team, index) => (
-            <button
-              className={
-                team.id === activeTeam.id
-                  ? 'min-h-11 rounded-2xl border border-gilt/30 bg-gilt/10 text-gold shadow-glow-gold'
-                  : 'min-h-11 rounded-2xl border border-line bg-white/[0.04]'
-              }
-              key={team.id}
-              onClick={() => {
-                onSelectTeam(team.id)
-                setSelectedSlotIndex(0)
-              }}
-              type="button"
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
+        <LayoutGroup id="team-picker">
+          <div className="grid grid-cols-6 gap-2 max-xs:grid-cols-3">
+            {teams.map((team, index) => (
+              <button
+                aria-pressed={team.id === activeTeam.id}
+                className={
+                  team.id === activeTeam.id
+                    ? 'relative isolate min-h-11 rounded-2xl border border-transparent text-gold'
+                    : 'relative isolate min-h-11 rounded-2xl border border-line bg-white/[0.04]'
+                }
+                key={team.id}
+                onClick={() => {
+                  onSelectTeam(team.id)
+                  setSelectedSlotIndex(0)
+                }}
+                type="button"
+              >
+                {team.id === activeTeam.id && (
+                  <TabIndicator
+                    className="border border-gilt/30 bg-gilt/10 shadow-glow-gold"
+                    layoutId="active-team"
+                  />
+                )}
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        </LayoutGroup>
 
         <div className="grid grid-cols-2 gap-2">
           <button
@@ -216,7 +262,10 @@ export function TeamLabView({
           <button
             className="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-control border border-line bg-white/[0.04] px-3"
             type="button"
-            onClick={() => onClearTeam(activeTeam.id)}
+            onClick={() => {
+              setIsClearing(true)
+              onClearTeam(activeTeam.id)
+            }}
           >
             <Eraser size={16} />
             Limpar
@@ -224,24 +273,33 @@ export function TeamLabView({
         </div>
       </section>
 
-      <nav className="flex gap-2 overflow-x-auto pb-1.5" aria-label="Secoes do laboratorio">
-        {labTabs
-          .filter((tab) => tab !== 'Editor')
-          .map((tab) => (
-            <button
-              className={
-                tab === activeTab
-                  ? 'min-h-11 whitespace-nowrap rounded-full border border-gilt/30 bg-gilt/10 px-3 text-gold shadow-glow-gold'
-                  : 'min-h-11 whitespace-nowrap rounded-full border border-line bg-white/[0.04] px-3'
-              }
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              type="button"
-            >
-              {tab === 'Analise' ? 'Análise' : tab}
-            </button>
-          ))}
-      </nav>
+      <LayoutGroup id="lab-sections">
+        <m.nav className="flex gap-2 overflow-x-auto pb-1.5" aria-label="Seções do laboratório" layoutScroll>
+          {labTabs
+            .filter((tab) => tab !== 'Editor')
+            .map((tab) => (
+              <button
+                aria-pressed={tab === activeTab}
+                className={
+                  tab === activeTab
+                    ? 'relative isolate min-h-11 whitespace-nowrap rounded-full border border-transparent px-3 text-gold'
+                    : 'relative isolate min-h-11 whitespace-nowrap rounded-full border border-line bg-white/[0.04] px-3'
+                }
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                type="button"
+              >
+                {tab === activeTab && (
+                  <TabIndicator
+                    className="border border-gilt/30 bg-gilt/10 shadow-glow-gold"
+                    layoutId="active-lab-section"
+                  />
+                )}
+                {tab === 'Analise' ? 'Análise' : tab}
+              </button>
+            ))}
+        </m.nav>
+      </LayoutGroup>
 
       {renderedPanel}
     </main>

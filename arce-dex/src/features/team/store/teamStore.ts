@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { normalizeCompetitivePokemon } from '@/shared/lib/stats'
 import { createLocalForageStateStorage } from '@/shared/lib/storage'
 import type { Team, TeamPokemon, TeamSlot } from '@/shared/types/team'
+import { useTeamHighlightStore } from './teamHighlightStore'
 
 export const MAX_TEAMS = 6
 export const TEAM_SIZE = 6
@@ -185,6 +186,8 @@ type TeamStore = {
     updates: Partial<TeamPokemon>,
   ) => void
   removePokemon: (slotIndex: number, teamId?: string) => void
+  /** Moves a slot (Pokémon included) to another position; the others shift to make room. */
+  moveSlot: (teamId: string, fromIndex: number, toIndex: number) => void
   renameTeam: (teamId: string, name: string) => void
   clearTeam: (teamId?: string) => void
   exportActiveTeam: () => string
@@ -248,6 +251,7 @@ export const useTeamStore = create<TeamStore>()(
         },
         addPokemonToTeam: (teamId, pokemon) => {
           let wasAdded = false
+          let addedSlotIndex = -1
 
           set((state) => ({
             teams: state.teams.map((team) => {
@@ -262,6 +266,7 @@ export const useTeamStore = create<TeamStore>()(
               }
 
               wasAdded = true
+              addedSlotIndex = nextSlotIndex
 
               return {
                 ...team,
@@ -274,6 +279,10 @@ export const useTeamStore = create<TeamStore>()(
             }),
             activeTeamId: wasAdded ? teamId : state.activeTeamId,
           }))
+
+          if (wasAdded) {
+            useTeamHighlightStore.getState().markAdded({ teamId, slotIndex: addedSlotIndex })
+          }
 
           return wasAdded
         },
@@ -322,6 +331,25 @@ export const useTeamStore = create<TeamStore>()(
               ),
             }
           }),
+        moveSlot: (teamId, fromIndex, toIndex) =>
+          set((state) => ({
+            teams: state.teams.map((team) => {
+              const isValid =
+                team.id === teamId &&
+                fromIndex !== toIndex &&
+                [fromIndex, toIndex].every((index) => index >= 0 && index < team.slots.length)
+              if (!isValid) {
+                return team
+              }
+              // Whole slot objects move, ids included, so the UI keeps each slot's identity
+              // through the move. Only the order matters for persistence and sync (slot_index);
+              // ids go back to positional the next time the team is normalized or pulled.
+              const slots = [...team.slots]
+              const [moved] = slots.splice(fromIndex, 1)
+              slots.splice(toIndex, 0, moved)
+              return { ...team, slots }
+            }),
+          })),
         renameTeam: (teamId, name) =>
           set((state) => ({
             teams: state.teams.map((team) =>

@@ -180,4 +180,17 @@ export async function openApp(page: Page, path = '/') {
   await page.waitForLoadState('networkidle')
 }
 
+/**
+ * Shows another Pokémon without reloading the page (like picking a search result). Use this,
+ * not page.goto, right after a click that saves something: a reload can land before the
+ * async localForage (IndexedDB) write, and the favorite/team member is silently lost.
+ */
+export async function visitPokemon(page: Page, name: string) {
+  await page.evaluate((pokemon) => {
+    history.pushState(null, '', `/?pokemon=${pokemon}`)
+    dispatchEvent(new PopStateEvent('popstate'))
+  }, name)
+  await expect(page).toHaveTitle(new RegExp(`^${name}`, 'i'))
+}
+
 export { expect }

@@ -83,11 +83,13 @@ Antes de qualquer commit: `npm run build && npm run lint && npm run test` (dos t
 - **Zustand store = `create(persist(...))`** com storage em `@/shared/lib/storage` (localForage). Ver qualquer store existente como referência.
 - **Dado de tipo/efetividade de Pokémon** mora em `features/type-analysis` — não duplicar tabela de tipos em outro lugar.
 - **Nunca commitar sem rodar build+lint+test** (regra de verdade, não sugestão).
+- **Animação só com Motion via `m` (`motion/react-m`)**, dentro do `LazyMotion` de `shared/ui/motion` — o lint proíbe `motion.*` e `framer-motion`. Tokens de duração/curva em `shared/ui/motion/tokens.ts`; regras (layout, `layoutDependency`, arrastar, contador) em `docs/design-system/MASTER.md`.
+- **E2E (Playwright, `npm run test:e2e`)** roda em 5 tipos de tela com reduced motion ligado (via `contextOptions`); `e2e/motion.e2e.ts` roda com animação ligada. Para trocar de Pokémon logo depois de salvar algo, use `visitPokemon` (sem reload), não `page.goto`.
 - **Componente com lógica de interação (form, toggle, dialog) ganha teste com Testing Library**, não só teste de store. Ver `features/auth/components/AuthForm.test.tsx` como referência (render + `fireEvent`, sem mockar Supabase — só testa o que a UI faz).
 
 ## O que já foi feito (histórico)
 
-Quatro fases de refatoração/evolução já concluídas — specs e planos completos em `docs/superpowers/`:
+Seis fases de refatoração/evolução já concluídas — specs e planos completos em `docs/superpowers/`:
 
 - **Fase 0** — reestruturação de `src/` pra feature-based (era tudo solto por tipo técnico antes).
 - **Fase 1** — TypeScript strict, migração 100% pra Tailwind, PWA de verdade, testes de store, Docker, CI, error boundary.
@@ -95,6 +97,9 @@ Quatro fases de refatoração/evolução já concluídas — specs e planos comp
 - **Fase 3** — robustez e manutenção:
   - **Sync por reconciliação** (`app/cloudSync/`): cada domínio tem um `reconcile()` (lê remoto → merge → aplica no store → envia a diferença), serializado por `createReconciler` e disparado por mudança local, Realtime, `online` e aba visível. Favoritos: merge de 3 vias contra um baseline por usuário (remoção em outro aparelho não ressuscita). Histórico/times/settings: last-write-wins por timestamp (`searchedAt`/`updatedAt`). Escrita que falha não avança o baseline → é refeita na próxima rodada. `lastSyncedUserId` impede que dados locais de uma conta subam pra outra. Espera a hidratação do store antes do primeiro merge.
   - Estado na URL, tokens de design com guarda no lint, `Dialog` compartilhado, `App.tsx` sem repassar seletores, cache da PokeAPI tratado como estático.
+
+- **Fase 4** — design: skill ui-ux-pro-max + `MASTER.md`, Motion (`LazyMotion`, reduced motion respeitado), componentes do 21st.dev adaptados aos tokens (`Skeleton`), code-splitting (laboratório e Supabase sob demanda), e2e com Playwright em 5 tipos de tela.
+- **Fase 5** — Motion completo (plano em `docs/superpowers/plans/2026-09-25-fase5-motion.md`): indicador de aba deslizando, stats contando + Total, favoritar com feedback, transição Pokédex ↔ Laboratório, slots do time animados, listas com layout, análise que destaca o que mudou desde a última visita, e reordenar o time (modo Organizar: arrastar pela alça ou botões Antes/Depois).
 
 ## O que falta
 

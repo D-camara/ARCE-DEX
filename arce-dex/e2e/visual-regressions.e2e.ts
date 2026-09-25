@@ -1,4 +1,4 @@
-import { expect, openApp, test } from './fixtures/fakePokeApi'
+import { expect, openApp, test, visitPokemon } from './fixtures/fakePokeApi'
 import type { Locator } from '@playwright/test'
 
 /** True when nothing (e.g. the sticky app header) is painted over the element's center. */
@@ -49,7 +49,7 @@ test.describe('regressões visuais do QA', () => {
   test('cards de favoritos não se sobrepõem', async ({ app }) => {
     await openApp(app)
     for (const name of ['garchomp', 'gible', 'gabite', 'riolu']) {
-      await app.goto(`/?pokemon=${name}`)
+      await visitPokemon(app, name)
       await app.getByRole('button', { name: 'Favoritar' }).click()
     }
     await app.locator('header').first().getByRole('button', { name: /favoritos/i }).click()

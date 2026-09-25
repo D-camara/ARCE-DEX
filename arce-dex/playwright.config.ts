@@ -15,7 +15,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4173',
     serviceWorkers: 'block',
-    reducedMotion: 'reduce',
+    // Deterministic end states. Must go through contextOptions: a bare `reducedMotion` key in
+    // `use` is not a Playwright option and was silently ignored (animations ran everywhere).
+    contextOptions: { reducedMotion: 'reduce' },
     trace: 'retain-on-failure',
   },
   // One project per kind of screen the app must work on (see docs/design-system/MASTER.md).
