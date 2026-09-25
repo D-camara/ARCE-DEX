@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
+import { LayoutGroup } from 'motion/react'
 import type {
   EvolutionChain,
   EvolutionNode,
@@ -10,7 +11,7 @@ import type {
 import { TypeBadges } from './TypeBadges'
 import { typeBadgeStyle } from '../lib/type-colors'
 import * as m from 'motion/react-m'
-import { duration, ease, EmptyHint, stagger } from '@/shared/ui'
+import { duration, ease, EmptyHint, stagger, TabIndicator } from '@/shared/ui'
 
 export type PokemonTabData = {
   currentPokemonName: string
@@ -46,40 +47,54 @@ const tabLabels: Record<PokemonTabName, string> = {
 }
 
 const tabButtonBase =
-  'min-h-11 whitespace-nowrap rounded-lg border border-transparent bg-transparent px-4 text-[0.88rem] font-bold uppercase tracking-wide text-ivory-soft transition-all hover:bg-white/[0.03] hover:text-ivory'
-const tabButtonActive =
-  'border-gilt/30 bg-gilt/10 text-gold shadow-glow-gold [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]'
+  'relative isolate min-h-11 whitespace-nowrap rounded-lg border border-transparent bg-transparent px-4 text-[0.88rem] font-bold uppercase tracking-wide text-ivory-soft transition-colors hover:bg-white/[0.03] hover:text-ivory'
+const tabButtonActive = 'text-gold [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]'
+// The active tab's background slides between tabs (TabIndicator + layoutId).
+const tabIndicatorClass = 'rounded-lg border border-gilt/30 bg-gilt/10 shadow-glow-gold'
 
 export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: PokemonTabsProps) {
   const [internalActiveTab, setInternalActiveTab] = useState<PokemonTabName>('Info')
   const selectedTab = activeTab ?? internalActiveTab
 
-  function handleTabChange(tab: PokemonTabName) {
+  function handleTabChange(tab: PokemonTabName, event: MouseEvent<HTMLButtonElement>) {
     setInternalActiveTab(tab)
     onTabChange?.(tab)
+    // On narrow screens the bar scrolls sideways: bring a half-hidden tab fully into view.
+    event.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }
 
   return (
     <section className="-mt-4 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 max-sm:p-4 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)]">
-      <div
-        className="mb-4 flex gap-2 overflow-x-auto border-b border-parchment/6 pb-3"
-        role="tablist"
-        aria-label="Dados do Pokémon"
+      <LayoutGroup id="pokemon-tabs">
+        {/* layoutScroll: the bar scrolls sideways, and Motion must account for it when measuring. */}
+        <m.div
+          className="mb-4 flex gap-2 overflow-x-auto border-b border-parchment/6 pb-3"
+          layoutScroll
+          role="tablist"
+          aria-label="Dados do Pokémon"
+        >
+          {tabs.map((tab) => (
+            <button
+              aria-selected={selectedTab === tab}
+              className={selectedTab === tab ? `${tabButtonBase} ${tabButtonActive}` : tabButtonBase}
+              key={tab}
+              onClick={(event) => handleTabChange(tab, event)}
+              role="tab"
+              type="button"
+            >
+              {selectedTab === tab && <TabIndicator className={tabIndicatorClass} layoutId="active-tab" />}
+              {tabLabels[tab]}
+            </button>
+          ))}
+        </m.div>
+      </LayoutGroup>
+      {/* Keyed by tab: the new panel fades in right away (no waiting for the old one to leave). */}
+      <m.div
+        animate={{ opacity: 1, transition: { duration: duration.fast, ease: ease.out } }}
+        className="px-0.5 pt-2.5"
+        initial={{ opacity: 0 }}
+        key={selectedTab}
       >
-        {tabs.map((tab) => (
-          <button
-            aria-selected={selectedTab === tab}
-            className={selectedTab === tab ? `${tabButtonBase} ${tabButtonActive}` : tabButtonBase}
-            key={tab}
-            onClick={() => handleTabChange(tab)}
-            role="tab"
-            type="button"
-          >
-            {tabLabels[tab]}
-          </button>
-        ))}
-      </div>
-      <div className="px-0.5 pt-2.5">
         {selectedTab === 'Info' && <InfoPanel items={data.infoItems} />}
         {selectedTab === 'Evolucao' && (
           <EvolutionTree
@@ -159,7 +174,7 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
             )}
           </div>
         )}
-      </div>
+      </m.div>
     </section>
   )
 }
