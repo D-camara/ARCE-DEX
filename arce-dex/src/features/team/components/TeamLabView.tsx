@@ -1,5 +1,5 @@
 import { ArrowLeft, Eraser, Pencil } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { TeamLabAnalysis } from './TeamLabAnalysis'
@@ -8,6 +8,7 @@ import { TeamSlotGrid } from './TeamSlotGrid'
 import { usePokemon, useMoveDetails } from '@/features/pokemon'
 import type { Team, TeamPokemon } from '@/shared/types/team'
 import { TabIndicator } from '@/shared/ui'
+import type { TeamAnalysisSnapshot } from '../lib/analysisDiff'
 
 type TeamLabViewProps = {
   activeTeamId: string
@@ -55,6 +56,12 @@ export function TeamLabView({
   const [activeTab, setActiveTab] = useState<LabTab>('Time')
   const [staggeredTeamId, setStaggeredTeamId] = useState<string | null>(null)
   const [isClearing, setIsClearing] = useState(false)
+  // Last analysis seen per team (memory only): the next visit highlights what changed.
+  const [analysisSnapshots] = useState(() => new Map<string, TeamAnalysisSnapshot>())
+  const rememberAnalysis = useCallback(
+    (snapshot: TeamAnalysisSnapshot) => analysisSnapshots.set(activeTeamId, snapshot),
+    [activeTeamId, analysisSnapshots],
+  )
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
   const selectedSlot = activeTeam.slots[selectedSlotIndex]
   const selectedPokemon = selectedSlot?.pokemon ?? null
@@ -126,7 +133,15 @@ export function TeamLabView({
     }
 
     if (activeTab === 'Analise') {
-      return <TeamLabAnalysis moveDetails={teamMoveDetailsQuery.data} team={activeTeam} />
+      return (
+        <TeamLabAnalysis
+          key={activeTeam.id}
+          moveDetails={teamMoveDetailsQuery.data}
+          onSeen={rememberAnalysis}
+          previousSnapshot={analysisSnapshots.get(activeTeam.id) ?? null}
+          team={activeTeam}
+        />
+      )
     }
 
     return (
@@ -149,7 +164,9 @@ export function TeamLabView({
   }, [
     activeTab,
     activeTeam,
+    analysisSnapshots,
     isClearing,
+    rememberAnalysis,
     staggeredTeamId,
     onRemovePokemon,
     onUpdatePokemon,

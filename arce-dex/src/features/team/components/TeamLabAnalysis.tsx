@@ -1,9 +1,13 @@
-import { AlertTriangle, Gauge, Shield, Swords, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { AlertTriangle, Gauge, History, Shield, Swords, Users } from 'lucide-react'
+import * as m from 'motion/react-m'
 import {
   ALL_POKEMON_TYPES,
   calculateTeamOffensiveProfile,
   calculateTeamDefensiveAnalysis,
 } from '@/features/type-analysis'
+import { diffTeamAnalysis, snapshotTeamAnalysis, type TeamAnalysisSnapshot } from '../lib/analysisDiff'
+import { duration, ease, fadeRise, layoutTransition, stagger } from '@/shared/ui'
 import { calculateFinalStats } from '@/shared/lib/stats'
 import type { MoveDetail } from '@/shared/types/pokemon'
 import type { Team, TeamPokemon } from '@/shared/types/team'
@@ -12,6 +16,23 @@ import { TypeBadges } from '@/features/pokemon'
 type TeamLabAnalysisProps = {
   team: Team
   moveDetails?: Record<string, MoveDetail>
+  /** What this team's analysis showed on the previous visit (null on the first one). */
+  previousSnapshot?: TeamAnalysisSnapshot | null
+  /** Called with what is on screen now, so the next visit can show what changed. */
+  onSeen?: (snapshot: TeamAnalysisSnapshot) => void
+}
+
+/** One-off highlight over something that changed since the last visit. */
+function ChangeFlash() {
+  return (
+    <m.span
+      animate={{ opacity: [0, 1, 0] }}
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gilt/15 ring-1 ring-gilt/50"
+      initial={{ opacity: 0 }}
+      transition={{ delay: 0.2, duration: duration.flash, ease: ease.out, times: [0, 0.3, 1] }}
+    />
+  )
 }
 
 const articleClass =
@@ -26,7 +47,7 @@ const emptyClass =
 const kpiRowClass =
   'my-1 flex items-center justify-between rounded-xl border border-parchment/6 bg-parchment/2 px-3 py-2 text-[0.84rem] text-[color:var(--color-silver,#c9c7bd)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]'
 
-export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps) {
+export function TeamLabAnalysis({ moveDetails = {}, onSeen, previousSnapshot = null, team }: TeamLabAnalysisProps) {
   const pokemons = team.slots.flatMap((slot) => (slot.pokemon ? [slot.pokemon] : []))
   const defensiveSummary = calculateTeamDefensiveAnalysis(team)
   const commonWeaknesses = defensiveSummary
@@ -55,22 +76,95 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
   const redundantTypes = getRepeatedTypes(pokemons)
   const alerts = getTeamAlerts(pokemons, commonWeaknesses)
 
+  // What changed since the last visit. The previous snapshot is frozen at mount; the current
+  // one follows the data (move details may still be arriving) and is reported back as "seen".
+  const [previous] = useState(previousSnapshot)
+  // Coverage is only comparable once every move's type is known.
+  const current = snapshotTeamAnalysis(
+    defensiveSummary,
+    unknownMoveCount === 0 ? coverage.superEffectiveAgainst : null,
+  )
+  const diff = diffTeamAnalysis(previous, current)
+  const [announcement, setAnnouncement] = useState('')
+
+  const snapshotKey = JSON.stringify(current)
+  useEffect(() => {
+    onSeen?.(JSON.parse(snapshotKey) as TeamAnalysisSnapshot)
+  }, [onSeen, snapshotKey])
+
+  // Filled after mount so screen readers announce it (content present at mount isn't).
+  const diffMessages = diff?.messages.join(' ') ?? ''
+  useEffect(() => {
+    const timer = window.setTimeout(() => setAnnouncement(diffMessages), 150)
+    return () => window.clearTimeout(timer)
+  }, [diffMessages])
+
+  const weaknessOrder = commonWeaknesses.map((summary) => summary.type).join()
+
   return (
     <section className="grid gap-4 md:grid-cols-2">
+      <p className="sr-only" aria-live="polite" role="status">
+        {announcement}
+      </p>
+      {diff && (
+        <m.article
+          {...fadeRise}
+          aria-label="Mudanças desde a última visita"
+          className="order-first rounded-[20px] border border-gilt/30 bg-gilt/6 p-4 md:col-span-2"
+        >
+          <p className="mb-1.5 flex items-center gap-2 text-[0.8rem] font-bold uppercase tracking-wide text-gold">
+            <History size={15} />
+            Desde a última visita
+          </p>
+          <ul className="m-0 grid gap-1 pl-0 text-[0.88rem] text-ivory">
+            {diff.messages.map((message) => (
+              <li className="list-none" key={message}>
+                {message}
+              </li>
+            ))}
+          </ul>
+        </m.article>
+      )}
       <article className={articleClass}>
         <Shield size={18} className={iconClass} />
         <h3 className={headingClass}>Defesa</h3>
         <p className={labelClass}>Fraquezas comuns</p>
         {commonWeaknesses.length > 0 ? (
-          commonWeaknesses.map((summary) => (
-            <div
-              className="mb-1 flex items-center justify-between gap-2.5 rounded-xl border border-parchment/8 bg-parchment/2 px-2.5 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
-              key={summary.type}
-            >
-              <TypeBadges compact types={[summary.type]} />
-              <span>{summary.weakTo} fracos</span>
-            </div>
-          ))
+          commonWeaknesses.map((summary, index) => {
+            const delta = diff?.weakToDelta[summary.type] ?? 0
+            const isNewRow = previous !== null && (previous.weakTo[summary.type] ?? 0) < 2
+            return (
+              <m.div
+                animate={isNewRow ? { ...fadeRise.animate, transition: { ...fadeRise.animate.transition, delay: index * stagger } } : undefined}
+                className="relative mb-1 flex items-center justify-between gap-2.5 rounded-xl border border-parchment/8 bg-parchment/2 px-2.5 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
+                initial={isNewRow ? fadeRise.initial : false}
+                key={summary.type}
+                layout="position"
+                // Rows re-sort by count: slide to the new place only when the order changes.
+                layoutDependency={weaknessOrder}
+                transition={{ layout: layoutTransition }}
+              >
+                <TypeBadges compact types={[summary.type]} />
+                <span className="flex items-center gap-2">
+                  {delta !== 0 && (
+                    <span
+                      aria-label={`${Math.abs(delta)} ${Math.abs(delta) === 1 ? 'fraco' : 'fracos'} a ${delta > 0 ? 'mais' : 'menos'} que antes`}
+                      className={
+                        delta > 0
+                          ? 'rounded-full border border-danger-400/40 bg-danger-400/12 px-1.5 text-xs font-bold text-danger-300'
+                          : 'rounded-full border border-success-400/40 bg-success-400/12 px-1.5 text-xs font-bold text-success-200'
+                      }
+                      role="img"
+                    >
+                      {delta > 0 ? `+${delta}` : `−${Math.abs(delta)}`}
+                    </span>
+                  )}
+                  {summary.weakTo} fracos
+                </span>
+                {delta !== 0 && <ChangeFlash />}
+              </m.div>
+            )
+          })
         ) : (
           <p className={emptyClass}>Sem fraqueza compartilhada relevante.</p>
         )}
@@ -112,9 +206,10 @@ export function TeamLabAnalysis({ moveDetails = {}, team }: TeamLabAnalysisProps
           {coverage.superEffectiveAgainst.map((type) => (
             <span
               key={type}
-              className="rounded-xl border border-success-400/30 bg-success-400/8 p-2 text-success-200 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
+              className="relative rounded-xl border border-success-400/30 bg-success-400/8 p-2 text-success-200 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
             >
               {type}
+              {diff?.newlyCovered.includes(type) && <ChangeFlash />}
             </span>
           ))}
         </div>

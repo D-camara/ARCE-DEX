@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { visitPokemon } from './fakePokeApi'
 
 export type OverflowWindow = Window & { __worstOverflow: number; __watchOverflowUntil: number }
 
@@ -26,7 +27,7 @@ export async function worstOverflowDuring(page: Page, ms: number, action: () => 
 /** Adds each Pokémon to the active team through the Pokédex dialog. */
 export async function addToTeam(page: Page, names: string[]) {
   for (const name of names) {
-    await page.goto(`/?pokemon=${name}`)
+    await visitPokemon(page, name)
     await page.getByRole('button', { name: /adicionar à equipe/i }).click()
     await page.getByRole('button', { name: /^adicionar em/i }).click()
     await page.getByRole('dialog').waitFor({ state: 'detached' })

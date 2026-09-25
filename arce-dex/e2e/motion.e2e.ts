@@ -1,4 +1,4 @@
-import { expect, openApp, test } from './fixtures/fakePokeApi'
+import { expect, openApp, test, visitPokemon } from './fixtures/fakePokeApi'
 import { addToTeam, sampleOverflow, worstOverflowDuring, type OverflowWindow } from './fixtures/motion'
 
 // The rest of the e2e suite runs with reduced motion (deterministic end states). This file
@@ -81,7 +81,7 @@ test.describe('animações ligadas', () => {
   test('remover favorito no drawer: item sai e o foco vai para o próximo', async ({ app }) => {
     await openApp(app)
     for (const name of ['garchomp', 'gible', 'riolu']) {
-      await app.goto(`/?pokemon=${name}`)
+      await visitPokemon(app, name)
       await app.getByRole('button', { name: 'Favoritar' }).click()
     }
     await app.locator('header').first().getByRole('button', { name: /favoritos/i }).click()
@@ -148,7 +148,7 @@ test.describe('animações ligadas', () => {
   test('listas fecham o buraco: remover favorito do meio e recente que volta ao topo', async ({ app }) => {
     await openApp(app)
     for (const name of ['garchomp', 'gible', 'gabite', 'riolu']) {
-      await app.goto(`/?pokemon=${name}`)
+      await visitPokemon(app, name)
       await app.getByRole('button', { name: 'Favoritar' }).click()
     }
     await app.locator('header').first().getByRole('button', { name: /favoritos/i }).click()
@@ -182,5 +182,33 @@ test.describe('animações ligadas', () => {
     await recents.filter({ hasText: 'Garchomp' }).click()
     await expect(recents.first().locator('strong')).toHaveText('Garchomp')
     await expect(recents).toHaveCount(3)
+  })
+
+  test('análise mostra o que mudou desde a última visita', async ({ app }) => {
+    await openApp(app)
+    // Three dragon/ground Pokémon: 3 weak to Ice. Removing one leaves the row, now at 2.
+    await addToTeam(app, ['garchomp', 'gible', 'gabite'])
+    await app.getByRole('button', { name: /meu time/i }).click()
+    const analysisTab = app.getByRole('button', { name: 'Análise', exact: true })
+    await analysisTab.click()
+    // First visit: nothing to compare with.
+    await expect(app.getByRole('heading', { name: 'Defesa' })).toBeVisible()
+    await expect(app.getByRole('article', { name: 'Mudanças desde a última visita' })).toHaveCount(0)
+
+    await app.getByRole('button', { name: 'Time', exact: true }).click()
+    await app.getByRole('region', { name: 'Slots do time' }).getByRole('button', { name: 'Remover' }).first().click()
+    await analysisTab.click()
+
+    const changes = app.getByRole('article', { name: 'Mudanças desde a última visita' })
+    await expect(changes).toContainText('Fraqueza a Ice caiu para 2.')
+    // Ice, Dragon and Fairy each went from 3 to 2.
+    await expect(app.getByRole('img', { name: '1 fraco a menos que antes' })).toHaveCount(3)
+    await expect(app.getByRole('status').filter({ hasText: 'Fraqueza a Ice' })).toHaveCount(1)
+
+    // Seen: coming back without changes shows nothing new.
+    await app.getByRole('button', { name: 'Time', exact: true }).click()
+    await analysisTab.click()
+    await expect(app.getByRole('heading', { name: 'Defesa' })).toBeVisible()
+    await expect(changes).toHaveCount(0)
   })
 })
