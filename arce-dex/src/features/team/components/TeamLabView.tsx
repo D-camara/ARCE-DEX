@@ -175,7 +175,7 @@ export function TeamLabView({
           Pokedex
         </button>
         <div>
-          <p className="text-gold">Laboratorio do Time</p>
+          <p className="text-gold">Laboratório do Time</p>
           <h1 className="m-0 mb-2 mt-1 max-w-none bg-[linear-gradient(to_right,#FFFFFF,var(--color-ivory))] bg-clip-text text-[clamp(1.8rem,4vw,2.6rem)] font-black leading-tight tracking-tight text-transparent [overflow-wrap:anywhere]">
             {activeTeam.name}
           </h1>

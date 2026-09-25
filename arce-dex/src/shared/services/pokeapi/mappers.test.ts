@@ -122,7 +122,7 @@ describe('pokeapi mappers', () => {
       power: null,
       accuracy: 100,
       pp: 40,
-      shortEffect: 'Descricao nao informada',
+      shortEffect: 'Descrição não informada',
     })
   })
 })

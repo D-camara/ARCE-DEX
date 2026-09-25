@@ -43,7 +43,7 @@ function QuickList({
         </div>
       ))}
       {items.length === 0 && (
-        <EmptyHint>Nenhum Pokemon nesta lista.</EmptyHint>
+        <EmptyHint>Nenhum Pokémon nesta lista.</EmptyHint>
       )}
     </article>
   )

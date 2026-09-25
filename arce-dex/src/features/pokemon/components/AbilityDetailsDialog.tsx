@@ -41,7 +41,7 @@ export function AbilityDetailsDialog({
       )}
       {isError && (
         <EmptyHint>
-          Nao foi possivel carregar esta habilidade.
+          Não foi possível carregar esta habilidade.
         </EmptyHint>
       )}
       {!isLoading && !isError && ability && (
@@ -51,7 +51,7 @@ export function AbilityDetailsDialog({
             <p className="text-ivory-soft">{ability.shortEffect}</p>
           </section>
           <section className="grid gap-1.5 rounded-2xl border border-line bg-surface-2 p-4">
-            <h3>Descricao</h3>
+            <h3>Descrição</h3>
             <p className="text-ivory-soft">{ability.effect}</p>
           </section>
           <section className="grid gap-1.5 rounded-2xl border border-line bg-surface-2 p-4">

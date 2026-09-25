@@ -129,7 +129,7 @@ export function PokemonCard({
           <m.button
             whileTap={{ scale: 0.97 }}
             transition={spring.snappy}
-            className="inline-flex min-h-[44px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-gilt/40 bg-[linear-gradient(135deg,rgba(212,175,55,0.2),rgba(246,237,211,0.05))] text-[0.9rem] font-extrabold uppercase tracking-wide text-ivory shadow-[0_6px_15px_rgba(0,0,0,0.4),inset_0_0_10px_rgba(212,175,55,0.1)] transition-[color,background-color,border-color,box-shadow,translate] hover:-translate-y-0.5 hover:border-gilt/70 hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.3),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
+            className="max-sm:text-[0.82rem] max-sm:tracking-normal inline-flex min-h-[44px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-gilt/40 bg-[linear-gradient(135deg,rgba(212,175,55,0.2),rgba(246,237,211,0.05))] text-[0.9rem] font-extrabold uppercase tracking-wide text-ivory shadow-[0_6px_15px_rgba(0,0,0,0.4),inset_0_0_10px_rgba(212,175,55,0.1)] transition-[color,background-color,border-color,box-shadow,translate] hover:-translate-y-0.5 hover:border-gilt/70 hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.3),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
             type="button"
             onClick={onAddToTeam}
           >
