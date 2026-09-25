@@ -66,18 +66,24 @@ Tokens (`shared/ui/motion/tokens.ts`):
 | `duration.fast` | 0.18s | hover, dropdown, destaque |
 | `duration.base` | 0.24s | entrada de diálogo/drawer, troca de conteúdo |
 | `duration.exit` | 0.16s | saída (~65% da entrada) |
-| `duration.slow` | 0.45s | barras de stats preenchendo |
+| `duration.slow` | 0.45s | barras de stats preenchendo (e o número contando junto) |
+| `duration.flash` | 0.9s | destaque de "isto mudou", uma vez só |
 | `ease.out` | `[0.22, 1, 0.36, 1]` | entradas |
 | `ease.in` | `[0.4, 0, 1, 1]` | saídas |
 | `stagger` | 0.04s | itens de lista entrando em sequência |
 | `spring.snappy` | stiffness 420, damping 32 | escala de toque |
+| `layoutTransition` | 0.24s, `ease.out` | vizinhos deslizando para o novo lugar (`layout`, `layoutId`) |
+| `pop` | escala 1 → 1,25 → 1 em 0.3s | confirmação (favoritou, adicionou) |
 
 Biblioteca: **Motion** (`motion`), só via `LazyMotion` + `m` (`motion/react-m`). O lint proíbe `motion.*` completo e `framer-motion`, para o bundle não inflar sem ninguém perceber.
 
 Conferido contra a doc oficial ([motion.dev/docs](https://motion.dev/docs/react-reduce-bundle-size)):
-- `m` + `LazyMotion` com `features` carregado por `import()` é o caminho recomendado para bundle mínimo. `domAnimation` custa ~15 KB e fica fora do bundle inicial. `domMax` (layout/drag, ~25 KB) não é usado.
+- `m` + `LazyMotion` com `features` carregado por `import()` é o caminho recomendado para bundle mínimo. Usamos `domMax` (animate, exit, gestos, **layout e drag**): ~28 KB gzip num chunk que chega depois da primeira pintura. O bundle principal não muda (medido: +0,1 KB em relação ao `domAnimation`).
 - `reducedMotion="user"` desliga transform e layout e mantém opacidade. É a recomendação de acessibilidade da doc: trocar movimento por fade.
 - **Componente que o pai desmonta** (`{open && <X />}`) precisa estar dentro de `<AnimatePresence>` no pai, e o `AnimatePresence` interno com `propagate`, senão a saída não roda. O `Dialog` já usa `propagate`.
+- **Layout (`layout`, `layoutId`):** todo container com `overflow-auto` que tenha elementos com layout dentro precisa de `layoutScroll`, senão a medição sai errada quando ele está rolado. Em conteúdo que não pode distorcer (texto dentro de um card que muda de altura), use `layout="position"`. Em listas que perdem itens, `AnimatePresence mode="popLayout"` com o pai `relative`. Várias barras com indicador `layoutId` ficam cada uma no seu `LayoutGroup id`.
+- **Arrastar:** sempre por uma alça (`useDragControls` + `dragListener={false}`, `touch-action: none` só na alça), senão o dedo não rola mais a página no celular. E sempre com uma alternativa sem arrastar, com botões e teclado (WCAG 2.5.7). Grave no store só ao soltar.
+- **Número contando:** use `useCountUp` (`shared/ui/motion`), que é `requestAnimationFrame` puro. Nunca o `animate()` imperativo nem `useSpring` do Motion no bundle principal: medidos, custam +12 KB e +5 KB gzip. O número animado fica `aria-hidden`, com o valor final em `sr-only` ao lado.
 - Motion anima via estilo inline, que vence as classes do Tailwind. Não coloque `transition-all`/`transition-transform` em elemento cujo `transform` o Motion anima, porque a transição CSS "arrasta" cada quadro.
 
 ## Checklist antes de entregar UI
