@@ -1,4 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
 import { ArrowRight, Search, X } from 'lucide-react'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 import {
@@ -6,7 +8,7 @@ import {
   normalizePokemonSearchText,
 } from '@/shared/lib/pokemon-search'
 import { TypeBadges } from '@/features/pokemon'
-import { EmptyHint } from '@/shared/ui'
+import { duration, ease, EmptyHint, spring } from '@/shared/ui'
 
 type SearchExperienceProps = {
   suggestions: PokemonSummary[]
@@ -150,62 +152,71 @@ export function SearchExperience({
               <X size={16} aria-hidden="true" />
             </button>
           )}
-          <button
+          <m.button
+            whileTap={{ scale: 0.95 }}
+            transition={spring.snappy}
             type="submit"
             aria-label="Buscar"
-            className="inline-flex h-10 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-gilt/40 bg-gilt/15 px-3 text-[0.8rem] font-bold uppercase tracking-wide text-ivory transition-colors hover:border-gilt/60 hover:bg-gilt/25 max-sm:h-11 max-sm:px-0"
+            className="inline-flex h-10 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-gilt/40 bg-gilt/15 px-3 text-[0.8rem] font-bold uppercase tracking-wide text-ivory transition-colors hover:border-gilt/60 hover:bg-gilt/25 pointer-coarse:h-11 max-sm:h-11 max-sm:px-0"
           >
             <ArrowRight size={16} className="sm:hidden" aria-hidden="true" />
             <span className="max-sm:hidden">Buscar</span>
-          </button>
+          </m.button>
         </div>
       </form>
 
-      {shouldShowSuggestions && (
-        <div className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-[70] max-h-[min(420px,60svh)] overflow-y-auto overflow-x-hidden overscroll-contain rounded-2xl border border-azure/28 bg-ink-deep/98 p-1.5 shadow-[0_22px_55px_rgba(0,0,0,0.48)] backdrop-blur-xl">
-          {isLoading && <EmptyHint>Carregando Pokémon...</EmptyHint>}
-          {isError && <EmptyHint>Não foi possível carregar a PokeAPI.</EmptyHint>}
-          <ul id={listboxId} role="listbox" aria-label="Sugestões" className="grid gap-1">
-            {!isLoading &&
-              !isError &&
-              visibleSuggestions.map((pokemon, index) => (
-                <li
-                  id={`${optionIdPrefix}-${index}`}
-                  key={pokemon.name}
-                  role="option"
-                  aria-selected={index === activeIndex}
-                  // pointerdown would blur the input first on some mobile browsers; click is fine
-                  // because outside-tap closing ignores taps inside this component.
-                  onClick={() => pick(pokemon)}
-                  onPointerMove={() => setActiveIndex(index)}
-                  className={`grid min-h-14 cursor-pointer grid-cols-[40px_minmax(0,1fr)] items-center gap-3 rounded-xl border px-2.5 py-2 transition-colors ${
-                    index === activeIndex ? 'border-gold/60 bg-surface-2' : 'border-transparent bg-surface'
-                  }`}
-                >
-                  {pokemon.imageUrl ? (
-                    <img className="h-10 w-10 object-contain" src={pokemon.imageUrl} alt="" loading="lazy" />
-                  ) : (
-                    <span className="h-10 w-10" aria-hidden="true" />
-                  )}
-                  <span className="grid min-w-0 gap-1">
-                    <span className="flex min-w-0 items-baseline justify-between gap-2">
-                      <strong className="truncate font-extrabold leading-tight">{pokemon.displayName}</strong>
-                      <small className="shrink-0 text-xs font-bold text-muted">
-                        {pokemon.id > 0 ? `#${String(pokemon.id).padStart(4, '0')}` : ''}
-                      </small>
+      <AnimatePresence>
+        {shouldShowSuggestions && (
+          <m.div
+            key="suggestions"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: duration.fast, ease: ease.out } }}
+            exit={{ opacity: 0, y: -4, transition: { duration: duration.exit, ease: ease.in } }}
+            className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-[70] max-h-[min(420px,60svh)] overflow-y-auto overflow-x-hidden overscroll-contain rounded-2xl border border-azure/28 bg-ink-deep/98 p-1.5 shadow-[0_22px_55px_rgba(0,0,0,0.48)] backdrop-blur-xl">
+            {isLoading && <EmptyHint>Carregando Pokémon...</EmptyHint>}
+            {isError && <EmptyHint>Não foi possível carregar a PokeAPI.</EmptyHint>}
+            <ul id={listboxId} role="listbox" aria-label="Sugestões" className="grid gap-1">
+              {!isLoading &&
+                !isError &&
+                visibleSuggestions.map((pokemon, index) => (
+                  <li
+                    id={`${optionIdPrefix}-${index}`}
+                    key={pokemon.name}
+                    role="option"
+                    aria-selected={index === activeIndex}
+                    // pointerdown would blur the input first on some mobile browsers; click is fine
+                    // because outside-tap closing ignores taps inside this component.
+                    onClick={() => pick(pokemon)}
+                    onPointerMove={() => setActiveIndex(index)}
+                    className={`grid min-h-14 cursor-pointer grid-cols-[40px_minmax(0,1fr)] items-center gap-3 rounded-xl border px-2.5 py-2 transition-colors ${
+                      index === activeIndex ? 'border-gold/60 bg-surface-2' : 'border-transparent bg-surface'
+                    }`}
+                  >
+                    {pokemon.imageUrl ? (
+                      <img className="h-10 w-10 object-contain" src={pokemon.imageUrl} alt="" loading="lazy" />
+                    ) : (
+                      <span className="h-10 w-10" aria-hidden="true" />
+                    )}
+                    <span className="grid min-w-0 gap-1">
+                      <span className="flex min-w-0 items-baseline justify-between gap-2">
+                        <strong className="truncate font-extrabold leading-tight">{pokemon.displayName}</strong>
+                        <small className="shrink-0 text-xs font-bold text-muted">
+                          {pokemon.id > 0 ? `#${String(pokemon.id).padStart(4, '0')}` : ''}
+                        </small>
+                      </span>
+                      {pokemon.types.length > 0 && <TypeBadges compact types={pokemon.types} />}
                     </span>
-                    {pokemon.types.length > 0 && <TypeBadges compact types={pokemon.types} />}
-                  </span>
-                </li>
-              ))}
-          </ul>
-          {!isLoading && !isError && visibleSuggestions.length === 0 && (
-            <EmptyHint>
-              Nenhum Pokémon encontrado para “{value.trim()}”. Tente o número (ex.: 448) ou parte do nome.
-            </EmptyHint>
-          )}
-        </div>
-      )}
+                  </li>
+                ))}
+            </ul>
+            {!isLoading && !isError && visibleSuggestions.length === 0 && (
+              <EmptyHint>
+                Nenhum Pokémon encontrado para “{value.trim()}”. Tente o número (ex.: 448) ou parte do nome.
+              </EmptyHint>
+            )}
+          </m.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }

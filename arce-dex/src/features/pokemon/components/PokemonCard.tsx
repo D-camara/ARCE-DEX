@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import * as m from 'motion/react-m'
 import { Heart, Info, Plus, ShieldCheck, Sparkles, Volume2 } from 'lucide-react'
+import { duration, ease, spring } from '@/shared/ui'
 import type { Pokemon, PokemonStatName } from '@/shared/types/pokemon'
 import { TypeBadges } from './TypeBadges'
 
@@ -33,10 +35,18 @@ export function PokemonCard({
   const displayedSprite = isShiny && pokemon.shinySprite ? pokemon.shinySprite : pokemon.imageUrl
 
   return (
-    <article className="grid overflow-hidden rounded-t-3xl border border-parchment/12 bg-ink/70 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.03)] lg:grid-cols-[minmax(280px,40%)_1fr]">
+    <article className="grid grid-cols-1 overflow-hidden rounded-t-3xl border border-parchment/12 bg-ink/70 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.03)] lg:grid-cols-[minmax(280px,40%)_1fr]">
       <div className="relative grid place-items-center border-b border-parchment/5 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.12),transparent_70%),rgba(5,7,12,0.5)] p-6 px-4 lg:border-b-0 lg:border-r lg:p-8">
-        <div className="absolute left-1/2 top-1/2 z-0 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 animate-[pulse-aura_6s_ease-in-out_infinite_alternate] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.1)_0%,transparent_60%)] shadow-[0_0_60px_rgba(212,175,55,0.12)] lg:h-[270px] lg:w-[270px]" />
-        <div className="relative z-10 flex flex-col items-center gap-3">
+        {/* The aura grows in once per Pokémon instead of pulsing forever (decorative loops distract). */}
+        <m.div
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1, transition: { duration: duration.slow, ease: ease.out } }}
+          className="absolute left-1/2 top-1/2 z-0 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.1)_0%,transparent_60%)] shadow-[0_0_60px_rgba(212,175,55,0.12)] lg:h-[270px] lg:w-[270px]" />
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: ease.out } }}
+          className="relative z-10 flex flex-col items-center gap-3"
+        >
           {displayedSprite ? (
             <img
               src={displayedSprite}
@@ -80,7 +90,7 @@ export function PokemonCard({
               </button>
             )}
           </div>
-        </div>
+        </m.div>
       </div>
 
       <div className="grid content-start gap-4 p-5 lg:p-6">
@@ -116,14 +126,16 @@ export function PokemonCard({
         </div>
 
         <div className="mt-2 flex gap-3">
-          <button
-            className="inline-flex min-h-[44px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-gilt/40 bg-[linear-gradient(135deg,rgba(212,175,55,0.2),rgba(246,237,211,0.05))] text-[0.9rem] font-extrabold uppercase tracking-wide text-ivory shadow-[0_6px_15px_rgba(0,0,0,0.4),inset_0_0_10px_rgba(212,175,55,0.1)] transition-all hover:-translate-y-0.5 hover:border-gilt/70 hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.3),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
+          <m.button
+            whileTap={{ scale: 0.97 }}
+            transition={spring.snappy}
+            className="inline-flex min-h-[44px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-gilt/40 bg-[linear-gradient(135deg,rgba(212,175,55,0.2),rgba(246,237,211,0.05))] text-[0.9rem] font-extrabold uppercase tracking-wide text-ivory shadow-[0_6px_15px_rgba(0,0,0,0.4),inset_0_0_10px_rgba(212,175,55,0.1)] transition-[color,background-color,border-color,box-shadow,translate] hover:-translate-y-0.5 hover:border-gilt/70 hover:bg-[linear-gradient(135deg,rgba(212,175,55,0.3),rgba(246,237,211,0.1))] hover:text-white hover:shadow-glow-gold"
             type="button"
             onClick={onAddToTeam}
           >
             <Plus size={20} />
             Adicionar à Equipe
-          </button>
+          </m.button>
           <button
             className={
               isFavorite
@@ -178,8 +190,11 @@ function StatBar({ label, value }: { label: string; value: number }) {
     <div className="grid grid-cols-[34px_1fr_34px] items-center gap-2 text-[0.82rem] text-ivory-soft">
       <span>{label}</span>
       <div className="h-[9px] overflow-hidden rounded-full bg-white/[0.08]">
-        <i
-          className="block h-full rounded-[inherit] bg-[linear-gradient(90deg,var(--color-gold),var(--color-cosmic-blue))]"
+        {/* Grows from the left (scaleX, not width: transform-only animation). */}
+        <m.i
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1, transition: { duration: duration.slow, ease: ease.out } }}
+          className="block h-full origin-left rounded-[inherit] bg-[linear-gradient(90deg,var(--color-gold),var(--color-cosmic-blue))]"
           style={{ width: `${Math.min(value, 150) / 1.5}%` }}
         />
       </div>

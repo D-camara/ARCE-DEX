@@ -184,7 +184,7 @@ export function TeamLabView({
       </section>
 
       <section className="-mt-3 grid gap-3 rounded-b-3xl border border-parchment/12 border-t-parchment/8 bg-ink/70 p-6 pt-4 max-sm:px-4 max-sm:pb-4 shadow-[0_30px_60px_rgba(0,0,0,0.7),inset_0_0_30px_rgba(246,237,211,0.02)] md:-mt-3.5">
-        <div className="grid grid-cols-6 gap-2 max-xs:gap-1.5">
+        <div className="grid grid-cols-6 gap-2 max-xs:grid-cols-3">
           {teams.map((team, index) => (
             <button
               className={

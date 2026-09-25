@@ -1,4 +1,12 @@
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
 export { resolvePokemonSearchInput as normalizePokemonSearch } from '@/shared/lib/pokemon-search'
+
+/** Merges class names, letting later Tailwind utilities win (shadcn/21st components rely on it). */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 export function formatPokemonName(name: string) {
   return name

@@ -9,7 +9,8 @@ import type {
 } from '@/shared/types/pokemon'
 import { TypeBadges } from './TypeBadges'
 import { typeBadgeStyle } from '../lib/type-colors'
-import { EmptyHint } from '@/shared/ui'
+import * as m from 'motion/react-m'
+import { duration, ease, EmptyHint, stagger } from '@/shared/ui'
 
 export type PokemonTabData = {
   currentPokemonName: string
@@ -90,7 +91,19 @@ export function PokemonTabs({ activeTab, data, onSelectPokemon, onTabChange }: P
         {selectedTab === 'Golpes' && (
           <div className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
             {data.moves.length > 0 ? (
-              data.moves.map((move) => <MoveCard key={move.name} move={move} />)
+              data.moves.map((move, index) => (
+                <m.div
+                  key={move.name}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: duration.base, ease: ease.out, delay: Math.min(index, 8) * stagger },
+                  }}
+                >
+                  <MoveCard move={move} />
+                </m.div>
+              ))
             ) : (
               <EmptyHint>Nenhum golpe carregado.</EmptyHint>
             )}

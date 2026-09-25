@@ -22,6 +22,18 @@ export default defineConfig([
       'no-restricted-imports': [
         'error',
         {
+          paths: [
+            {
+              name: 'framer-motion',
+              message: "Use 'motion' (motion/react), the current package name.",
+            },
+            {
+              name: 'motion/react',
+              importNames: ['motion'],
+              message:
+                "Use `m` from 'motion/react-m' inside the app's LazyMotion (see shared/ui/motion) — `motion.*` pulls the whole engine into the main bundle.",
+            },
+          ],
           patterns: [
             {
               group: [
@@ -37,6 +49,12 @@ export default defineConfig([
         },
       ],
     },
+  },
+  {
+    // Playwright tests: `use` in fixtures is Playwright's, not a React hook; they run in Node.
+    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    languageOptions: { globals: globals.node },
+    rules: { 'react-hooks/rules-of-hooks': 'off' },
   },
   {
     // Design tokens are enforced, not just documented (see @theme in src/index.css).

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { supabase } from '@/shared/services/supabase/client'
+import { getSupabase } from '@/shared/services/supabase/client'
 import { createDefaultTeams, useTeamStore } from '@/features/team'
 import type { Team, TeamPokemon } from '@/shared/types/team'
 import { mergeLww, type LwwEntry } from './merge/mergeLww'
@@ -80,11 +80,11 @@ async function pushTeam(client: SupabaseClient, userId: string, team: Team) {
 }
 
 export async function startTeamsSync(userId: string, ownership: DataOwnership): Promise<DomainSync | null> {
-  if (!supabase) {
+  const loadedClient = await getSupabase()
+  if (!loadedClient) {
     return null
   }
-
-  const client = supabase
+  const client = loadedClient
   let lastApplied: Team[] | null = null
 
   async function reconcile(currentOwnership: DataOwnership) {

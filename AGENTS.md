@@ -25,9 +25,10 @@ ARCE-DEX/                  ← raiz do repo, sem código próprio
 │   └── package.json
 ├── .github/workflows/ci.yml lint + test + build em todo push/PR
 ├── .mcp.json               MCP servers do projeto (hoje só o Supabase) — versionado, sem segredo
-├── .agents/skills/          skills reais (Supabase, etc.), instaladas via `npx skills add`
+├── .agents/skills/          skills reais (Supabase, ui-ux-pro-max), instaladas via `npx skills add`
 ├── skills-lock.json         lockfile de quais skills estão instaladas e de onde vieram
 ├── .serena/                 config do Serena (MCP de navegação/edição de código via LSP)
+├── docs/design-system/       MASTER.md — identidade visual, tokens, regras de layout/toque/movimento
 └── docs/superpowers/         specs e planos das reestruturações já feitas (histórico, ver abaixo)
 ```
 
@@ -75,6 +76,7 @@ Antes de qualquer commit: `npm run build && npm run lint && npm run test` (dos t
 
 - **Feature-based, não por tipo técnico.** Não recriar `components/`, `hooks/`, `stores/` soltos na raiz de `src/` — isso já foi extinto de propósito.
 - **Sem CSS custom.** Se precisar de algo que Tailwind não cobre direto, usa classe arbitrária inline no componente, não adiciona regra em `index.css` (só `@theme`).
+- **Decisão visual segue `docs/design-system/MASTER.md`.** Para dúvida pontual de UI/UX, consulte a skill ui-ux-pro-max: `python3 .agents/skills/ui-ux-pro-max/scripts/search.py "<2-5 termos>" --domain ux`. Use a skill para regras (acessibilidade, toque, movimento), não para trocar a identidade — o modo `--design-system` dela não se aplica a este produto.
 - **Cor e breakpoint vêm de token** (`@theme` em `src/index.css`): `bg-gilt/10`, `border-parchment/12`, `max-xs:`, `md:`. Cor literal em utilitário simples (`bg-[rgba(...)]`, `text-[#...]`) e breakpoint arbitrário (`max-[375px]:`) são **erro de lint**. Cor nova = token novo no `@theme`. Gradiente/sombra com `rgba` dentro ainda é permitido (efeito pontual). Alguns tokens são quase iguais (`gilt` × `gold`, `parchment` × `ivory`) — existem separados porque é o que a UI pinta hoje; unificar é decisão de design.
 - **Modal/drawer usa `Dialog` ou `useDialogBehavior` de `@/shared/ui`** (Esc, foco, Tab preso, trava de scroll, `aria-labelledby`). Não fazer overlay na mão.
 - **Estado navegável fica na URL** (`app/useUrlState.ts`): Pokémon selecionado, view e aba (`?pokemon=garchomp&tab=golpes&view=team`). Trocar Pokémon/view = `push` (botão voltar funciona), aba = `replace`. Estado efêmero (texto da busca, diálogo aberto) continua em `useState`.

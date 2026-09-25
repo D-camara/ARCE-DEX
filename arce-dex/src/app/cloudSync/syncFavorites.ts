@@ -1,15 +1,15 @@
-import { supabase } from '@/shared/services/supabase/client'
+import { getSupabase } from '@/shared/services/supabase/client'
 import { useFavoritesStore } from '@/features/favorites'
 import { mergeSet } from './merge/mergeSet'
 import { readBaseline, writeBaseline, type DataOwnership } from './syncBaseline'
 import { startDomainSync, type DomainSync } from './startDomainSync'
 
 export async function startFavoritesSync(userId: string, ownership: DataOwnership): Promise<DomainSync | null> {
-  if (!supabase) {
+  const loadedClient = await getSupabase()
+  if (!loadedClient) {
     return null
   }
-
-  const client = supabase
+  const client = loadedClient
   let lastApplied: number[] | null = null
 
   async function reconcile(currentOwnership: DataOwnership) {

@@ -1,6 +1,6 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Dialog } from '@/shared/ui'
-import { supabase } from '@/shared/services/supabase/client'
+import { connectAuth } from '../store/authStore'
 
 type AuthFormProps = {
   onClose: () => void
@@ -15,8 +15,14 @@ export function AuthForm({ onClose }: AuthFormProps) {
   const [confirmationSent, setConfirmationSent] = useState(false)
   const titleId = useId()
 
+  // Start loading supabase-js as soon as the form opens, so submitting doesn't wait on it.
+  useEffect(() => {
+    void connectAuth()
+  }, [])
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
+    const supabase = await connectAuth()
     if (!supabase) {
       return
     }

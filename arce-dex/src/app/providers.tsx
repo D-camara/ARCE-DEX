@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
+import { MotionProvider } from '@/shared/ui'
 import { AppErrorFallback } from './AppErrorFallback'
 
 const queryClient = new QueryClient({
@@ -20,7 +21,7 @@ export function Providers({ children }: PropsWithChildren) {
   return (
     <ErrorBoundary FallbackComponent={AppErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </ErrorBoundary>

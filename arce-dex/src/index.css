@@ -76,6 +76,9 @@
   --shadow-glow-purple: 0 0 26px rgba(125, 106, 216, 0.1);
 }
 
+/* Short screens (phones in landscape): the sticky header would eat a third of the height. */
+@custom-variant short (@media (max-height: 500px));
+
 * {
   box-sizing: border-box;
 }
@@ -87,7 +90,6 @@
 }
 
 body {
-  min-width: 320px;
   min-height: 100svh;
   margin: 0;
   overflow-x: clip;
@@ -150,17 +152,6 @@ main {
   gap: 16px;
 }
 
-@keyframes fade-in-backdrop {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes cosmic-pulse {
-  0% { background-position: 200% 0; box-shadow: 0 0 0 rgba(56, 189, 248, 0); }
-  50% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.08); }
-  100% { background-position: -200% 0; box-shadow: 0 0 0 rgba(56, 189, 248, 0); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -170,17 +161,6 @@ main {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-@media (max-width: 399px) {
-  .search-card {
-    padding: 16px 12px;
-  }
-}
-
-@keyframes pulse-aura {
-  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.8; }
-  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
 }
 
 /*
