@@ -55,4 +55,41 @@ test.describe('animações ligadas', () => {
     const total = values.pop()
     expect(total).toBe(values.reduce((sum, value) => sum + value, 0))
   })
+
+  test('favoritar: botão anuncia o estado e o coração volta ao tamanho normal', async ({ app }) => {
+    await openApp(app)
+    const heart = app.getByRole('button', { name: 'Favoritar' })
+    await expect(heart).toHaveAttribute('aria-pressed', 'false')
+    await heart.click()
+    await expect(heart).toHaveAttribute('aria-pressed', 'true')
+    // Pop finished: the icon wrapper is back to scale 1.
+    const scaleOf = () => heart.locator('span.inline-flex').evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).a)
+    await expect.poll(scaleOf).toBe(1)
+    // Clicking again mid-animation still ends unfavorited and at rest.
+    await heart.click()
+    await heart.click()
+    await heart.click()
+    await expect(heart).toHaveAttribute('aria-pressed', 'false')
+    await expect.poll(scaleOf).toBe(1)
+  })
+
+  test('remover favorito no drawer: item sai e o foco vai para o próximo', async ({ app }) => {
+    await openApp(app)
+    for (const name of ['garchomp', 'gible', 'riolu']) {
+      await app.goto(`/?pokemon=${name}`)
+      await app.getByRole('button', { name: 'Favoritar' }).click()
+    }
+    await app.locator('header').first().getByRole('button', { name: /favoritos/i }).click()
+    const drawer = app.getByRole('dialog', { name: 'Pokémon salvos' })
+    const cards = drawer.locator('article')
+    await expect(cards).toHaveCount(3)
+    const first = cards.first()
+    const firstName = await first.locator('strong').textContent()
+    const secondName = await cards.nth(1).locator('strong').textContent()
+    await first.getByRole('button', { name: /^Remover/ }).focus()
+    await app.keyboard.press('Enter')
+    await expect(cards).toHaveCount(2)
+    await expect(drawer.getByText(firstName!)).toHaveCount(0)
+    await expect(drawer.getByRole('button', { name: `Remover ${secondName} dos favoritos`, exact: true })).toBeFocused()
+  })
 })

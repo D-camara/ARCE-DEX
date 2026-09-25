@@ -1,3 +1,5 @@
+import type { TargetAndTransition } from 'motion/react'
+
 /**
  * Motion tokens — the single source for durations/easings (see docs/design-system/MASTER.md).
  * Entrances decelerate, exits accelerate and are ~65% as long, nothing loops except loaders.
@@ -34,7 +36,7 @@ export const fadeRise = {
 export const layoutTransition = { duration: duration.base, ease: ease.out } as const
 
 /** Quick "confirmed" pop (favorited, added). Pass as `animate` on a keyed element. */
-export const pop = {
+export const pop: TargetAndTransition = {
   scale: [1, 1.25, 1],
-  transition: { duration: 0.3, ease: ease.out, times: [0, 0.4, 1] },
-} as const
+  transition: { duration: 0.3, ease: [...ease.out], times: [0, 0.4, 1] },
+}

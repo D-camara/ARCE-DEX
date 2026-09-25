@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import * as m from 'motion/react-m'
 import { Heart, Info, Plus, ShieldCheck, Sparkles, Volume2 } from 'lucide-react'
-import { duration, ease, spring, useCountUp } from '@/shared/ui'
+import { duration, ease, pop, spring, useCountUp } from '@/shared/ui'
 import type { Pokemon, PokemonStatName } from '@/shared/types/pokemon'
 import { TypeBadges } from './TypeBadges'
 
@@ -32,6 +32,8 @@ export function PokemonCard({
   onToggleFavorite,
 }: PokemonCardProps) {
   const [isShiny, setIsShiny] = useState(false)
+  // Feedback only for the user's own click (not on load, not when removed from the drawer).
+  const [favoritePulse, setFavoritePulse] = useState<'pop' | 'shrink' | null>(null)
   const displayedSprite = isShiny && pokemon.shinySprite ? pokemon.shinySprite : pokemon.imageUrl
 
   return (
@@ -141,18 +143,36 @@ export function PokemonCard({
             <Plus size={20} />
             Adicionar à Equipe
           </m.button>
-          <button
+          <m.button
+            aria-pressed={isFavorite}
             className={
               isFavorite
-                ? 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-gilt/50 bg-gilt/15 text-gilt shadow-glow-gold transition-all hover:-translate-y-0.5'
-                : 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-parchment/15 bg-white/5 text-ivory-soft transition-all hover:-translate-y-0.5 hover:border-parchment/30 hover:bg-white/10 hover:text-ivory'
+                ? 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-gilt/50 bg-gilt/15 text-gilt shadow-glow-gold transition-[color,background-color,border-color,box-shadow,translate] hover:-translate-y-0.5'
+                : 'inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-parchment/15 bg-white/5 text-ivory-soft transition-[color,background-color,border-color,box-shadow,translate] hover:-translate-y-0.5 hover:border-parchment/30 hover:bg-white/10 hover:text-ivory'
             }
             type="button"
-            onClick={onToggleFavorite}
+            onClick={() => {
+              setFavoritePulse(isFavorite ? 'shrink' : 'pop')
+              onToggleFavorite()
+            }}
+            transition={spring.snappy}
+            whileTap={{ scale: 0.94 }}
           >
-            <Heart fill={isFavorite ? 'currentColor' : 'none'} size={20} />
+            {/* The heart pops when favorited and dips when unfavorited (the button itself only scales on tap). */}
+            <m.span
+              animate={
+                favoritePulse === 'pop'
+                  ? pop
+                  : favoritePulse === 'shrink'
+                    ? { scale: [1, 0.85, 1], transition: { duration: duration.base, ease: ease.out } }
+                    : undefined
+              }
+              className="inline-flex"
+            >
+              <Heart fill={isFavorite ? 'currentColor' : 'none'} size={20} />
+            </m.span>
             <span className="sr-only">Favoritar</span>
-          </button>
+          </m.button>
           <button
             className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-parchment/15 bg-white/5 text-ivory-soft transition-all hover:-translate-y-0.5 hover:border-parchment/30 hover:bg-white/10 hover:text-ivory"
             type="button"
