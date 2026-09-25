@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { normalizeCompetitivePokemon } from '@/shared/lib/stats'
 import { createLocalForageStateStorage } from '@/shared/lib/storage'
 import type { Team, TeamPokemon, TeamSlot } from '@/shared/types/team'
+import { useTeamHighlightStore } from './teamHighlightStore'
 
 export const MAX_TEAMS = 6
 export const TEAM_SIZE = 6
@@ -248,6 +249,7 @@ export const useTeamStore = create<TeamStore>()(
         },
         addPokemonToTeam: (teamId, pokemon) => {
           let wasAdded = false
+          let addedSlotIndex = -1
 
           set((state) => ({
             teams: state.teams.map((team) => {
@@ -262,6 +264,7 @@ export const useTeamStore = create<TeamStore>()(
               }
 
               wasAdded = true
+              addedSlotIndex = nextSlotIndex
 
               return {
                 ...team,
@@ -274,6 +277,10 @@ export const useTeamStore = create<TeamStore>()(
             }),
             activeTeamId: wasAdded ? teamId : state.activeTeamId,
           }))
+
+          if (wasAdded) {
+            useTeamHighlightStore.getState().markAdded({ teamId, slotIndex: addedSlotIndex })
+          }
 
           return wasAdded
         },

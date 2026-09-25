@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useTeamStore, MAX_TEAMS, TEAM_SIZE, stampChangedTeams } from './teamStore'
+import { useTeamHighlightStore } from './teamHighlightStore'
 import type { TeamPokemon } from '@/shared/types/team'
 
 const pikachu: TeamPokemon = {
@@ -16,6 +17,16 @@ beforeEach(() => {
 })
 
 describe('teamStore', () => {
+  it('marks the slot filled from the Pokédex so the lab can highlight it once', () => {
+    useTeamHighlightStore.getState().clear()
+    useTeamStore.getState().addPokemonToTeam('team-2', pikachu)
+    useTeamStore.getState().addPokemonToTeam('team-2', pikachu)
+
+    expect(useTeamHighlightStore.getState().recentlyAdded).toEqual({ teamId: 'team-2', slotIndex: 1 })
+    // Ephemeral: never part of the persisted/synced team state.
+    expect(JSON.stringify(useTeamStore.getState().teams)).not.toContain('recentlyAdded')
+  })
+
   it('starts with MAX_TEAMS empty teams', () => {
     const { teams } = useTeamStore.getState()
 

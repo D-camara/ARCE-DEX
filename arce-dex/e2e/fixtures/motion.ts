@@ -22,3 +22,13 @@ export async function worstOverflowDuring(page: Page, ms: number, action: () => 
   await page.waitForTimeout(ms)
   return page.evaluate(() => (window as OverflowWindow).__worstOverflow)
 }
+
+/** Adds each Pokémon to the active team through the Pokédex dialog. */
+export async function addToTeam(page: Page, names: string[]) {
+  for (const name of names) {
+    await page.goto(`/?pokemon=${name}`)
+    await page.getByRole('button', { name: /adicionar à equipe/i }).click()
+    await page.getByRole('button', { name: /^adicionar em/i }).click()
+    await page.getByRole('dialog').waitFor({ state: 'detached' })
+  }
+}

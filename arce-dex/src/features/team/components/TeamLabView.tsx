@@ -4,7 +4,7 @@ import { LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { TeamLabAnalysis } from './TeamLabAnalysis'
 import { TeamPokemonEditor } from './TeamPokemonEditor'
-import { TeamSlotCard } from './TeamSlotCard'
+import { TeamSlotGrid } from './TeamSlotGrid'
 import { usePokemon, useMoveDetails } from '@/features/pokemon'
 import type { Team, TeamPokemon } from '@/shared/types/team'
 import { TabIndicator } from '@/shared/ui'
@@ -53,6 +53,8 @@ export function TeamLabView({
 }: TeamLabViewProps) {
   const [selectedSlotIndex, setSelectedSlotIndex] = useState(0)
   const [activeTab, setActiveTab] = useState<LabTab>('Time')
+  const [staggeredTeamId, setStaggeredTeamId] = useState<string | null>(null)
+  const [isClearing, setIsClearing] = useState(false)
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? teams[0]
   const selectedSlot = activeTeam.slots[selectedSlotIndex]
   const selectedPokemon = selectedSlot?.pokemon ?? null
@@ -128,25 +130,27 @@ export function TeamLabView({
     }
 
     return (
-      <section className="grid gap-2.5 md:grid-cols-2 lg:grid-cols-3">
-        {activeTeam.slots.map((slot, index) => (
-          <TeamSlotCard
-            isSelected={index === selectedSlotIndex}
-            key={slot.id}
-            onEdit={(slotIndex) => {
-              setSelectedSlotIndex(slotIndex)
-              setActiveTab('Editor')
-            }}
-            onRemove={(slotIndex) => onRemovePokemon(slotIndex, activeTeam.id)}
-            slot={slot}
-            slotIndex={index}
-          />
-        ))}
-      </section>
+      <TeamSlotGrid
+        isClearing={isClearing}
+        onEdit={(slotIndex) => {
+          setSelectedSlotIndex(slotIndex)
+          setActiveTab('Editor')
+        }}
+        onRemove={(slotIndex) => {
+          setIsClearing(false)
+          onRemovePokemon(slotIndex, activeTeam.id)
+        }}
+        onStaggered={setStaggeredTeamId}
+        selectedSlotIndex={selectedSlotIndex}
+        staggeredTeamId={staggeredTeamId}
+        team={activeTeam}
+      />
     )
   }, [
     activeTab,
     activeTeam,
+    isClearing,
+    staggeredTeamId,
     onRemovePokemon,
     onUpdatePokemon,
     selectedAbilityOptions,
@@ -228,7 +232,10 @@ export function TeamLabView({
           <button
             className="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-control border border-line bg-white/[0.04] px-3"
             type="button"
-            onClick={() => onClearTeam(activeTeam.id)}
+            onClick={() => {
+              setIsClearing(true)
+              onClearTeam(activeTeam.id)
+            }}
           >
             <Eraser size={16} />
             Limpar

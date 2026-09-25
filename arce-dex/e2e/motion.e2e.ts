@@ -1,5 +1,5 @@
 import { expect, openApp, test } from './fixtures/fakePokeApi'
-import { sampleOverflow, worstOverflowDuring, type OverflowWindow } from './fixtures/motion'
+import { addToTeam, sampleOverflow, worstOverflowDuring, type OverflowWindow } from './fixtures/motion'
 
 // The rest of the e2e suite runs with reduced motion (deterministic end states). This file
 // turns animations ON to check what only shows up while they run: horizontal overflow
@@ -116,5 +116,27 @@ test.describe('animações ligadas', () => {
     await expect(app.getByRole('region', { name: 'Pokédex' })).toBeVisible()
     await expect(app.getByRole('region', { name: 'Laboratório do time' })).toHaveCount(0)
     await expect(app.getByRole('group', { name: 'Stats base' })).toBeVisible()
+  })
+
+  test('slots do time: remover anima, foco vai para o slot vazio, limpar e trocar de time no meio', async ({ app }) => {
+    await openApp(app)
+    await addToTeam(app, ['garchomp', 'gible', 'lucario'])
+    await app.getByRole('button', { name: /meu time/i }).click()
+    const grid = app.getByRole('region', { name: 'Slots do time' })
+    const removeButtons = grid.getByRole('button', { name: 'Remover' })
+    await expect(removeButtons).toHaveCount(3)
+
+    const overflow = await worstOverflowDuring(app, 500, () => removeButtons.first().click())
+    expect(overflow).toBeLessThanOrEqual(0)
+    await expect(removeButtons).toHaveCount(2)
+    await expect(grid.getByRole('group', { name: 'Slot 1 vazio' })).toBeFocused()
+    await expect(app.getByText('2/6 slots', { exact: false })).toBeVisible()
+
+    // Clear, then switch team while the cards are still leaving: no duplicate or lost slot.
+    await app.getByRole('button', { name: 'Limpar' }).click()
+    await app.getByRole('button', { name: '2', exact: true }).click()
+    await app.getByRole('button', { name: '1', exact: true }).click()
+    await expect(removeButtons).toHaveCount(0)
+    await expect(grid.getByText('Slot vazio')).toHaveCount(6)
   })
 })
