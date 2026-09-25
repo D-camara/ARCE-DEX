@@ -2,7 +2,7 @@ import { HeartOff } from 'lucide-react'
 import { useEffect, useId, useRef, type MouseEvent } from 'react'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { CloseButton, duration, ease, useDialogBehavior } from '@/shared/ui'
+import { CloseButton, duration, ease, layoutTransition, useDialogBehavior } from '@/shared/ui'
 import type { PokemonSummary } from '@/shared/types/pokemon'
 import { TypeBadges } from '@/features/pokemon'
 
@@ -87,13 +87,20 @@ export function FavoritesDrawer({
         </header>
 
         {/* auto-rows-max: the cards' explicit min-height would otherwise let rows shrink and overlap. */}
-        <div className="grid min-h-0 auto-rows-max content-start gap-2.5 overflow-y-auto">
-          <AnimatePresence initial={false}>
+        {/* layoutScroll: the list scrolls, and Motion must account for it when sliding items up.
+            relative: popLayout positions the leaving card against this box. */}
+        <m.div className="relative grid min-h-0 auto-rows-max content-start gap-2.5 overflow-y-auto" layoutScroll>
+          <AnimatePresence initial={false} mode="popLayout">
           {favorites.map((pokemon) => (
             <m.article
               data-favorite-id={pokemon.id}
-              // Slides out toward the drawer's edge when removed.
+              // Slides out toward the drawer's edge when removed; the ones below slide up.
               exit={{ opacity: 0, x: 32, transition: { duration: duration.exit, ease: ease.in } }}
+              layout="position"
+              // Only an added/removed item moves the others. Not data arriving: types load when
+              // the drawer opens and grow the cards, and animating that made them overlap.
+              layoutDependency={favorites.length}
+              transition={{ layout: layoutTransition }}
               className="grid w-full min-h-[82px] cursor-pointer grid-cols-[50px_minmax(0,1fr)_44px] items-center gap-3 max-xs:grid-cols-[40px_minmax(0,1fr)_44px] max-xs:gap-2 rounded-2xl border border-gilt-warm/24 bg-[linear-gradient(135deg,rgba(245,208,108,0.09),rgba(103,232,249,0.04)),rgba(15,23,42,0.84)] p-3 transition-colors hover:border-gilt-warm/50 hover:bg-[linear-gradient(135deg,rgba(245,208,108,0.14),rgba(103,232,249,0.06)),rgba(15,23,42,0.92)]"
               key={pokemon.id}
               onClick={() => onSelect(pokemon)}
@@ -125,7 +132,7 @@ export function FavoritesDrawer({
               Nenhum Pokémon favoritado.
             </p>
           )}
-        </div>
+        </m.div>
       </aside>
     </>
   )

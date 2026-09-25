@@ -144,4 +144,43 @@ test.describe('animações ligadas', () => {
     await expect(removeButtons).toHaveCount(0)
     await expect(grid.getByText('Slot vazio')).toHaveCount(6)
   })
+
+  test('listas fecham o buraco: remover favorito do meio e recente que volta ao topo', async ({ app }) => {
+    await openApp(app)
+    for (const name of ['garchomp', 'gible', 'gabite', 'riolu']) {
+      await app.goto(`/?pokemon=${name}`)
+      await app.getByRole('button', { name: 'Favoritar' }).click()
+    }
+    await app.locator('header').first().getByRole('button', { name: /favoritos/i }).click()
+    const drawer = app.getByRole('dialog', { name: 'Pokémon salvos' })
+    const cards = drawer.locator('article')
+    await expect(cards).toHaveCount(4)
+    await cards.nth(1).getByRole('button', { name: /^Remover/ }).click()
+    await expect(cards).toHaveCount(3)
+    // Once the items below have slid up: no overlap, no leftover transform.
+    await expect
+      .poll(() =>
+        cards.evaluateAll((els) =>
+          els.every((el, i) => {
+            const style = getComputedStyle(el).transform
+            const settled = style === 'none' || new DOMMatrix(style).isIdentity
+            return settled && (i === 0 || el.getBoundingClientRect().top >= els[i - 1].getBoundingClientRect().bottom)
+          }),
+        ),
+      )
+      .toBe(true)
+    await app.keyboard.press('Escape')
+
+    // Recentes come from searches. Picking an older one brings it back to the top.
+    for (const name of ['garchomp', 'gible', 'riolu']) {
+      await app.getByRole('combobox').fill(name)
+      await app.getByRole('combobox').press('Enter')
+      await expect(app).toHaveTitle(new RegExp(name, 'i'))
+    }
+    const recents = app.getByRole('heading', { name: 'Recentes' }).locator('xpath=..').getByRole('button')
+    await expect(recents.first().locator('strong')).toHaveText('Riolu')
+    await recents.filter({ hasText: 'Garchomp' }).click()
+    await expect(recents.first().locator('strong')).toHaveText('Garchomp')
+    await expect(recents).toHaveCount(3)
+  })
 })

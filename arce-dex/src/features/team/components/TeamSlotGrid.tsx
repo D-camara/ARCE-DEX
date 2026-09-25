@@ -98,6 +98,8 @@ export function TeamSlotGrid({
               key={keys[index]}
               // position only: a neighbour whose height changes (row stretch) must not be scaled.
               layout="position"
+              // Only who-is-where changes slide slots, not details (stats, moves) loading in.
+              layoutDependency={keys.join()}
               role={slot.pokemon ? undefined : 'group'}
               tabIndex={slot.pokemon ? undefined : -1}
               transition={{ layout: layoutTransition }}
