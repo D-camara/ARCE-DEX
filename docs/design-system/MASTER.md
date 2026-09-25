@@ -68,6 +68,12 @@ Tokens (`shared/ui/motion/tokens.ts`):
 
 Biblioteca: **Motion** (`motion`), só via `LazyMotion` + `m` (`motion/react-m`). O lint proíbe `motion.*` completo e `framer-motion`, para o bundle não inflar sem ninguém perceber.
 
+Conferido contra a doc oficial ([motion.dev/docs](https://motion.dev/docs/react-reduce-bundle-size)):
+- `m` + `LazyMotion` com `features` carregado por `import()` é o caminho recomendado para bundle mínimo. `domAnimation` custa ~15 KB e fica fora do bundle inicial. `domMax` (layout/drag, ~25 KB) não é usado.
+- `reducedMotion="user"` desliga transform e layout e mantém opacidade. É a recomendação de acessibilidade da doc: trocar movimento por fade.
+- **Componente que o pai desmonta** (`{open && <X />}`) precisa estar dentro de `<AnimatePresence>` no pai, e o `AnimatePresence` interno com `propagate`, senão a saída não roda. O `Dialog` já usa `propagate`.
+- Motion anima via estilo inline, que vence as classes do Tailwind. Não coloque `transition-all`/`transition-transform` em elemento cujo `transform` o Motion anima, porque a transição CSS "arrasta" cada quadro.
+
 ## Checklist antes de entregar UI
 
 - [ ] Auditoria mobile limpa: toque ≥ 44px, texto ≥ 12px, sem overflow horizontal.

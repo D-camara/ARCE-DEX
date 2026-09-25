@@ -171,7 +171,9 @@ function App() {
         {dialogs.showToast && <Toast key="toast" message={dialogs.toastMessage} />}
       </AnimatePresence>
 
-      {isAuthOpen && <AuthForm onClose={() => setIsAuthOpen(false)} />}
+      <AnimatePresence>
+        {isAuthOpen && <AuthForm key="auth" onClose={() => setIsAuthOpen(false)} />}
+      </AnimatePresence>
     </div>
   )
 }

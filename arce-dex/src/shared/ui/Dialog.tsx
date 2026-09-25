@@ -16,13 +16,15 @@ type DialogProps = PropsWithChildren<{
 /**
  * Centered on desktop, bottom sheet on mobile. Closes on Esc and on a click outside the panel.
  * Enters by rising from where it sits (bottom on phones), leaves faster than it came.
+ * `propagate`: when the parent unmounts the whole dialog (e.g. `{open && <AuthForm />}` inside
+ * an AnimatePresence), the exit animation still runs instead of the dialog vanishing.
  */
 export function Dialog({ isOpen, onClose, labelledBy, className, children }: DialogProps) {
   const panelRef = useRef<HTMLElement>(null)
   useDialogBehavior(isOpen, onClose, panelRef)
 
   return (
-    <AnimatePresence>
+    <AnimatePresence propagate>
       {isOpen && (
         <m.div
           key="dialog-overlay"
