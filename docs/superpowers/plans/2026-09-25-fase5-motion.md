@@ -1,6 +1,6 @@
 # Fase 5: Motion completo (8 itens)
 
-Plano para levar o Motion às partes do app que ainda não têm animação e ligar as animações de layout. **Nada daqui foi implementado ainda.** Os custos de bundle foram medidos no build atual (25/09).
+Plano para levar o Motion às partes do app que ainda não têm animação e ligar as animações de layout. **Executado em 25/09** (commits `6530c4d` a `46afa4e` na `dev`); ver "Notas de execução" no fim. Os custos de bundle foram medidos no build de 25/09.
 
 Todas as regras do `docs/design-system/MASTER.md` continuam valendo:
 - toda animação mostra causa e efeito, com 1–2 elementos animados por tela;
@@ -263,3 +263,38 @@ O problema é que a aba "Análise" só existe na tela quando está aberta, e a m
 - Navegação por setas nas abas (padrão ARIA de tabs completo). É acessibilidade, não Motion; vale como tarefa separada.
 - `TeamAnalysisPanel` (`features/type-analysis`) está exportado mas não é usado em lugar nenhum. Remover ou usar é outra decisão.
 - "Desfazer" no toast ao remover favorito ou Pokémon do time.
+
+---
+
+## Notas de execução (25/09)
+
+Os 8 itens foram entregues, um commit cada, com build, lint, testes unitários e e2e passando.
+
+**O que mudou em relação ao plano:**
+- **Bug na suíte e2e, anterior a esta fase:** `reducedMotion: 'reduce'` solto no `use` do Playwright não é opção válida e era ignorado. A suíte inteira rodava com animações ligadas. Passou a usar `contextOptions`, e cada lado ganhou um teste de guarda (commit separado, `2f05814`).
+- **`layoutDependency` obrigatório nas listas.** Sem ele, os tipos dos favoritos, que só carregam quando o drawer abre, faziam os cards deslizarem e se sobreporem por ~0,3 s. Virou regra no MASTER.md.
+- **O diff da análise (item 5) ficou em `features/team/lib/analysisDiff.ts`**, não em `type-analysis`. Pelo barrel de `type-analysis`, que a Pokédex já carrega, ele entrava no bundle principal. Não tem tabela de tipos, então não fere a regra do AGENTS.md.
+- **Item 8:**
+  - a alça fica na linha de ações (alça | Antes | Depois), não no canto do card: lá ela ficava por baixo da coluna de texto (`z-[1]`) e cobria nome e tipos nas telas estreitas;
+  - a rolagem automática só começa quando o dedo vai em direção à borda (16 px), senão pegar um card perto do rodapé já rolava a página sozinho;
+  - Esc usa `dragControls.stop()`, então o card solta o ponteiro e volta na hora;
+  - `moveSlot` move o slot inteiro (ids juntos); o sync continua por `slot_index`.
+- **Item 4:** o deslize de 16 px criava 2 px de rolagem lateral em 740 px no meio da animação, e o container do app ganhou `overflow-x-clip`. A região da tela nova recebe foco (sem anel, com `!` porque a regra global de foco não está em layer).
+- **E2E:** trocar de Pokémon com `page.goto` logo depois de favoritar pode chegar antes da escrita assíncrona no IndexedDB. O helper `visitPokemon` troca sem reload.
+
+**Orçamento (gzip):**
+
+| Chunk | Antes | Depois | Meta | Resultado |
+|---|---|---|---|---|
+| Principal | 133,6 KB | 135,5 KB | +1,5 KB | **+1,9 KB, estourou 0,4 KB** |
+| Features do Motion (assíncrono) | 14,6 KB | 28,0 KB | ~28 KB | ok |
+| Laboratório (assíncrono) | 9,8 KB | 14,1 KB | ~+4 KB | +4,3 KB |
+
+**Desempenho** (Playwright, 375 px, CPU 4× mais lenta, comparado com o build de antes da fase):
+- **CLS 0 em tudo.**
+- Troca de aba e abrir a análise já tinham tarefas longas antes (55–100 ms) e continuam iguais.
+- Algumas interações novas (abrir o laboratório, remover slot, voltar para Time, abrir e remover favorito) passaram a ter às vezes **uma tarefa de 51–57 ms**, no começo das animações de layout, quando antes tinham nenhuma. A meta de "nenhuma tarefa > 50 ms causada por animação" **não foi cumprida por 1–7 ms**. É candidata a otimização, por exemplo reduzir quantos elementos medem layout de uma vez.
+
+**Não verificado aqui:** arrastar num celular de verdade (iOS Safari). O toque foi testado no Chromium com eventos de toque via CDP.
+
+**Achado fora do escopo:** o brilho da aba ativa no laboratório é cortado num retângulo pela barra com scroll (`overflow-x-auto`). Já estava assim antes da Fase 5.
