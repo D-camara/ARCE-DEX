@@ -4,9 +4,14 @@ import { addToTeam, sampleOverflow, worstOverflowDuring, type OverflowWindow } f
 // The rest of the e2e suite runs with reduced motion (deterministic end states). This file
 // turns animations ON to check what only shows up while they run: horizontal overflow
 // mid-animation, interrupted animations leaving the wrong state, final states arriving.
-test.use({ reducedMotion: 'no-preference' })
+test.use({ contextOptions: { reducedMotion: 'no-preference' } })
 
 test.describe('animações ligadas', () => {
+  test('este arquivo roda mesmo com animação (reduced motion desligado)', async ({ app }) => {
+    await openApp(app)
+    expect(await app.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(false)
+  })
+
   test('carregar o app não cria rolagem lateral no meio das animações', async ({ app }) => {
     await app.addInitScript(sampleOverflow, 2000)
     await openApp(app)
